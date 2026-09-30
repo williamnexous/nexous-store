@@ -2,7 +2,7 @@
 import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 const CONFIG={url:'https://tcszjspirwwxrkabhtgi.supabase.co',anon:'sb_publishable_bZIkwmhElVzFMsGbk0bBgw_eFVWJuXV'};const sb=createClient(CONFIG.url,CONFIG.anon);let products=[],cart=JSON.parse(localStorage.nexousCart||'[]');
 const money=n=>Number(n).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});function save(){localStorage.nexousCart=JSON.stringify(cart);document.querySelector('#cart').textContent=`CARRINHO (${cart.reduce((a,b)=>a+b.quantity,0)})`}
-async function load(){const{data,error}=await sb.from('products').select('*').eq('ativo',true).order('criado em',{ascending:false});if(error){
+async function load(){const{data,error}=await sb.from('products').select('*').eq('active',true).order('created_at',{ascending:false});if(error){
 document.querySelector('#products').innerHTML='<p>ERRO SUPABASE: '+error.message+'</p>';
 console.error(error);
 return;
