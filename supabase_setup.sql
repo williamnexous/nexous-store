@@ -1,0 +1,20 @@
+create extension if not exists pgcrypto;
+create table if not exists public.admins (user_id uuid primary key references auth.users(id) on delete cascade);
+create table if not exists public.products (id uuid primary key default gen_random_uuid(), name text not null, description text default '', price numeric(10,2) not null check(price>=0), image_url text, tag text check(tag in ('NEW','DROP','HOT','LIMITED')), active boolean not null default true, created_at timestamptz not null default now());
+create table if not exists public.orders (id uuid primary key default gen_random_uuid(), customer_name text not null, customer_email text not null, total numeric(10,2) not null check(total>=0), status text not null default 'pending', payment_id text, created_at timestamptz not null default now());
+create table if not exists public.order_items (id uuid primary key default gen_random_uuid(), order_id uuid not null references public.orders(id) on delete cascade, product_id uuid references public.products(id) on delete set null, product_name text not null, quantity int not null check(quantity>0), unit_price numeric(10,2) not null check(unit_price>=0));
+create or replace function public.is_admin() returns boolean language sql stable security definer set search_path=public as $$ select exists(select 1 from public.admins where user_id=auth.uid()) $$;
+alter table public.admins enable row level security; alter table public.products enable row level security; alter table public.orders enable row level security; alter table public.order_items enable row level security;
+drop policy if exists "public read active products" on public.products; create policy "public read active products" on public.products for select using (active or public.is_admin());
+drop policy if exists "admins manage products" on public.products; create policy "admins manage products" on public.products for all using(public.is_admin()) with check(public.is_admin());
+drop policy if exists "admins read admins" on public.admins; create policy "admins read admins" on public.admins for select using(public.is_admin());
+drop policy if exists "admins read orders" on public.orders; create policy "admins read orders" on public.orders for select using(public.is_admin());
+drop policy if exists "admins read order items" on public.order_items; create policy "admins read order items" on public.order_items for select using(public.is_admin());
+insert into storage.buckets(id,name,public) values('products','products',true) on conflict(id) do update set public=true;
+drop policy if exists "public product images" on storage.objects; create policy "public product images" on storage.objects for select using(bucket_id='products');
+drop policy if exists "admins upload product images" on storage.objects; create policy "admins upload product images" on storage.objects for insert with check(bucket_id='products' and public.is_admin());
+drop policy if exists "admins update product images" on storage.objects; create policy "admins update product images" on storage.objects for update using(bucket_id='products' and public.is_admin()) with check(bucket_id='products' and public.is_admin());
+drop policy if exists "admins delete product images" on storage.objects; create policy "admins delete product images" on storage.objects for delete using(bucket_id='products' and public.is_admin());
+insert into public.products(name,description,price,tag,active) select * from (values ('NEXOUS OVERSIZED TEE','Oversized premium streetwear.',89.90,'NEW',true),('NEXOUS CARGO','Cargo urbano de corte moderno.',159.90,'DROP',true),('NEXOUS HOODIE','Moletom pesado e minimalista.',189.90,'HOT',true),('NEXOUS SNEAKER 01','Sneaker NEXOUS edição 01.',249.90,'LIMITED',true)) v(name,description,price,tag,active) where not exists(select 1 from public.products);
+-- Depois de criar seu usuário no Auth, torne-o admin substituindo o UUID:
+-- insert into public.admins(user_id) values ('UUID_DO_USUARIO');

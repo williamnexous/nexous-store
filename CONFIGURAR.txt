@@ -1,0 +1,48 @@
+NEXOUS — CONFIGURAÇÃO RÁPIDA
+
+1) SUPABASE
+- Crie um projeto em supabase.com.
+- Abra SQL Editor e execute supabase_setup.sql.
+- Em Authentication > Users, crie seu usuário (e-mail/senha).
+- Copie o UUID desse usuário e rode no SQL Editor:
+  insert into public.admins(user_id) values ('SEU_UUID');
+- O SQL já cria o bucket público "products" e as políticas de Storage.
+
+2) CHAVES PÚBLICAS DO SITE
+- Em Supabase > Project Settings/API, copie Project URL e anon/publishable key.
+- Em index.html e admin.html substitua __SUPABASE_URL__ e __SUPABASE_ANON_KEY__.
+- A anon key pode ficar no navegador; a segurança vem das políticas RLS. NUNCA coloque service_role no HTML.
+
+3) VERCEL
+- Envie esta pasta para um repositório GitHub e importe na Vercel, ou use outro método de deploy aceito pela Vercel.
+- Adicione Environment Variables:
+  SUPABASE_URL
+  SUPABASE_SERVICE_ROLE_KEY
+  MP_ACCESS_TOKEN
+  SITE_URL (ex.: https://nexous.vercel.app)
+  MP_WEBHOOK_SECRET (opcional, se você configurar assinatura secreta do webhook)
+- Faça Deploy.
+
+4) MERCADO PAGO
+- Em Mercado Pago Developers, crie/configure sua aplicação e pegue o Access Token.
+- Coloque somente na Vercel como MP_ACCESS_TOKEN.
+- Configure a URL de notificações/webhook como:
+  https://SEU-DOMINIO/api/webhook
+- Se o painel fornecer/configurar uma secret de assinatura, coloque a mesma em MP_WEBHOOK_SECRET.
+- O servidor recebe IDs/quantidades, consulta preços no Supabase, cria order/order_items e só então cria a preferência.
+- O webhook busca o pagamento diretamente na API do Mercado Pago antes de atualizar o pedido.
+
+5) ADMIN
+- Acesse https://SEU-DOMINIO/admin.html e entre com o usuário que foi inserido na tabela admins.
+- Adicione/edite/desative/exclua produtos e envie fotos.
+
+6) TESTE
+- Primeiro use credenciais de teste do Mercado Pago e compradores de teste conforme o painel Developers.
+- Adicione produtos ao carrinho, informe nome/e-mail e finalize.
+- Confira orders/order_items no Supabase e veja se o webhook altera orders.status.
+- Só depois passe para credenciais de produção.
+
+IMPORTANTE
+- Não compartilhe SUPABASE_SERVICE_ROLE_KEY nem MP_ACCESS_TOKEN.
+- Este projeto não coleta dados de cartão; o pagamento ocorre no checkout hospedado pelo Mercado Pago.
+- Para produção, revise domínio, políticas, logs, e-mails, LGPD/privacidade, frete/estoque e regras comerciais.
