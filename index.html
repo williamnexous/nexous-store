@@ -7,7 +7,38 @@ document.querySelector('#products').innerHTML='<p>ERRO SUPABASE: '+error.message
 console.error(error);
 return;
 }products=data;document.querySelector('#products').innerHTML=data.map(p=>`<article class="card"><div class="photo">${p.image_url?`<img src="${p.image_url}" alt="">`:'NEXOUS'}</div><div class="info"><span class="tag">${p.tag||'DROP'}</span><h3>${p.name}</h3><p>${p.description||''}</p><p class="price">${money(p.price)}</p><button class="btn" data-add="${p.id}">ADICIONAR</button></div></article>`).join('');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add))}
-function add(id){const x=cart.find(i=>i.id===id);x?x.quantity++:cart.push({id,quantity:1});save()}window.closeCart=()=>drawer.style.display='none';function render(){const rows=cart.map(i=>{const p=products.find(x=>x.id===i.id);return p?`<div class="row"><span>${p.name} × ${i.quantity}</span><span>${money(p.price*i.quantity)}</span></div>`:''}).join('');cartItems.innerHTML=rows||'<p>Carrinho vazio.</p>';total.textContent='Total: '+money(cart.reduce((s,i)=>{const p=products.find(x=>x.id===i.id);return s+(p?Number(p.price)*i.quantity:0)},0))}document.querySelector('#cart').onclick=()=>{render();drawer.style.display='block'};window.checkout=async()=>{
+function add(id){
+  const x = cart.find(i => i.id === id);
+
+  if(x){
+    x.quantity++;
+  }else{
+    cart.push({id, quantity:1});
+  }
+
+  save();
+}
+
+window.changeQty = (id, amount) => {
+  const item = cart.find(i => i.id === id);
+
+  if(!item) return;
+
+  item.quantity += amount;
+
+  if(item.quantity <= 0){
+    cart = cart.filter(i => i.id !== id);
+  }
+
+  save();
+  render();
+};
+
+window.removeItem = (id) => {
+  cart = cart.filter(i => i.id !== id);
+  save();
+  render();
+};window.closeCart=()=>drawer.style.display='none';function render(){const rows=cart.map(i=>{const p=products.find(x=>x.id===i.id);return p?`<div class="row"><span>${p.name} × ${i.quantity}</span><span>${money(p.price*i.quantity)}</span></div>`:''}).join('');cartItems.innerHTML=rows||'<p>Carrinho vazio.</p>';total.textContent='Total: '+money(cart.reduce((s,i)=>{const p=products.find(x=>x.id===i.id);return s+(p?Number(p.price)*i.quantity:0)},0))}document.querySelector('#cart').onclick=()=>{render();drawer.style.display='block'};window.checkout=async()=>{
   msg.textContent='Criando pagamento...';
 
   const r=await fetch('/api/create-checkout',{
