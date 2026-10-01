@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 
 // ======================================================
-// SUPABASE
+// CONFIGURAÇÃO
 // ======================================================
 
 const supabaseUrl =
@@ -11,6 +11,12 @@ const supabaseUrl =
 
 const supabaseServiceKey =
   process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+const mercadoPagoToken =
+  process.env.MP_ACCESS_TOKEN;
+
+const webhookSecret =
+  process.env.MP_WEBHOOK_SECRET;
 
 if (!supabaseUrl) {
   throw new Error(
@@ -24,26 +30,42 @@ if (!supabaseServiceKey) {
   );
 }
 
+if (!mercadoPagoToken) {
+  throw new Error(
+    'MP_ACCESS_TOKEN não configurado na Vercel'
+  );
+}
+
 const supabase = createClient(
   supabaseUrl,
   supabaseServiceKey
 );
 
 // ======================================================
-// VALIDAR ASSINATURA DO MERCADO PAGO
+// VALIDAR ASSINATURA MERCADO PAGO
 // ======================================================
 
 function validateSignature(req, dataId) {
-  const secret = process.env.MP_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error('MP_WEBHOOK_SECRET não configurado.');
+    return false;
+  }
 
-  const xSignature = req.headers['x-signature'];
-  const xRequestId = req.headers['x-request-id'];
+  const xSignature =
+    req.headers['x-signature'];
 
-  if (!secret || !xSignature || !xRequestId || !dataId) {
+  const xRequestId =
+    req.headers['x-request-id'];
+
+  if (
+    !xSignature ||
+    !xRequestId ||
+    !dataId
+  ) {
     console.error(
-      'Dados ausentes para validar assinatura',
+      'Dados ausentes para validar assinatura:',
       {
-        hasSecret: !!secret,
+        hasSecret: !!webhookSecret,
         hasSignature: !!xSignature,
         hasRequestId: !!xRequestId,
         hasDataId: !!dataId
@@ -59,7 +81,8 @@ function validateSignature(req, dataId) {
     const [key, value] = part.split('=');
 
     if (key && value) {
-      parts[key.trim()] = value.trim();
+      parts[key.trim()] =
+        value.trim();
     }
   }
 
@@ -67,7 +90,10 @@ function validateSignature(req, dataId) {
   const receivedHash = parts.v1;
 
   if (!ts || !receivedHash) {
-    console.error('x-signature incompleto');
+    console.error(
+      'Cabeçalho x-signature incompleto.'
+    );
+
     return false;
   }
 
@@ -80,16 +106,25 @@ function validateSignature(req, dataId) {
     `ts:${ts};`;
 
   const calculatedHash = crypto
-    .createHmac('sha256', secret)
+    .createHmac(
+      'sha256',
+      webhookSecret
+    )
     .update(manifest)
     .digest('hex');
 
   try {
     const receivedBuffer =
-      Buffer.from(receivedHash, 'hex');
+      Buffer.from(
+        receivedHash,
+        'hex'
+      );
 
     const calculatedBuffer =
-      Buffer.from(calculatedHash, 'hex');
+      Buffer.from(
+        calculatedHash,
+        'hex'
+      );
 
     if (
       receivedBuffer.length !==
@@ -105,11 +140,43 @@ function validateSignature(req, dataId) {
 
   } catch (error) {
     console.error(
-      'Erro ao comparar assinatura:',
+      'Erro ao validar assinatura:',
       error
     );
 
     return false;
+  }
+}
+
+// ======================================================
+// CONVERTER STATUS
+// ======================================================
+
+function convertPaymentStatus(status) {
+  switch (status) {
+    case 'approved':
+      return 'pago';
+
+    case 'pending':
+      return 'pendente';
+
+    case 'in_process':
+      return 'processando';
+
+    case 'rejected':
+      return 'rejeitado';
+
+    case 'cancelled':
+      return 'cancelado';
+
+    case 'refunded':
+      return 'reembolsado';
+
+    case 'charged_back':
+      return 'estornado';
+
+    default:
+      return status || 'pendente';
   }
 }
 
@@ -134,27 +201,32 @@ export default async function handler(req, res) {
     const dataId =
       req.query?.['data.id'];
 
-    const paymentId =
-      dataId ||
+    const bodyPaymentId =
       req.body?.data?.id;
 
+    const paymentId =
+      dataId ||
+      bodyPaymentId;
+
     console.log(
-      'Webhook Mercado Pago recebido',
+      'Webhook Mercado Pago recebido:',
       {
         type: req.body?.type,
         action: req.body?.action,
-        paymentId,
-        dataId
+        dataId,
+        bodyPaymentId,
+        paymentId
       }
     );
 
     if (!paymentId) {
       console.log(
-        'Webhook sem ID de pagamento.'
+        'Notificação sem payment ID.'
       );
 
       return res.status(200).json({
-        ok: true
+        ok: true,
+        ignored: true
       });
     }
 
@@ -162,14 +234,19 @@ export default async function handler(req, res) {
     // VALIDAR ASSINATURA
     // ==================================================
 
-    if (!validateSignature(req, dataId)) {
-
+    if (
+      !validateSignature(
+        req,
+        dataId
+      )
+    ) {
       console.error(
-        'Assinatura do Mercado Pago inválida'
+        'Assinatura Mercado Pago inválida.'
       );
 
       return res.status(401).json({
-        error: 'Assinatura inválida'
+        error:
+          'Assinatura inválida'
       });
     }
 
@@ -178,43 +255,44 @@ export default async function handler(req, res) {
     );
 
     // ==================================================
-    // CONSULTAR PAGAMENTO NO MERCADO PAGO
+    // CONSULTAR PAGAMENTO
     // ==================================================
 
-    const response = await fetch(
-      `https://api.mercadopago.com/v1/payments/${encodeURIComponent(paymentId)}`,
-      {
-        method: 'GET',
+    const mpResponse =
+      await fetch(
+        `https://api.mercadopago.com/v1/payments/${encodeURIComponent(paymentId)}`,
+        {
+          method: 'GET',
 
-        headers: {
-          Authorization:
-            `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+          headers: {
+            Authorization:
+              `Bearer ${mercadoPagoToken}`,
 
-          'Content-Type':
-            'application/json'
+            'Content-Type':
+              'application/json'
+          }
         }
-      }
-    );
+      );
 
     const payment =
-      await response.json();
+      await mpResponse.json();
 
-    if (!response.ok) {
-
+    if (!mpResponse.ok) {
       console.error(
-        'Erro ao consultar pagamento no Mercado Pago:',
+        'Erro Mercado Pago:',
         payment
       );
 
-      // Evita que o Mercado Pago fique
-      // reenviando infinitamente a notificação.
       return res.status(200).json({
-        ok: true
+        ok: true,
+        ignored: true,
+        reason:
+          'payment_not_found'
       });
     }
 
     console.log(
-      'Pagamento consultado:',
+      'Pagamento encontrado:',
       {
         id: payment.id,
         status: payment.status,
@@ -227,62 +305,150 @@ export default async function handler(req, res) {
     // CONVERTER STATUS
     // ==================================================
 
-    let statusPedido =
-      payment.status;
+    const orderStatus =
+      convertPaymentStatus(
+        payment.status
+      );
 
-    if (payment.status === 'approved') {
-      statusPedido = 'pago';
-    }
+    // ==================================================
+    // LOCALIZAR PEDIDO
+    // ==================================================
 
-    if (payment.status === 'pending') {
-      statusPedido = 'pendente';
-    }
+    const paymentIdString =
+      String(payment.id);
 
-    if (payment.status === 'in_process') {
-      statusPedido = 'processando';
-    }
+    let {
+      data: order,
+      error: findError
+    } = await supabase
+      .from('orders')
+      .select(
+        'id,payment_id,status,total'
+      )
+      .eq(
+        'payment_id',
+        paymentIdString
+      )
+      .maybeSingle();
 
-    if (payment.status === 'rejected') {
-      statusPedido = 'rejeitado';
-    }
+    if (findError) {
+      console.error(
+        'Erro procurando pedido por payment_id:',
+        findError
+      );
 
-    if (payment.status === 'cancelled') {
-      statusPedido = 'cancelado';
-    }
-
-    if (payment.status === 'refunded') {
-      statusPedido = 'reembolsado';
-    }
-
-    if (payment.status === 'charged_back') {
-      statusPedido = 'estornado';
+      return res.status(500).json({
+        error:
+          'Erro procurando pedido'
+      });
     }
 
     // ==================================================
-    // ATUALIZAR PEDIDO NO SUPABASE
+    // FALLBACK PELO external_reference
+    // ==================================================
+
+    if (
+      !order &&
+      payment.external_reference
+    ) {
+      console.log(
+        'Pedido não encontrado por payment_id. Tentando external_reference.'
+      );
+
+      const {
+        data: orderByReference,
+        error: referenceError
+      } = await supabase
+        .from('orders')
+        .select(
+          'id,payment_id,status,total'
+        )
+        .eq(
+          'id',
+          String(
+            payment.external_reference
+          )
+        )
+        .maybeSingle();
+
+      if (referenceError) {
+        console.error(
+          'Erro procurando external_reference:',
+          referenceError
+        );
+
+        return res.status(500).json({
+          error:
+            'Erro procurando pedido'
+        });
+      }
+
+      order =
+        orderByReference;
+    }
+
+    // ==================================================
+    // PEDIDO NÃO ENCONTRADO
+    // ==================================================
+
+    if (!order) {
+      console.error(
+        'Nenhum pedido correspondente encontrado.',
+        {
+          paymentId:
+            paymentIdString,
+
+          externalReference:
+            payment.external_reference
+        }
+      );
+
+      return res.status(200).json({
+        ok: true,
+        updated: 0,
+        reason:
+          'order_not_found'
+      });
+    }
+
+    console.log(
+      'Pedido encontrado:',
+      {
+        orderId: order.id,
+        oldStatus:
+          order.status,
+        newStatus:
+          orderStatus
+      }
+    );
+
+    // ==================================================
+    // ATUALIZAR PEDIDO
     // ==================================================
 
     const {
-      data: pedidosAtualizados,
-      error
+      data: updatedOrder,
+      error: updateError
     } = await supabase
-      .from('pedidos')
+      .from('orders')
       .update({
-        status: statusPedido,
-        id_do_pagamento:
-          String(payment.id)
+        status:
+          orderStatus,
+
+        payment_id:
+          paymentIdString
       })
       .eq(
-        'id_do_pagamento',
-        String(payment.id)
+        'id',
+        order.id
       )
-      .select();
+      .select()
+      .single();
 
-    if (error) {
-
+    if (updateError) {
       console.error(
-        'Erro ao atualizar pedido no Supabase:',
-        error
+        'Erro ao atualizar order:',
+        updateError
       );
 
       return res.status(500).json({
@@ -292,8 +458,17 @@ export default async function handler(req, res) {
     }
 
     console.log(
-      'Pedidos atualizados:',
-      pedidosAtualizados
+      'PEDIDO ATUALIZADO COM SUCESSO:',
+      {
+        id:
+          updatedOrder.id,
+
+        payment_id:
+          updatedOrder.payment_id,
+
+        status:
+          updatedOrder.status
+      }
     );
 
     // ==================================================
@@ -303,17 +478,19 @@ export default async function handler(req, res) {
     return res.status(200).json({
       ok: true,
 
+      order_id:
+        updatedOrder.id,
+
       payment_id:
-        String(payment.id),
+        paymentIdString,
 
       payment_status:
         payment.status,
 
       order_status:
-        statusPedido,
+        updatedOrder.status,
 
-      updated:
-        pedidosAtualizados?.length || 0
+      updated: 1
     });
 
   } catch (error) {
@@ -324,7 +501,8 @@ export default async function handler(req, res) {
     );
 
     return res.status(500).json({
-      error: 'Erro interno'
+      error:
+        'Erro interno do webhook'
     });
   }
 }
