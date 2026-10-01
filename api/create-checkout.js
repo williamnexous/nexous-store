@@ -31,7 +31,7 @@ if (!customerData.name || !customerData.email) {
       });
     }
 
-    // Buscar produtos reais no // Buscar produtos reais no Supabase
+    // Buscar produtos reais no Supabase
 const ids = items.map(item => item.product_id || item.id);
 
 if (ids.some(id => !id)) {
