@@ -1,18 +1,12 @@
 <!doctype html>
 <html lang="pt-BR">
-
 <head>
 <meta charset="utf-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1"
->
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>NEXOUS — Your Style.</title>
 
 <style>
-
 *{
   box-sizing:border-box;
 }
@@ -60,8 +54,7 @@ header{
 .grid{
   padding:40px 5%;
   display:grid;
-  grid-template-columns:
-    repeat(auto-fit,minmax(230px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
   gap:20px;
 }
 
@@ -90,15 +83,8 @@ header{
   padding:18px;
 }
 
-.info h3{
-  margin-bottom:8px;
-}
-
-.info p{
-  line-height:1.5;
-}
-
 .tag{
+  display:inline-block;
   font-size:11px;
   border:1px solid #555;
   padding:5px 8px;
@@ -108,6 +94,11 @@ header{
 .price{
   font-size:22px;
   font-weight:bold;
+}
+
+.stock{
+  color:#888;
+  font-size:13px;
 }
 
 .btn{
@@ -122,7 +113,7 @@ header{
 }
 
 .btn:disabled{
-  opacity:.4;
+  opacity:.45;
   cursor:not-allowed;
 }
 
@@ -137,7 +128,6 @@ header{
   padding:15px 20px;
   font-weight:bold;
   z-index:4;
-  cursor:pointer;
 }
 
 .drawer{
@@ -174,64 +164,12 @@ header{
   margin-bottom:10px;
 }
 
-.field:focus{
-  outline:none;
-  border-color:#777;
-}
-
 .closeBtn{
   background:#171717;
   color:#fff;
   border:1px solid #333;
   border-radius:8px;
   padding:8px 12px;
-  cursor:pointer;
-}
-
-.stock{
-  color:#777;
-  font-size:12px;
-}
-
-.soldout{
-  color:#ff8b8b;
-  font-weight:bold;
-}
-
-.category{
-  color:#777;
-  font-size:13px;
-  margin:6px 0;
-}
-
-.variant{
-  color:#bbb;
-  font-weight:bold;
-  margin:6px 0;
-}
-
-.cartProduct{
-  border-bottom:1px solid #222;
-  padding:15px 0;
-}
-
-.cartSize{
-  color:#999;
-  font-size:13px;
-  margin-top:5px;
-}
-
-.quantity{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-top:10px;
-}
-
-.qtyBtn{
-  padding:8px 12px;
-  border:0;
-  border-radius:7px;
   cursor:pointer;
 }
 
@@ -245,13 +183,32 @@ header{
   cursor:pointer;
 }
 
-#msg{
-  color:#aaa;
-  line-height:1.5;
+.qtyBtn{
+  padding:8px 12px;
+  border:0;
+  border-radius:7px;
+  cursor:pointer;
 }
 
-#pixStatus{
-  color:#aaa;
+#pixArea{
+  display:none;
+  margin-top:20px;
+  text-align:center;
+}
+
+#pixQr{
+  width:220px;
+  max-width:100%;
+  background:white;
+  padding:10px;
+  border-radius:12px;
+  margin:10px auto;
+}
+
+#pixCode{
+  height:100px;
+  resize:none;
+  margin:12px 0;
 }
 
 @media(max-width:600px){
@@ -260,12 +217,8 @@ header{
     font-size:13px;
   }
 
-  .logo{
-    font-size:16px;
-  }
-
   .hero{
-    padding:70px 5%;
+    padding:65px 5%;
   }
 
   .grid{
@@ -273,1755 +226,1223 @@ header{
   }
 
   .panel{
-    padding:20px;
+    width:100%;
   }
-
 }
-
 </style>
-
 </head>
 
 <body>
 
-
-<!-- CABEÇALHO -->
-
 <header>
 
-  <div class="logo">
-    NEXOUS
-  </div>
+<div class="logo">
+NEXOUS
+</div>
 
-  <div>
-    STREETWEAR / US
-  </div>
+<div>
+STREETWEAR / US
+</div>
 
 </header>
 
 
-<!-- BANNER -->
-
 <section class="hero">
 
-  <h1>
-    O ESTILO<br>
-    COMEÇA AQUI.
-  </h1>
+<h1>
+O ESTILO<br>
+COMEÇA AQUI.
+</h1>
 
-  <p>
-    Crie sua própria tendência.
-  </p>
+<p>
+Crie sua própria tendência.
+</p>
 
 </section>
 
 
-<!-- PRODUTOS -->
-
 <main
-  id="products"
-  class="grid">
+id="products"
+class="grid">
 </main>
 
 
-<!-- BOTÃO CARRINHO -->
-
 <button id="cart">
-  CARRINHO (0)
+CARRINHO (0)
 </button>
 
 
-<!-- CARRINHO -->
-
 <div
-  id="drawer"
-  class="drawer">
+id="drawer"
+class="drawer">
 
-  <div class="panel">
+<div class="panel">
 
+<div class="row">
 
-    <div class="row">
+<h2>
+Seu carrinho
+</h2>
 
-      <h2>
-        Seu carrinho
-      </h2>
+<button
+class="closeBtn"
+onclick="closeCart()">
+✕
+</button>
 
-      <button
-        class="closeBtn"
-        onclick="closeCart()">
-        ✕
-      </button>
-
-    </div>
-
-
-    <div id="cartItems">
-    </div>
+</div>
 
 
-    <h3 id="total">
-      Total: R$ 0,00
-    </h3>
+<div id="cartItems"></div>
+
+<h3 id="total"></h3>
 
 
-    <!-- CLIENTE -->
+<h3>
+Seus dados
+</h3>
 
-    <h3>
-      Seus dados
-    </h3>
-
-
-    <input
-      id="name"
-      class="field"
-      placeholder="Seu nome"
-    >
+<input
+id="name"
+class="field"
+placeholder="Seu nome">
 
 
-    <input
-      id="email"
-      class="field"
-      type="email"
-      placeholder="Seu e-mail"
-    >
+<input
+id="email"
+class="field"
+type="email"
+placeholder="Seu e-mail">
 
 
-    <input
-      id="cpf"
-      class="field"
-      inputmode="numeric"
-      maxlength="14"
-      autocomplete="off"
-      placeholder="CPF"
-    >
+<input
+id="cpf"
+class="field"
+inputmode="numeric"
+maxlength="14"
+autocomplete="off"
+placeholder="CPF">
 
 
-    <!-- ENDEREÇO -->
-
-    <h3 style="margin-top:22px">
-      Endereço de entrega
-    </h3>
+<h3 style="margin-top:22px">
+Endereço de entrega
+</h3>
 
 
-    <input
-      id="cep"
-      class="field"
-      inputmode="numeric"
-      maxlength="9"
-      placeholder="CEP"
-    >
+<input
+id="cep"
+class="field"
+inputmode="numeric"
+maxlength="9"
+placeholder="CEP">
 
 
-    <input
-      id="rua"
-      class="field"
-      placeholder="Rua"
-    >
+<input
+id="rua"
+class="field"
+placeholder="Rua">
 
 
-    <input
-      id="numero"
-      class="field"
-      placeholder="Número"
-    >
+<input
+id="numero"
+class="field"
+placeholder="Número">
 
 
-    <input
-      id="complemento"
-      class="field"
-      placeholder="Complemento (opcional)"
-    >
+<input
+id="complemento"
+class="field"
+placeholder="Complemento (opcional)">
 
 
-    <input
-      id="bairro"
-      class="field"
-      placeholder="Bairro"
-    >
+<input
+id="bairro"
+class="field"
+placeholder="Bairro">
 
 
-    <input
-      id="cidade"
-      class="field"
-      placeholder="Cidade"
-    >
+<input
+id="cidade"
+class="field"
+placeholder="Cidade">
 
 
-    <input
-      id="estado"
-      class="field"
-      maxlength="2"
-      placeholder="Estado (ex: RS)"
-    >
+<input
+id="estado"
+class="field"
+maxlength="2"
+placeholder="Estado (ex: RS)">
 
 
-    <!-- PAGAMENTO -->
+<button
+class="btn"
+onclick="checkout()">
 
-    <button
-      class="btn"
-      onclick="checkout()">
-      PAGAR COM PIX
-    </button>
+PAGAR COM PIX
 
-
-    <p id="msg">
-    </p>
+</button>
 
 
-    <!-- PIX -->
-
-    <div
-      id="pixArea"
-      style="
-        display:none;
-        margin-top:20px;
-        text-align:center
-      ">
-
-      <h2>
-        Pagamento via Pix
-      </h2>
-
-      <p style="color:#aaa">
-        Escaneie o QR Code ou copie o código Pix.
-      </p>
+<p id="msg"></p>
 
 
-      <img
-        id="pixQr"
-        alt="QR Code Pix"
-        style="
-          width:220px;
-          max-width:100%;
-          background:white;
-          padding:10px;
-          border-radius:12px;
-          margin:10px auto
-        "
-      >
+<div id="pixArea">
+
+<h2>
+Pagamento via Pix
+</h2>
+
+<p style="color:#aaa">
+Escaneie o QR Code ou copie o código Pix.
+</p>
 
 
-      <textarea
-        id="pixCode"
-        class="field"
-        readonly
-        style="
-          height:100px;
-          resize:none;
-          margin:12px 0
-        "
-      ></textarea>
+<img
+id="pixQr"
+alt="QR Code Pix">
 
 
-      <button
-        class="btn"
-        type="button"
-        onclick="copyPix()">
-
-        COPIAR CÓDIGO PIX
-
-      </button>
+<textarea
+id="pixCode"
+class="field"
+readonly>
+</textarea>
 
 
-      <p id="pixStatus">
-        Aguardando pagamento...
-      </p>
+<button
+class="btn"
+type="button"
+onclick="copyPix()">
 
-    </div>
+COPIAR CÓDIGO PIX
+
+</button>
 
 
-  </div>
+<p
+id="pixStatus"
+style="color:#aaa">
 
+Aguardando pagamento...
+
+</p>
+
+</div>
+
+</div>
 </div>
 
 
 <script type="module">
 
-/* =========================================
-   SUPABASE
-========================================= */
-
-import { createClient }
+import {createClient}
 from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 
-const CONFIG = {
+const CONFIG={
 
-  url:
-    'https://tcszjspirwwxrkabhtgi.supabase.co',
+url:
+'https://tcszjspirwwxrkabhtgi.supabase.co',
 
-  anon:
-    'sb_publishable_bZIkwmhElVzFMsGbk0bBgw_eFVWJuXV'
+anon:
+'sb_publishable_bZIkwmhElVzFMsGbk0bBgw_eFVWJuXV'
 
 };
 
 
-const sb =
-  createClient(
-    CONFIG.url,
-    CONFIG.anon
-  );
+const sb=createClient(
+CONFIG.url,
+CONFIG.anon
+);
 
 
-/* =========================================
-   DADOS
-========================================= */
-
-let products = [];
+let products=[];
 
 
-let cart =
-  JSON.parse(
-    localStorage.nexousCart || '[]'
-  );
+let cart=
+JSON.parse(
+localStorage.nexousCart||'[]'
+);
 
 
-/* Remove itens antigos sem tamanho */
-
-cart =
-  cart.filter(
-    item =>
-      item &&
-      item.id &&
-      item.size
-  );
-
-
-/* =========================================
-   UTILIDADES
-========================================= */
-
-function money(value){
-
-  return Number(value || 0)
-    .toLocaleString(
-      'pt-BR',
-      {
-        style:'currency',
-        currency:'BRL'
-      }
-    );
-
+const money=n=>
+Number(n||0).toLocaleString(
+'pt-BR',
+{
+style:'currency',
+currency:'BRL'
 }
+);
 
-
-function escapeHtml(value = ''){
-
-  return String(value)
-
-    .replaceAll(
-      '&',
-      '&amp;'
-    )
-
-    .replaceAll(
-      '<',
-      '&lt;'
-    )
-
-    .replaceAll(
-      '>',
-      '&gt;'
-    )
-
-    .replaceAll(
-      '"',
-      '&quot;'
-    )
-
-    .replaceAll(
-      "'",
-      '&#039;'
-    );
-
-}
-
-
-/* =========================================
-   SALVAR CARRINHO
-========================================= */
 
 function save(){
 
-  localStorage.nexousCart =
-    JSON.stringify(cart);
+localStorage.nexousCart=
+JSON.stringify(cart);
 
-
-  const quantity =
-    cart.reduce(
-      (total,item) =>
-        total +
-        Number(item.quantity || 0),
-      0
-    );
-
-
-  document
-    .querySelector('#cart')
-    .textContent =
-      `CARRINHO (${quantity})`;
+document.querySelector('#cart')
+.textContent=
+`CARRINHO (${
+cart.reduce(
+(a,b)=>a+b.quantity,
+0
+)
+})`;
 
 }
 
 
-/* =========================================
-   CARREGAR PRODUTOS
-========================================= */
+function escapeHtml(value=''){
+
+return String(value)
+
+.replaceAll('&','&amp;')
+.replaceAll('<','&lt;')
+.replaceAll('>','&gt;')
+.replaceAll('"','&quot;');
+
+}
+
+
+function getSizes(product){
+
+/*
+O seu banco possui a coluna "sizes".
+
+Se ela estiver preenchida como ARRAY:
+["38","39","40"]
+
+usaremos diretamente.
+
+Também deixei compatibilidade com "tamanhos"
+caso você ainda tenha algum produto antigo.
+*/
+
+let sizes=
+product.sizes ??
+product.tamanhos ??
+[];
+
+
+if(Array.isArray(sizes)){
+
+return sizes
+.map(x=>String(x).trim())
+.filter(Boolean);
+
+}
+
+
+/*
+Se por algum motivo vier como texto:
+"38,39,40"
+*/
+
+if(typeof sizes==='string'){
+
+return sizes
+.split(',')
+.map(x=>x.trim())
+.filter(Boolean);
+
+}
+
+
+return [];
+
+}
+
+
+function sizeLabel(product){
+
+return product.product_type==='tenis'
+?'número'
+:'tamanho';
+
+}
+
+
+function sizeOptions(product){
+
+const sizes=getSizes(product);
+
+
+if(!sizes.length){
+
+return `
+<option value="">
+Sem tamanhos disponíveis
+</option>
+`;
+
+}
+
+
+return `
+
+<option value="">
+Escolha o ${sizeLabel(product)}
+</option>
+
+${sizes.map(size=>`
+
+<option value="${escapeHtml(size)}">
+${escapeHtml(size)}
+</option>
+
+`).join('')}
+
+`;
+
+}
+
 
 async function load(){
 
-  const productsArea =
-    document.querySelector(
-      '#products'
-    );
+const {data,error}=
+await sb
+.from('products')
+.select('*')
+.eq('active',true)
+.order(
+'created_at',
+{ascending:false}
+);
 
 
-  productsArea.innerHTML =
-    '<p>Carregando produtos...</p>';
+if(error){
 
+document.querySelector('#products')
+.innerHTML=
+`
+<p>
+ERRO SUPABASE:
+${escapeHtml(error.message)}
+</p>
+`;
 
-  const {
-    data,
-    error
-  } =
-    await sb
+console.error(error);
 
-      .from('products')
-
-      .select('*')
-
-      .eq(
-        'active',
-        true
-      )
-
-      .order(
-        'created_at',
-        {
-          ascending:false
-        }
-      );
-
-
-  if(error){
-
-    console.error(error);
-
-
-    productsArea.innerHTML =
-
-      `<p>
-        ERRO SUPABASE:
-        ${escapeHtml(error.message)}
-      </p>`;
-
-
-    return;
-
-  }
-
-
-  products =
-    data || [];
-
-
-  renderProducts();
+return;
 
 }
 
 
-/* =========================================
-   MOSTRAR PRODUTOS
-========================================= */
+products=data||[];
+
+
+renderProducts();
+
+}
+
 
 function renderProducts(){
 
-  const area =
-    document.querySelector(
-      '#products'
-    );
+const container=
+document.querySelector('#products');
 
 
-  if(
-    products.length === 0
-  ){
+if(!products.length){
 
-    area.innerHTML =
-      '<p>Nenhum produto disponível.</p>';
+container.innerHTML=
+'<p>Nenhum produto disponível.</p>';
 
-    return;
-
-  }
-
-
-  area.innerHTML =
-
-    products.map(product => {
-
-
-      /* TAMANHOS VINDOS DO SUPABASE */
-
-      const sizes =
-        Array.isArray(product.sizes)
-
-          ? product.sizes
-              .map(size =>
-                String(size).trim()
-              )
-              .filter(Boolean)
-
-          : [];
-
-
-      /* ESTOQUE */
-
-      const stock =
-        Number(
-          product.stock
-        ) || 0;
-
-
-      const soldOut =
-        stock <= 0;
-
-
-      /* TIPO */
-
-      const isShoes =
-        product.product_type ===
-        'tenis';
-
-
-      const sizeLabel =
-        isShoes
-
-          ? 'Escolha o número'
-
-          : 'Escolha o tamanho';
-
-
-      const variantLabel =
-        isShoes
-
-          ? 'Modelo'
-
-          : 'Cor';
-
-
-      /* OPTIONS */
-
-      const sizeOptions =
-
-        sizes.map(size => `
-
-          <option
-            value="${escapeHtml(size)}">
-
-            ${escapeHtml(size)}
-
-          </option>
-
-        `).join('');
-
-
-      return `
-
-        <article class="card">
-
-
-          <!-- FOTO -->
-
-          <div class="photo">
-
-            ${
-              product.image_url
-
-                ? `
-
-                  <img
-                    src="${escapeHtml(
-                      product.image_url
-                    )}"
-
-                    alt="${escapeHtml(
-                      product.name ||
-                      'Produto NEXOUS'
-                    )}"
-                  >
-
-                `
-
-                : 'NEXOUS'
-            }
-
-          </div>
-
-
-          <!-- INFORMAÇÕES -->
-
-          <div class="info">
-
-
-            <span class="tag">
-
-              ${escapeHtml(
-                product.tag ||
-                'DROP'
-              )}
-
-            </span>
-
-
-            <h3>
-
-              ${escapeHtml(
-                product.name ||
-                ''
-              )}
-
-            </h3>
-
-
-            ${
-              product.variant
-
-                ? `
-
-                  <p class="variant">
-
-                    ${variantLabel}:
-
-                    ${escapeHtml(
-                      product.variant
-                    )}
-
-                  </p>
-
-                `
-
-                : ''
-            }
-
-
-            ${
-              product.category
-
-                ? `
-
-                  <p class="category">
-
-                    ${escapeHtml(
-                      product.category
-                    )}
-
-                  </p>
-
-                `
-
-                : ''
-            }
-
-
-            <p>
-
-              ${escapeHtml(
-                product.description ||
-                ''
-              )}
-
-            </p>
-
-
-            <p class="price">
-
-              ${money(
-                product.price
-              )}
-
-            </p>
-
-
-            ${
-              soldOut
-
-                ? `
-
-                  <p class="soldout">
-                    ESGOTADO
-                  </p>
-
-                `
-
-                : `
-
-                  <p class="stock">
-
-                    ${stock}
-                    em estoque
-
-                  </p>
-
-                `
-            }
-
-
-            ${
-              !soldOut &&
-              sizes.length > 0
-
-                ? `
-
-                  <select
-                    id="size-${product.id}"
-                    class="field">
-
-                    <option value="">
-
-                      ${sizeLabel}
-
-                    </option>
-
-                    ${sizeOptions}
-
-                  </select>
-
-                `
-
-                : ''
-            }
-
-
-            ${
-              !soldOut &&
-              sizes.length === 0
-
-                ? `
-
-                  <p style="
-                    color:#999;
-                    font-size:13px
-                  ">
-
-                    Tamanhos indisponíveis.
-
-                  </p>
-
-                `
-
-                : ''
-            }
-
-
-            <button
-
-              class="btn"
-
-              data-add="${product.id}"
-
-              ${
-                soldOut ||
-                sizes.length === 0
-
-                  ? 'disabled'
-
-                  : ''
-              }
-
-            >
-
-              ${
-                soldOut
-
-                  ? 'ESGOTADO'
-
-                  : 'ADICIONAR'
-              }
-
-            </button>
-
-
-          </div>
-
-        </article>
-
-      `;
-
-
-    }).join('');
-
-
-  /* BOTÕES ADICIONAR */
-
-  document
-    .querySelectorAll(
-      '[data-add]'
-    )
-    .forEach(button => {
-
-      button.onclick =
-        () => {
-
-          add(
-            button.dataset.add
-          );
-
-        };
-
-    });
+return;
 
 }
 
 
-/* =========================================
-   ADICIONAR AO CARRINHO
-========================================= */
+container.innerHTML=
+products.map(p=>{
+
+const sizes=getSizes(p);
+
+const hasStock=
+Number(p.stock ?? p.estoque ?? 0)>0;
+
+
+return `
+
+<article class="card">
+
+
+<div class="photo">
+
+${p.image_url
+
+?`
+<img
+src="${escapeHtml(p.image_url)}"
+alt="${escapeHtml(p.name||'Produto NEXOUS')}">
+`
+
+:'NEXOUS'
+
+}
+
+</div>
+
+
+<div class="info">
+
+
+<span class="tag">
+${escapeHtml(p.tag||'DROP')}
+</span>
+
+
+<h3>
+${escapeHtml(p.name||'Produto')}
+</h3>
+
+
+${p.variant
+?`
+
+<p
+style="
+color:#bbb;
+font-weight:bold;
+margin:6px 0;
+">
+
+${p.product_type==='tenis'
+?'Modelo'
+:'Cor'}:
+
+${escapeHtml(p.variant)}
+
+</p>
+
+`
+:''
+}
+
+
+<p>
+${escapeHtml(p.description||'')}
+</p>
+
+
+<p class="price">
+${money(p.price)}
+</p>
+
+
+<p class="stock">
+
+${Number(p.stock ?? p.estoque ?? 0)}
+em estoque
+
+</p>
+
+
+<select
+id="size-${p.id}"
+class="field"
+${!sizes.length||!hasStock
+?'disabled'
+:''}>
+
+${sizeOptions(p)}
+
+</select>
+
+
+<button
+class="btn"
+data-add="${p.id}"
+${!sizes.length||!hasStock
+?'disabled'
+:''}>
+
+${!hasStock
+?'SEM ESTOQUE'
+:'ADICIONAR'}
+
+</button>
+
+
+</div>
+
+</article>
+
+`;
+
+}).join('');
+
+
+document
+.querySelectorAll('[data-add]')
+.forEach(button=>{
+
+button.onclick=
+()=>add(button.dataset.add);
+
+});
+
+}
+
 
 function add(id){
 
-  const product =
+const product=
+products.find(
+p=>String(p.id)===String(id)
+);
 
-    products.find(
 
-      item =>
-        String(item.id) ===
-        String(id)
+if(!product){
 
-    );
+alert(
+'Produto não encontrado.'
+);
 
-
-  if(!product){
-
-    return;
-
-  }
-
-
-  const select =
-
-    document.querySelector(
-
-      `#size-${CSS.escape(
-        String(id)
-      )}`
-
-    );
-
-
-  const size =
-    select?.value;
-
-
-  if(!size){
-
-    alert(
-
-      product.product_type ===
-      'tenis'
-
-        ? 'Escolha o número antes de adicionar.'
-
-        : 'Escolha o tamanho antes de adicionar.'
-
-    );
-
-    return;
-
-  }
-
-
-  const stock =
-    Number(
-      product.stock
-    ) || 0;
-
-
-  if(stock <= 0){
-
-    alert(
-      'Este produto está esgotado.'
-    );
-
-    return;
-
-  }
-
-
-  /* TOTAL DESSE PRODUTO NO CARRINHO */
-
-  const productQuantity =
-
-    cart
-
-      .filter(
-        item =>
-          String(item.id) ===
-          String(id)
-      )
-
-      .reduce(
-        (total,item) =>
-          total +
-          Number(item.quantity || 0),
-        0
-      );
-
-
-  if(
-    productQuantity >= stock
-  ){
-
-    alert(
-
-      `Só temos ${stock} unidade(s) deste produto em estoque.`
-
-    );
-
-    return;
-
-  }
-
-
-  /* PROCURA MESMO TAMANHO */
-
-  const existing =
-
-    cart.find(
-
-      item =>
-
-        String(item.id) ===
-        String(id)
-
-        &&
-
-        String(item.size) ===
-        String(size)
-
-    );
-
-
-  if(existing){
-
-    existing.quantity++;
-
-  }
-
-  else{
-
-    cart.push({
-
-      id:
-        product.id,
-
-      size:
-        size,
-
-      quantity:
-        1
-
-    });
-
-  }
-
-
-  save();
-
-
-  alert(
-    'Produto adicionado ao carrinho!'
-  );
+return;
 
 }
 
 
-/* =========================================
-   ALTERAR QUANTIDADE
-========================================= */
+const sizeSelect=
+document.querySelector(
+`#size-${id}`
+);
 
-window.changeQty =
-function(
-  id,
-  size,
-  amount
+
+const size=
+sizeSelect?.value;
+
+
+if(!size){
+
+alert(
+`Escolha o ${sizeLabel(product)} antes de adicionar.`
+);
+
+return;
+
+}
+
+
+const stock=
+Number(
+product.stock ??
+product.estoque ??
+0
+);
+
+
+const currentQuantity=
+cart
+
+.filter(i=>
+String(i.id)===String(id)
+)
+
+.reduce(
+(total,item)=>
+total+item.quantity,
+0
+);
+
+
+if(
+currentQuantity>=stock
 ){
 
-  const product =
+alert(
+'Você atingiu o estoque disponível deste produto.'
+);
 
-    products.find(
+return;
 
-      item =>
-        String(item.id) ===
-        String(id)
-
-    );
+}
 
 
-  const item =
+const existing=
+cart.find(i=>
 
-    cart.find(
+String(i.id)===String(id)
+&&
+i.size===size
 
-      item =>
-
-        String(item.id) ===
-        String(id)
-
-        &&
-
-        String(item.size) ===
-        String(size)
-
-    );
+);
 
 
-  if(
-    !product ||
-    !item
-  ){
+if(existing){
 
-    return;
+existing.quantity++;
 
-  }
+}else{
 
+cart.push({
 
-  /* AUMENTANDO */
+id:String(id),
 
-  if(amount > 0){
+size:size,
 
-    const stock =
-      Number(
-        product.stock
-      ) || 0;
+quantity:1
 
+});
 
-    const quantity =
-
-      cart
-
-        .filter(
-          cartItem =>
-            String(cartItem.id) ===
-            String(id)
-        )
-
-        .reduce(
-          (total,cartItem) =>
-            total +
-            Number(
-              cartItem.quantity ||
-              0
-            ),
-          0
-        );
+}
 
 
-    if(
-      quantity >= stock
-    ){
-
-      alert(
-
-        `Só temos ${stock} unidade(s) deste produto em estoque.`
-
-      );
-
-      return;
-
-    }
-
-  }
+save();
 
 
-  item.quantity +=
-    amount;
+alert(
+'Produto adicionado ao carrinho!'
+);
+
+}
 
 
-  /* REMOVE QUANDO CHEGAR A ZERO */
-
-  if(
-    item.quantity <= 0
-  ){
-
-    cart =
-      cart.filter(
-
-        cartItem =>
-
-          !(
-
-            String(cartItem.id) ===
-            String(id)
-
-            &&
-
-            String(cartItem.size) ===
-            String(size)
-
-          )
-
-      );
-
-  }
+window.changeQty=
+(id,size,amount)=>{
 
 
-  save();
+const item=
+cart.find(i=>
 
-  renderCart();
+String(i.id)===String(id)
+&&
+i.size===size
 
-};
+);
 
 
-/* =========================================
-   REMOVER ITEM
-========================================= */
+if(!item)return;
 
-window.removeItem =
-function(
-  id,
-  size
+
+const product=
+products.find(
+p=>String(p.id)===String(id)
+);
+
+
+if(
+amount>0 &&
+product
 ){
 
-  cart =
-    cart.filter(
-
-      item =>
-
-        !(
-
-          String(item.id) ===
-          String(id)
-
-          &&
-
-          String(item.size) ===
-          String(size)
-
-        )
-
-    );
+const stock=
+Number(
+product.stock ??
+product.estoque ??
+0
+);
 
 
-  save();
+const totalProductQuantity=
+cart
 
-  renderCart();
+.filter(i=>
+String(i.id)===String(id)
+)
+
+.reduce(
+(total,x)=>
+total+x.quantity,
+0
+);
+
+
+if(
+totalProductQuantity>=stock
+){
+
+alert(
+'Você atingiu o estoque disponível.'
+);
+
+return;
+
+}
+
+}
+
+
+item.quantity+=amount;
+
+
+if(item.quantity<=0){
+
+cart=
+cart.filter(i=>
+
+!(
+String(i.id)===String(id)
+&&
+i.size===size
+)
+
+);
+
+}
+
+
+save();
+
+renderCart();
 
 };
 
 
-/* =========================================
-   ABRIR CARRINHO
-========================================= */
-
-document
-  .querySelector('#cart')
-  .onclick =
-function(){
-
-  renderCart();
+window.removeItem=
+(id,size)=>{
 
 
-  document
-    .querySelector('#drawer')
-    .style.display =
-      'block';
+cart=
+cart.filter(i=>
 
-};
+!(
+String(i.id)===String(id)
+&&
+i.size===size
+)
+
+);
 
 
-/* =========================================
-   FECHAR CARRINHO
-========================================= */
+save();
 
-window.closeCart =
-function(){
-
-  document
-    .querySelector('#drawer')
-    .style.display =
-      'none';
+renderCart();
 
 };
 
 
-/* =========================================
-   MOSTRAR CARRINHO
-========================================= */
+window.closeCart=()=>{
+
+document.querySelector('#drawer')
+.style.display='none';
+
+};
+
 
 function renderCart(){
 
-  const cartItems =
-    document.querySelector(
-      '#cartItems'
-    );
+const cartItems=
+document.querySelector('#cartItems');
 
 
-  const totalElement =
-    document.querySelector(
-      '#total'
-    );
+const rows=
+cart.map(i=>{
 
 
-  const rows =
+const p=
+products.find(
+x=>String(x.id)===String(i.id)
+);
 
-    cart.map(item => {
 
+if(!p)return '';
 
-      const product =
 
-        products.find(
+return `
 
-          product =>
-            String(product.id) ===
-            String(item.id)
+<div
+style="
+border-bottom:1px solid #222;
+padding:15px 0;
+">
 
-        );
 
+<div class="row">
 
-      if(!product){
 
-        return '';
+<div>
 
-      }
+<strong>
+${escapeHtml(p.name)}
+</strong>
 
 
-      const sizeLabel =
+<div
+style="
+color:#999;
+font-size:13px;
+margin-top:5px;
+">
 
-        product.product_type ===
-        'tenis'
+${p.product_type==='tenis'
+?'Número'
+:'Tamanho'}:
 
-          ? 'Número'
+${escapeHtml(i.size)}
 
-          : 'Tamanho';
+</div>
 
+</div>
 
-      return `
 
-        <div class="cartProduct">
+<strong>
 
+${money(
+Number(p.price)*
+i.quantity
+)}
 
-          <div class="row">
+</strong>
 
 
-            <div>
+</div>
 
-              <strong>
 
-                ${escapeHtml(
-                  product.name
-                )}
+<div
+style="
+display:flex;
+align-items:center;
+gap:10px;
+margin-top:10px;
+">
 
-              </strong>
 
+<button
+class="qtyBtn"
+onclick=
+"changeQty('${i.id}','${escapeHtml(i.size)}',-1)">
 
-              <div class="cartSize">
+−
 
-                ${sizeLabel}:
+</button>
 
-                ${escapeHtml(
-                  item.size
-                )}
 
-              </div>
+<strong>
+${i.quantity}
+</strong>
 
-            </div>
 
+<button
+class="qtyBtn"
+onclick=
+"changeQty('${i.id}','${escapeHtml(i.size)}',1)">
 
-            <strong>
++
 
-              ${money(
+</button>
 
-                Number(
-                  product.price
-                )
 
-                *
+<button
+class="removeBtn"
+onclick=
+"removeItem('${i.id}','${escapeHtml(i.size)}')">
 
-                Number(
-                  item.quantity
-                )
+REMOVER
 
-              )}
+</button>
 
-            </strong>
 
+</div>
 
-          </div>
+</div>
 
+`;
 
-          <div class="quantity">
+}).join('');
 
 
-            <button
+cartItems.innerHTML=
+rows||
+'<p>Carrinho vazio.</p>';
 
-              class="qtyBtn"
 
-              onclick="
-                changeQty(
-                  '${item.id}',
-                  '${escapeHtml(item.size)}',
-                  -1
-                )
-              ">
+document.querySelector('#total')
+.textContent=
 
-              −
+'Total: ' +
 
-            </button>
+money(
 
+cart.reduce(
 
-            <strong>
+(sum,item)=>{
 
-              ${item.quantity}
+const p=
+products.find(
+x=>
+String(x.id)===
+String(item.id)
+);
 
-            </strong>
 
+return sum+
+(
+p
+?
+Number(p.price)*
+item.quantity
+:
+0
+);
 
-            <button
+},
 
-              class="qtyBtn"
+0
 
-              onclick="
-                changeQty(
-                  '${item.id}',
-                  '${escapeHtml(item.size)}',
-                  1
-                )
-              ">
+)
 
-              +
-
-            </button>
-
-
-            <button
-
-              class="removeBtn"
-
-              onclick="
-                removeItem(
-                  '${item.id}',
-                  '${escapeHtml(item.size)}'
-                )
-              ">
-
-              REMOVER
-
-            </button>
-
-
-          </div>
-
-
-        </div>
-
-      `;
-
-
-    }).join('');
-
-
-  cartItems.innerHTML =
-
-    rows ||
-
-    '<p>Carrinho vazio.</p>';
-
-
-  /* TOTAL */
-
-  const value =
-
-    cart.reduce(
-
-      (total,item) => {
-
-
-        const product =
-
-          products.find(
-
-            product =>
-
-              String(product.id) ===
-              String(item.id)
-
-          );
-
-
-        if(!product){
-
-          return total;
-
-        }
-
-
-        return (
-
-          total
-
-          +
-
-          Number(
-            product.price
-          )
-
-          *
-
-          Number(
-            item.quantity
-          )
-
-        );
-
-
-      },
-
-      0
-
-    );
-
-
-  totalElement.textContent =
-
-    'Total: ' +
-    money(value);
+);
 
 }
 
 
-/* =========================================
-   CHECKOUT PIX
-========================================= */
+document
+.querySelector('#cart')
+.onclick=()=>{
 
-window.checkout =
-async function(){
+renderCart();
 
-  const msg =
-    document.querySelector(
-      '#msg'
-    );
-
-
-  /* CARRINHO */
-
-  if(
-    cart.length === 0
-  ){
-
-    msg.textContent =
-      'Seu carrinho está vazio.';
-
-    return;
-
-  }
-
-
-  /* CLIENTE */
-
-  const customer = {
-
-    name:
-      document
-        .querySelector('#name')
-        .value
-        .trim(),
-
-    email:
-      document
-        .querySelector('#email')
-        .value
-        .trim(),
-
-    cpf:
-      document
-        .querySelector('#cpf')
-        .value
-        .trim(),
-
-    cep:
-      document
-        .querySelector('#cep')
-        .value
-        .trim(),
-
-    rua:
-      document
-        .querySelector('#rua')
-        .value
-        .trim(),
-
-    numero:
-      document
-        .querySelector('#numero')
-        .value
-        .trim(),
-
-    complemento:
-      document
-        .querySelector('#complemento')
-        .value
-        .trim(),
-
-    bairro:
-      document
-        .querySelector('#bairro')
-        .value
-        .trim(),
-
-    cidade:
-      document
-        .querySelector('#cidade')
-        .value
-        .trim(),
-
-    estado:
-      document
-        .querySelector('#estado')
-        .value
-        .trim()
-        .toUpperCase()
-
-  };
-
-
-  /* CAMPOS OBRIGATÓRIOS */
-
-  if(
-
-    !customer.name ||
-
-    !customer.email ||
-
-    !customer.cpf ||
-
-    !customer.cep ||
-
-    !customer.rua ||
-
-    !customer.numero ||
-
-    !customer.bairro ||
-
-    !customer.cidade ||
-
-    !customer.estado
-
-  ){
-
-    msg.textContent =
-
-      'Preencha todos os dados obrigatórios.';
-
-    return;
-
-  }
-
-
-  msg.textContent =
-    'Criando pagamento...';
-
-
-  try{
-
-
-    const response =
-
-      await fetch(
-
-        '/api/create-checkout',
-
-        {
-
-          method:
-            'POST',
-
-          headers:{
-
-            'Content-Type':
-              'application/json'
-
-          },
-
-          body:
-            JSON.stringify({
-
-              items:
-                cart,
-
-              customer:
-                customer
-
-            })
-
-        }
-
-      );
-
-
-    const data =
-      await response.json();
-
-
-    /* PIX CRIADO */
-
-    if(
-
-      response.ok &&
-
-      data.qr_code &&
-
-      data.qr_code_base64
-
-    ){
-
-
-      const pixArea =
-        document.querySelector(
-          '#pixArea'
-        );
-
-
-      pixArea.style.display =
-        'block';
-
-
-      document
-        .querySelector('#pixQr')
-        .src =
-
-          `data:image/png;base64,${data.qr_code_base64}`;
-
-
-      document
-        .querySelector('#pixCode')
-        .value =
-
-          data.qr_code;
-
-
-      document
-        .querySelector('#pixStatus')
-        .textContent =
-
-          'Aguardando pagamento...';
-
-
-      msg.textContent =
-
-        'Pix gerado com sucesso!';
-
-
-      pixArea.scrollIntoView({
-
-        behavior:
-          'smooth'
-
-      });
-
-
-    }
-
-    else{
-
-
-      msg.textContent =
-
-        data.error ||
-
-        'Erro ao gerar Pix.';
-
-
-    }
-
-
-  }
-
-  catch(error){
-
-
-    console.error(
-      error
-    );
-
-
-    msg.textContent =
-
-      'Erro de conexão ao gerar o Pix.';
-
-
-  }
+document.querySelector('#drawer')
+.style.display='block';
 
 };
 
 
-/* =========================================
-   COPIAR PIX
-========================================= */
-
-window.copyPix =
-async function(){
+window.checkout=
+async()=>{
 
 
-  const field =
-    document.querySelector(
-      '#pixCode'
-    );
+const msg=
+document.querySelector('#msg');
 
 
-  const code =
-    field.value;
+if(cart.length===0){
+
+msg.textContent=
+'Seu carrinho está vazio.';
+
+return;
+
+}
 
 
-  if(!code){
+const customer={
 
-    return;
+name:
+document
+.querySelector('#name')
+.value
+.trim(),
 
-  }
+email:
+document
+.querySelector('#email')
+.value
+.trim(),
 
+cpf:
+document
+.querySelector('#cpf')
+.value
+.trim(),
 
-  try{
+cep:
+document
+.querySelector('#cep')
+.value
+.trim(),
 
+rua:
+document
+.querySelector('#rua')
+.value
+.trim(),
 
-    await navigator
-      .clipboard
-      .writeText(
-        code
-      );
+numero:
+document
+.querySelector('#numero')
+.value
+.trim(),
 
+complemento:
+document
+.querySelector('#complemento')
+.value
+.trim(),
 
-    document
-      .querySelector('#pixStatus')
-      .textContent =
+bairro:
+document
+.querySelector('#bairro')
+.value
+.trim(),
 
-        'Código Pix copiado!';
+cidade:
+document
+.querySelector('#cidade')
+.value
+.trim(),
 
-
-  }
-
-  catch(error){
-
-
-    field.select();
-
-
-    document.execCommand(
-      'copy'
-    );
-
-
-    document
-      .querySelector('#pixStatus')
-      .textContent =
-
-        'Código Pix copiado!';
-
-
-  }
+estado:
+document
+.querySelector('#estado')
+.value
+.trim()
+.toUpperCase()
 
 };
 
 
-/* =========================================
-   INICIAR NEXOUS
-========================================= */
+if(
+!customer.name||
+!customer.email||
+!customer.cpf||
+!customer.cep||
+!customer.rua||
+!customer.numero||
+!customer.bairro||
+!customer.cidade||
+!customer.estado
+){
+
+msg.textContent=
+'Preencha todos os dados obrigatórios.';
+
+return;
+
+}
+
+
+msg.textContent=
+'Criando pagamento...';
+
+
+try{
+
+
+const response=
+await fetch(
+'/api/create-checkout',
+{
+
+method:'POST',
+
+headers:{
+'Content-Type':
+'application/json'
+},
+
+body:
+JSON.stringify({
+
+items:cart,
+
+customer
+
+})
+
+}
+);
+
+
+const data=
+await response.json();
+
+
+if(
+data.qr_code &&
+data.qr_code_base64
+){
+
+document
+.querySelector('#pixArea')
+.style.display='block';
+
+
+document
+.querySelector('#pixQr')
+.src=
+
+`data:image/png;base64,${data.qr_code_base64}`;
+
+
+document
+.querySelector('#pixCode')
+.value=
+data.qr_code;
+
+
+document
+.querySelector('#pixStatus')
+.textContent=
+'Aguardando pagamento...';
+
+
+msg.textContent=
+'Pix gerado com sucesso!';
+
+
+}else{
+
+msg.textContent=
+data.error||
+'Erro ao gerar Pix.';
+
+}
+
+
+}catch(error){
+
+console.error(error);
+
+msg.textContent=
+'Erro ao conectar com o pagamento.';
+
+}
+
+};
+
+
+window.copyPix=
+async()=>{
+
+
+const field=
+document.querySelector(
+'#pixCode'
+);
+
+
+const code=
+field.value;
+
+
+if(!code)return;
+
+
+try{
+
+
+await navigator
+.clipboard
+.writeText(code);
+
+
+document
+.querySelector('#pixStatus')
+.textContent=
+'Código Pix copiado!';
+
+
+}catch{
+
+
+field.select();
+
+document.execCommand(
+'copy'
+);
+
+
+document
+.querySelector('#pixStatus')
+.textContent=
+'Código Pix copiado!';
+
+}
+
+};
+
 
 save();
 
@@ -2029,7 +1450,5 @@ load();
 
 </script>
 
-
 </body>
-
 </html>
