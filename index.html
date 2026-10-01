@@ -81,7 +81,7 @@ window.removeItem = (id) => {
       const p = products.find(x => x.id === i.id);
       return s + (p ? Number(p.price) * i.quantity : 0);
     },0)
-  );
+  );}
 document.querySelector('#cart').onclick=()=>{render();drawer.style.display='block'};window.checkout=async()=>{
   msg.textContent='Criando pagamento...';
 
