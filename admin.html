@@ -761,7 +761,7 @@ Produto ativo
 </label>
 
 <label class="check">
-<input id="apresentou" type="checkbox">
+<input id="featured" type="checkbox">
 Produto em destaque
 </label>
 
@@ -886,7 +886,7 @@ $('activeProducts').textContent=
 allProducts.filter(p=>p.active!==false).length;
 
 $('featuredProducts').textContent=
-allProducts.filter(p=>p.apresentou===true).length;
+allProducts.filter(p=>p.featured===true).length;
 
 $('totalStock').textContent=
 allProducts.reduce((s,p)=>s+(Number(p.estoque)||0),0);
@@ -971,7 +971,7 @@ ${p.variant?' • '+escapeHtml(p.variant):''}
 Estoque: ${Number(p.estoque)||0}
 </span>
 
-${p.apresentou
+${p.featured
 ?'<span class="badge">DESTAQUE</span>'
 :''}
 
@@ -1025,7 +1025,7 @@ $('productForm').reset();
 
 $('editingId').value='';
 $('active').checked=true;
-$('apresentou').checked=false;
+$('featured').checked=false;
 $('estoque').value=0;
 
 $('preview').src='';
@@ -1066,7 +1066,7 @@ Array.isArray(p.tamanhos)
 :'';
 
 $('active').checked=p.active!==false;
-$('apresentou').checked=p.apresentou===true;
+$('featured').checked=p.featured===true;
 
 if(p.image_url){
 
@@ -1163,7 +1163,7 @@ tamanhos:sizes,
 
 active:$('active').checked,
 
-apresentou:$('apresentou').checked
+featured:$('featured').checked
 
 };
 
