@@ -83,6 +83,10 @@ window.removeItem = (id) => {
     },0)
   );}
 document.querySelector('#cart').onclick=()=>{render();drawer.style.display='block'};window.checkout=async()=>{
+    if(cart.length === 0){
+    msg.textContent='Seu carrinho está vazio.';
+    return;
+  }
   msg.textContent='Criando pagamento...';
 
   const r=await fetch('/api/create-checkout',{
