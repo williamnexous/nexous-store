@@ -42,7 +42,7 @@ if (ids.some(id => !id)) {
 
     const { data: products, error } = await supabase
       .from('products')
-      .select('id,name,price')
+     .select('id,name,price,product_type')
       .in('id', ids)
       .eq('active', true);
 
@@ -59,24 +59,38 @@ if (ids.some(id => !id)) {
 
     let total = 0;
 
-    const orderItems = products.map(product => {
-
-      const item = items.find(
-  i => (i.product_id || i.id) === product.id
+const productMap = new Map(
+  products.map(product => [product.id, product])
 );
 
-      const quantity = item?.quantity || 1;
+const orderItems = items.map(item => {
+  const product = productMap.get(item.product_id || item.id);
 
-      total += Number(product.price) * quantity;
+  if(!product){
+    throw new Error('Produto inválido');
+  }
 
-      return {
-        product_id: product.id,
-        product_name: product.name,
-        quantity,
-        unit_price: product.price
-      };
+  const quantity = Math.max(1, Number(item.quantity) || 1);
+  const size = String(item.size || '');
 
-    });
+  const validSizes = product.product_type === 'tenis'
+    ? ['38','39','40','41','42']
+    : ['P','M','G'];
+
+  if(!validSizes.includes(size)){
+    throw new Error('Tamanho inválido para ' + product.name);
+  }
+
+  total += Number(product.price) * quantity;
+
+  return {
+    product_id: product.id,
+    product_name: product.name,
+    size,
+    quantity,
+    unit_price: product.price
+  };
+});
 
 
     // Criar pedido pendente
@@ -114,7 +128,7 @@ if (ids.some(id => !id)) {
     const preference = {
 
       items: orderItems.map(item => ({
-        title: item.product_name,
+        title: `${item.product_name} - ${item.size}`,
         quantity: item.quantity,
         unit_price: Number(item.unit_price)
       })),
