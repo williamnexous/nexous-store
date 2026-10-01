@@ -28,12 +28,26 @@ ${p.product_type === 'tenis' ? `
 
 <button class="btn" data-add="${p.id}">ADICIONAR</button></div></article>`).join('');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add))}
 function add(id){
-  const x = cart.find(i => i.id === id);
+  const sizeSelect = document.querySelector(`#size-${id}`);
+  const size = sizeSelect?.value;
+
+  if(!size){
+    alert('Escolha o tamanho ou número antes de adicionar.');
+    return;
+  }
+
+  const x = cart.find(i =>
+    i.id === id && i.size === size
+  );
 
   if(x){
     x.quantity++;
   }else{
-    cart.push({id, quantity:1});
+    cart.push({
+      id,
+      size,
+      quantity: 1
+    });
   }
 
   save();
