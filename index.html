@@ -1,278 +1,12 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>NEXOUS — Your Style.</title>
-
-<style>
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  background:#080808;
-  color:#eee;
-  font-family:Arial,sans-serif;
-}
-
-header{
-  padding:22px 5%;
-  display:flex;
-  justify-content:space-between;
-  border-bottom:1px solid #222;
-  position:sticky;
-  top:0;
-  background:#080808dd;
-  backdrop-filter:blur(12px);
-  z-index:3;
-}
-
-.logo{
-  font-weight:900;
-  letter-spacing:5px;
-}
-
-.hero{
-  padding:90px 5%;
-  background:linear-gradient(120deg,#111,#050505);
-  border-bottom:1px solid #222;
-}
-
-.hero h1{
-  font-size:clamp(52px,12vw,130px);
-  margin:0;
-  line-height:.85;
-}
-
-.hero p{
-  color:#888;
-}
-
-.grid{
-  padding:40px 5%;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-  gap:20px;
-}
-
-.card{
-  background:#111;
-  border:1px solid #222;
-  border-radius:18px;
-  overflow:hidden;
-}
-
-.photo{
-  aspect-ratio:1;
-  background:#171717;
-  display:grid;
-  place-items:center;
-  color:#555;
-}
-
-.photo img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.info{
-  padding:18px;
-}
-
-.tag{
-  display:inline-block;
-  font-size:11px;
-  border:1px solid #555;
-  padding:5px 8px;
-  border-radius:99px;
-}
-
-.price{
-  font-size:22px;
-  font-weight:bold;
-}
-
-.stock{
-  color:#888;
-  font-size:13px;
-}
-
-.btn{
-  border:0;
-  background:#eee;
-  color:#080808;
-  padding:12px 15px;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
-  width:100%;
-}
-
-.btn:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-}
-
-#cart{
-  position:fixed;
-  right:15px;
-  bottom:15px;
-  background:#eee;
-  color:#111;
-  border:0;
-  border-radius:99px;
-  padding:15px 20px;
-  font-weight:bold;
-  z-index:4;
-}
-
-.drawer{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:#000b;
-  z-index:5;
-}
-
-.panel{
-  margin-left:auto;
-  width:min(430px,100%);
-  height:100%;
-  background:#101010;
-  padding:24px;
-  overflow:auto;
-}
-
-.row{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  margin:12px 0;
-}
-
-.field{
-  width:100%;
-  padding:12px;
-  background:#171717;
-  color:#fff;
-  border:1px solid #333;
-  border-radius:9px;
-  margin-bottom:10px;
-}
-
-.closeBtn{
-  background:#171717;
-  color:#fff;
-  border:1px solid #333;
-  border-radius:8px;
-  padding:8px 12px;
-  cursor:pointer;
-}
-
-.removeBtn{
-  margin-left:auto;
-  padding:8px 12px;
-  border:1px solid #444;
-  background:#171717;
-  color:#eee;
-  border-radius:7px;
-  cursor:pointer;
-}
-
-.qtyBtn{
-  padding:8px 12px;
-  border:0;
-  border-radius:7px;
-  cursor:pointer;
-}
-
-#pixArea{
-  display:none;
-  margin-top:20px;
-  text-align:center;
-}
-
-#pixQr{
-  width:220px;
-  max-width:100%;
-  background:white;
-  padding:10px;
-  border-radius:12px;
-  margin:10px auto;
-}
-
-#pixCode{
-  height:100px;
-  resize:none;
-  margin:12px 0;
-}
-
-@media(max-width:600px){
-
-  header{
-    font-size:13px;
-  }
-
-  .hero{
-    padding:65px 5%;
-  }
-
-  .grid{
-    padding:25px 4%;
-  }
-
-  .panel{
-    width:100%;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<header>
-
-<div class="logo">
-NEXOUS
-</div>
-
-<div>
-STREETWEAR / US
-</div>
-
-</header>
-
-
-<section class="hero">
-
-<h1>
-O ESTILO<br>
-COMEÇA AQUI.
-</h1>
-
-<p>
-Crie sua própria tendência.
-</p>
-
-</section>
-
-
-<main
-id="products"
-class="grid">
-</main>
-
-
-<button id="cart">
-CARRINHO (0)
-</button>
-
-
-<div
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0c0c0c"><meta name="description" content="NEXOUS: streetwear, sneakers e acessórios. Seu estilo, suas regras. Frete grátis para todo o Brasil."><title>NEXOUS — Your Style.</title><style>
+:root{--bg:#0c0c0c;--surface:#151515;--muted:#999;--line:#2b2b2b;--lime:#d7ff57}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:#f6f6f2;font-family:Arial,Helvetica,sans-serif}button,input,select,textarea{font:inherit}button,a,input,select{ -webkit-tap-highlight-color:transparent}button,a{cursor:pointer}a{color:inherit;text-decoration:none}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--lime);outline-offset:4px}.announcement{text-align:center;background:var(--lime);color:#111;padding:11px;font-size:11px;font-weight:800;letter-spacing:1.6px}header{position:sticky;top:0;z-index:3;background:#0c0c0cf2;backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:23px 5%}.logo{font-weight:900;font-size:27px;letter-spacing:5px}.icons{display:flex;gap:18px;align-items:center}.icon{border:0;background:transparent;color:inherit;padding:6px;display:flex;align-items:center;gap:7px}.icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.6}.desktop-nav{display:flex;gap:24px;font-size:12px}.hero{min-height:570px;padding:65px 6%;position:relative;overflow:hidden;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1.15fr 1fr;align-items:center;gap:30px;background:radial-gradient(ellipse at 80% 60%,#25282a,transparent 60%)}.eyebrow{font-size:10px;letter-spacing:3px;font-weight:700;color:var(--lime)}.hero h1{font-size:clamp(58px,7.8vw,118px);line-height:.92;letter-spacing:-6px;margin:25px 0}.hero h1 em{font-style:normal;color:var(--lime)}.hero p{color:#aaa;line-height:1.7;max-width:330px;font-size:14px}.cta{display:inline-flex;justify-content:space-between;gap:55px;align-items:center;background:var(--lime);color:#111;padding:18px 24px;margin-top:20px;font-size:11px;letter-spacing:1px;font-weight:bold}.hero-art{position:relative;height:430px;display:grid;place-items:center}.hero-art img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 30px 35px #0008);position:relative;z-index:1}.hero-art:before{content:'N';font-weight:900;font-size:440px;color:#ffffff06;position:absolute;transform:rotate(-15deg)}.hero-art span{position:absolute;bottom:10px;right:0;letter-spacing:3px;color:#aaa;font-size:10px}.benefits{display:flex;justify-content:space-around;gap:20px;padding:24px 5%;border-bottom:1px solid var(--line);font-size:10px;letter-spacing:1px;color:#bbb}.shop-head{padding:58px 5% 24px;display:flex;align-items:end;justify-content:space-between}.shop-head h2{font-size:35px;letter-spacing:-1.5px;margin:10px 0 0}.shop-head p{color:var(--muted);font-size:12px}.filters{padding:0 5%;display:flex;gap:8px;overflow:auto}.chip{border:1px solid var(--line);color:#aaa;background:transparent;padding:12px 17px;font-size:11px;white-space:nowrap}.chip.active{color:#111;background:#f4f4ee;border-color:#f4f4ee}.grid{padding:26px 5% 70px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}.card{min-width:0}.photo{aspect-ratio:1;background:#1b1b1b;display:grid;place-items:center;overflow:hidden;position:relative;color:#555}.photo img{width:100%;height:100%;object-fit:cover;transition:transform .4s}.card:hover .photo img{transform:scale(1.045)}.info{padding:16px 0}.info h3{font-size:14px;line-height:1.4;margin:12px 0}.info p{font-size:12px;color:#999;line-height:1.5}.info .price{font-size:18px;color:white;font-weight:bold}.tag{font-size:9px;letter-spacing:1px;color:var(--lime)}.stock{font-size:10px!important}.btn{width:100%;padding:15px;border:0;background:#f1f1eb;color:#111;font-size:11px;letter-spacing:1px;font-weight:800}.btn:hover{background:var(--lime)}.btn:disabled{opacity:.4;cursor:not-allowed}.field{width:100%;padding:13px;background:#1b1b1b;color:white;border:1px solid #363636;margin:6px 0 12px;border-radius:0}.drawer{display:none;position:fixed;inset:0;background:#000a;z-index:8}.panel{margin-left:auto;width:min(510px,100%);height:100%;background:#111;padding:28px;overflow:auto}.panel h2{font-size:23px}.row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0}.closeBtn,.removeBtn,.qtyBtn{padding:9px 12px;background:#222;color:white;border:1px solid #444}.removeBtn{margin-left:auto;font-size:10px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}label{display:block;font-size:11px;color:#bbb}#pixArea{display:none;text-align:center;margin-top:20px}#pixQr{width:220px;max-width:100%;padding:10px;background:white}#pixCode{height:100px}#msg,#authMsg{font-size:13px;line-height:1.5}#cart{position:static}.menu-list{display:grid;margin:35px 0}.menu-list button{background:none;color:white;border:0;border-bottom:1px solid #333;padding:19px 0;text-align:left;font-size:21px}.footer{border-top:1px solid var(--line);padding:50px 5% 22px}.footer-main{display:flex;justify-content:space-between;gap:30px}.footer p{font-size:12px;color:#999;line-height:1.8}.footer-bottom{margin-top:45px;padding-top:20px;border-top:1px solid var(--line);font-size:10px;color:#777;display:flex;justify-content:space-between}.notice{padding:15px;border:1px solid #333;font-size:12px;color:#bbb;line-height:1.7}.linkbtn{border:0;background:none;color:var(--lime);padding:12px 0;font-size:12px}.empty{grid-column:1/-1;padding:40px;text-align:center;color:#aaa}.order{border:1px solid #333;padding:18px;margin:16px 0;font-size:13px;line-height:1.8}.order a{color:var(--lime);text-decoration:underline}#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--lime);color:#111;padding:14px 22px;z-index:20;font-size:12px;display:none}@media(max-width:900px){.desktop-nav{display:none}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{min-height:470px}.hero-art{height:320px}.hero h1{letter-spacing:-4px}.hero-art:before{font-size:300px}}@media(max-width:600px){header{padding:17px 5%}.logo{font-size:21px}.icons{gap:9px}.announcement{font-size:9px;letter-spacing:1px}.hero{display:block;padding:45px 5% 20px}.hero h1{font-size:66px}.hero-art{height:270px;margin-top:5px}.hero p{font-size:12px}.hero .cta{padding:16px 20px}.benefits{font-size:8px;gap:8px;letter-spacing:0}.shop-head{padding-top:35px}.shop-head h2{font-size:27px}.grid{gap:14px}.info h3{font-size:12px}.panel{padding:22px}.footer-main{display:block}.footer-bottom{gap:20px}.icon-label{display:none}.formgrid{gap:0 8px}}
+</style></head><body>
+<div class="announcement">FRETE GRÁTIS PARA TODO O BRASIL</div><header><button class="icon" onclick="openPanel('menuDrawer')" aria-label="Abrir categorias"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><a class="logo" href="/">NEXOUS</a><nav class="desktop-nav"><a href="#collection">COLEÇÃO</a><a href="#collection" onclick="filterCategory('Tênis')">SNEAKERS</a></nav><div class="icons"><button class="icon" onclick="openAccount()" aria-label="Minha conta"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></button><button id="cart" class="icon" aria-label="Abrir carrinho"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7Z"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg><span id="cartCount">0</span></button></div></header>
+<section class="hero"><div><span class="eyebrow">NEXOUS / STREET CULTURE</span><h1>YOUR<br><em>STYLE.</em><br>YOUR RULES.</h1><p>Vista sua identidade. Streetwear e sneakers para quem cria o próprio caminho.</p><a class="cta" href="#collection">EXPLORAR COLEÇÃO <span>↗</span></a></div><div class="hero-art"><img id="heroProduct" hidden alt="Destaque da coleção NEXOUS"><span>ESCOLHA SER VOCÊ.</span></div></section>
+<div class="benefits"><span>↗ FRETE GRÁTIS • BRASIL</span><span>◇ PAGAMENTO VIA PIX</span><span>＋ STREETWEAR & SNEAKERS</span></div><section id="collection"><div class="shop-head"><div><span class="eyebrow">ESCOLHA SEU PRÓXIMO DROP</span><h2 id="collectionTitle">A sua próxima escolha.</h2></div><p id="productCount"></p></div><div class="filters"><button class="chip active" data-category="">Todos</button><button class="chip" data-category="Camisas">Camisas</button><button class="chip" data-category="Bermudas">Bermudas</button><button class="chip" data-category="Calças">Calças</button><button class="chip" data-category="Conjuntos">Conjuntos</button><button class="chip" data-category="Tênis">Tênis</button><button class="chip" data-category="Bonés">Bonés</button><button class="chip" data-category="Acessórios">Acessórios</button></div><main id="products" class="grid"><p class="empty">Carregando coleção…</p></main></section>
+<footer class="footer"><div class="footer-main"><div><a class="logo" href="/">NEXOUS</a><p>Seu estilo. Suas regras.<br>Streetwear para expressar quem você é.</p></div><div><b>MINHA CONTA</b><p><a href="#" onclick="openAccount();return false">Entrar / cadastrar</a><br><a href="#" onclick="showOrders();return false">Área do cliente</a></p></div><div><b>ENTREGA & PAGAMENTO</b><p>Frete grátis para todo o Brasil.<br>Pagamento via Pix no checkout.</p></div></div><div class="footer-bottom"><span>© 2026 NEXOUS. Todos os direitos reservados.</span><span>YOUR STYLE.</span></div></footer>
+<div id="menuDrawer" class="drawer" role="dialog" aria-modal="true" aria-label="Categorias"><div class="panel"><div class="row"><h2>Explore a NEXOUS</h2><button class="closeBtn" onclick="closePanels()" aria-label="Fechar">×</button></div><nav class="menu-list"><button onclick="filterCategory('Camisas');closePanels();document.querySelector('#collection').scrollIntoView()">Camisas ↗</button><button onclick="filterCategory('Bermudas');closePanels();document.querySelector('#collection').scrollIntoView()">Bermudas ↗</button><button onclick="filterCategory('Calças');closePanels();document.querySelector('#collection').scrollIntoView()">Calças ↗</button><button onclick="filterCategory('Conjuntos');closePanels();document.querySelector('#collection').scrollIntoView()">Conjuntos ↗</button><button onclick="filterCategory('Tênis');closePanels();document.querySelector('#collection').scrollIntoView()">Tênis ↗</button><button onclick="filterCategory('Bonés');closePanels();document.querySelector('#collection').scrollIntoView()">Bonés ↗</button><button onclick="filterCategory('Acessórios');closePanels();document.querySelector('#collection').scrollIntoView()">Acessórios ↗</button></nav><button class="linkbtn" onclick="openAccount()">Área do cliente →</button></div></div>
+<div id="accountDrawer" class="drawer" role="dialog" aria-modal="true" aria-label="Área do cliente"><div class="panel"><div class="row"><h2>Área do cliente</h2><button class="closeBtn" onclick="closePanels()" aria-label="Fechar">×</button></div><p class="notice">Estamos preparando sua área de cadastro, pedidos e rastreio. Por enquanto, você pode comprar preenchendo seus dados no checkout.</p><button class="btn" onclick="document.querySelector('#cart').click()">IR PARA O CARRINHO</button></div></div><div
 id="drawer"
 class="drawer">
 
@@ -295,33 +29,33 @@ onclick="closeCart()">
 
 <div id="cartItems"></div>
 
-<h3 id="total"></h3>
+<h3 id="total"></h3><p class="notice">Frete grátis para todo o Brasil.</p>
 
 
 <h3>
 Seus dados
 </h3>
 
-<input
+<label>Nome completo<input
 id="name"
 class="field"
-placeholder="Seu nome">
+placeholder="Seu nome"></label>
 
 
-<input
+<label>E-mail<input
 id="email"
 class="field"
 type="email"
-placeholder="Seu e-mail">
+placeholder="Seu e-mail"></label>
 
 
-<input
+<label>CPF<input
 id="cpf"
 class="field"
 inputmode="numeric"
 maxlength="14"
 autocomplete="off"
-placeholder="CPF">
+placeholder="CPF"></label>
 
 
 <h3 style="margin-top:22px">
@@ -329,49 +63,49 @@ Endereço de entrega
 </h3>
 
 
-<input
+<label>CEP<input
 id="cep"
 class="field"
 inputmode="numeric"
 maxlength="9"
-placeholder="CEP">
+placeholder="CEP"></label>
 
 
-<input
+<label>Rua<input
 id="rua"
 class="field"
-placeholder="Rua">
+placeholder="Rua"></label>
 
 
-<input
+<label>Número<input
 id="numero"
 class="field"
-placeholder="Número">
+placeholder="Número"></label>
 
 
-<input
+<label>Complemento (opcional)<input
 id="complemento"
 class="field"
-placeholder="Complemento (opcional)">
+placeholder="Complemento (opcional)"></label>
 
 
-<input
+<label>Bairro<input
 id="bairro"
 class="field"
-placeholder="Bairro">
+placeholder="Bairro"></label>
 
 
-<input
+<label>Cidade<input
 id="cidade"
 class="field"
-placeholder="Cidade">
+placeholder="Cidade"></label>
 
 
-<input
+<label>Estado (UF)<input
 id="estado"
 class="field"
 maxlength="2"
-placeholder="Estado (ex: RS)">
+placeholder="Estado (ex: RS)"></label>
 
 
 <button
@@ -433,38 +167,21 @@ Aguardando pagamento...
 </div>
 
 
-<script type="module">
-
+<div id="toast" role="status"></div><script type="module">
 import {createClient}
 from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-
 const CONFIG={
-
 url:
 'https://tcszjspirwwxrkabhtgi.supabase.co',
-
 anon:
 'sb_publishable_bZIkwmhElVzFMsGbk0bBgw_eFVWJuXV'
-
 };
-
-
 const sb=createClient(
 CONFIG.url,
 CONFIG.anon
 );
-
-
 let products=[];
-
-
-let cart=
-JSON.parse(
-localStorage.nexousCart||'[]'
-);
-
-
+let cart=[];try{cart=JSON.parse(localStorage.nexousCart||'[]');if(!Array.isArray(cart))cart=[];}catch{}
 const money=n=>
 Number(n||0).toLocaleString(
 'pt-BR',
@@ -473,132 +190,62 @@ style:'currency',
 currency:'BRL'
 }
 );
-
-
 function save(){
-
 localStorage.nexousCart=
 JSON.stringify(cart);
-
-document.querySelector('#cart')
-.textContent=
-`CARRINHO (${
-cart.reduce(
-(a,b)=>a+b.quantity,
-0
-)
-})`;
-
+document.querySelector('#cartCount').textContent=cart.reduce((a,b)=>a+b.quantity,0);
 }
-
-
 function escapeHtml(value=''){
-
 return String(value)
-
 .replaceAll('&','&amp;')
 .replaceAll('<','&lt;')
 .replaceAll('>','&gt;')
 .replaceAll('"','&quot;');
-
 }
-
-
 function getSizes(product){
-
-/*
-O seu banco possui a coluna "sizes".
-
-Se ela estiver preenchida como ARRAY:
-["38","39","40"]
-
-usaremos diretamente.
-
-Também deixei compatibilidade com "tamanhos"
-caso você ainda tenha algum produto antigo.
-*/
-
 let sizes=
 product.sizes ??
 product.tamanhos ??
 [];
-
-
 if(Array.isArray(sizes)){
-
 return sizes
 .map(x=>String(x).trim())
 .filter(Boolean);
-
 }
-
-
-/*
-Se por algum motivo vier como texto:
-"38,39,40"
-*/
-
 if(typeof sizes==='string'){
-
 return sizes
 .split(',')
 .map(x=>x.trim())
 .filter(Boolean);
-
 }
-
-
 return [];
-
 }
-
-
 function sizeLabel(product){
-
 return product.product_type==='tenis'
 ?'número'
 :'tamanho';
-
 }
-
-
 function sizeOptions(product){
-
 const sizes=getSizes(product);
-
-
 if(!sizes.length){
-
 return `
 <option value="">
 Sem tamanhos disponíveis
 </option>
 `;
-
 }
-
-
 return `
-
 <option value="">
 Escolha o ${sizeLabel(product)}
 </option>
-
 ${sizes.map(size=>`
-
 <option value="${escapeHtml(size)}">
 ${escapeHtml(size)}
 </option>
-
 `).join('')}
-
 `;
-
 }
-
-
 async function load(){
-
 const {data,error}=
 await sb
 .from('products')
@@ -608,10 +255,7 @@ await sb
 'created_at',
 {ascending:false}
 );
-
-
 if(error){
-
 document.querySelector('#products')
 .innerHTML=
 `
@@ -620,475 +264,277 @@ ERRO SUPABASE:
 ${escapeHtml(error.message)}
 </p>
 `;
-
 console.error(error);
-
 return;
-
 }
-
-
 products=data||[];
-
-
-renderProducts();
-
+renderProducts();const feature=products.find(p=>p.featured&&p.image_url)||products.find(p=>p.image_url);if(feature){const image=document.querySelector('#heroProduct');image.src=feature.image_url;image.hidden=false;}
 }
-
-
 function renderProducts(){
-
 const container=
 document.querySelector('#products');
-
-
-if(!products.length){
-
+const visible=products.filter(p=>!selectedCategory||normalize(p.category)===normalize(selectedCategory));document.querySelector('#productCount').textContent=visible.length+' produtos';if(!visible.length){
 container.innerHTML=
-'<p>Nenhum produto disponível.</p>';
-
+'<p class="empty">Em breve, novos produtos nesta categoria.</p>';
 return;
-
 }
-
-
 container.innerHTML=
-products.map(p=>{
-
+visible.map(p=>{
 const sizes=getSizes(p);
-
 const hasStock=
 Number(p.stock ?? p.estoque ?? 0)>0;
-
-
 return `
-
 <article class="card">
-
-
 <div class="photo">
-
 ${p.image_url
-
 ?`
 <img
 src="${escapeHtml(p.image_url)}"
 alt="${escapeHtml(p.name||'Produto NEXOUS')}">
 `
-
 :'NEXOUS'
-
 }
-
 </div>
-
-
 <div class="info">
-
-
 <span class="tag">
 ${escapeHtml(p.tag||'DROP')}
 </span>
-
-
 <h3>
 ${escapeHtml(p.name||'Produto')}
 </h3>
-
-
 ${p.variant
 ?`
-
 <p
 style="
 color:#bbb;
 font-weight:bold;
 margin:6px 0;
 ">
-
 ${p.product_type==='tenis'
 ?'Modelo'
 :'Cor'}:
-
 ${escapeHtml(p.variant)}
-
 </p>
-
 `
 :''
 }
-
-
 <p>
 ${escapeHtml(p.description||'')}
 </p>
-
-
 <p class="price">
 ${money(p.price)}
 </p>
-
-
 <p class="stock">
-
 ${Number(p.stock ?? p.estoque ?? 0)}
 em estoque
-
 </p>
-
-
 <select
 id="size-${p.id}"
 class="field"
 ${!sizes.length||!hasStock
 ?'disabled'
 :''}>
-
 ${sizeOptions(p)}
-
 </select>
-
-
 <button
 class="btn"
 data-add="${p.id}"
 ${!sizes.length||!hasStock
 ?'disabled'
 :''}>
-
 ${!hasStock
 ?'SEM ESTOQUE'
 :'ADICIONAR'}
-
 </button>
-
-
 </div>
-
 </article>
-
 `;
-
 }).join('');
-
-
 document
 .querySelectorAll('[data-add]')
 .forEach(button=>{
-
 button.onclick=
 ()=>add(button.dataset.add);
-
 });
-
 }
-
-
 function add(id){
-
 const product=
 products.find(
 p=>String(p.id)===String(id)
 );
-
-
 if(!product){
-
 alert(
 'Produto não encontrado.'
 );
-
 return;
-
 }
-
-
 const sizeSelect=
 document.querySelector(
 `#size-${id}`
 );
-
-
 const size=
 sizeSelect?.value;
-
-
 if(!size){
-
 alert(
 `Escolha o ${sizeLabel(product)} antes de adicionar.`
 );
-
 return;
-
 }
-
-
 const stock=
 Number(
 product.stock ??
 product.estoque ??
 0
 );
-
-
 const currentQuantity=
 cart
-
 .filter(i=>
 String(i.id)===String(id)
 )
-
 .reduce(
 (total,item)=>
 total+item.quantity,
 0
 );
-
-
 if(
 currentQuantity>=stock
 ){
-
 alert(
 'Você atingiu o estoque disponível deste produto.'
 );
-
 return;
-
 }
-
-
 const existing=
 cart.find(i=>
-
 String(i.id)===String(id)
 &&
 i.size===size
-
 );
-
-
 if(existing){
-
 existing.quantity++;
-
 }else{
-
 cart.push({
-
 id:String(id),
-
 size:size,
-
 quantity:1
-
 });
-
 }
-
-
 save();
-
-
-alert(
-'Produto adicionado ao carrinho!'
-);
-
+toast('Produto adicionado ao carrinho');
 }
-
-
 window.changeQty=
 (id,size,amount)=>{
-
-
 const item=
 cart.find(i=>
-
 String(i.id)===String(id)
 &&
 i.size===size
-
 );
-
-
 if(!item)return;
-
-
 const product=
 products.find(
 p=>String(p.id)===String(id)
 );
-
-
 if(
 amount>0 &&
 product
 ){
-
 const stock=
 Number(
 product.stock ??
 product.estoque ??
 0
 );
-
-
 const totalProductQuantity=
 cart
-
 .filter(i=>
 String(i.id)===String(id)
 )
-
 .reduce(
 (total,x)=>
 total+x.quantity,
 0
 );
-
-
 if(
 totalProductQuantity>=stock
 ){
-
 alert(
 'Você atingiu o estoque disponível.'
 );
-
 return;
-
 }
-
 }
-
-
 item.quantity+=amount;
-
-
 if(item.quantity<=0){
-
 cart=
 cart.filter(i=>
-
 !(
 String(i.id)===String(id)
 &&
 i.size===size
 )
-
 );
-
 }
-
-
 save();
-
 renderCart();
-
 };
-
-
 window.removeItem=
 (id,size)=>{
-
-
 cart=
 cart.filter(i=>
-
 !(
 String(i.id)===String(id)
 &&
 i.size===size
 )
-
 );
-
-
 save();
-
 renderCart();
-
 };
-
-
 window.closeCart=()=>{
-
 document.querySelector('#drawer')
 .style.display='none';
-
 };
-
-
 function renderCart(){
-
 const cartItems=
 document.querySelector('#cartItems');
-
-
 const rows=
 cart.map(i=>{
-
-
 const p=
 products.find(
 x=>String(x.id)===String(i.id)
 );
-
-
 if(!p)return '';
-
-
 return `
-
 <div
 style="
 border-bottom:1px solid #222;
 padding:15px 0;
 ">
-
-
 <div class="row">
-
-
 <div>
-
 <strong>
 ${escapeHtml(p.name)}
 </strong>
-
-
 <div
 style="
 color:#999;
 font-size:13px;
 margin-top:5px;
 ">
-
 ${p.product_type==='tenis'
 ?'Número'
 :'Tamanho'}:
-
 ${escapeHtml(i.size)}
-
 </div>
-
 </div>
-
-
 <strong>
-
 ${money(
 Number(p.price)*
 i.quantity
 )}
-
 </strong>
-
-
 </div>
-
-
 <div
 style="
 display:flex;
@@ -1096,76 +542,46 @@ align-items:center;
 gap:10px;
 margin-top:10px;
 ">
-
-
 <button
 class="qtyBtn"
 onclick=
 "changeQty('${i.id}','${escapeHtml(i.size)}',-1)">
-
 −
-
 </button>
-
-
 <strong>
 ${i.quantity}
 </strong>
-
-
 <button
 class="qtyBtn"
 onclick=
 "changeQty('${i.id}','${escapeHtml(i.size)}',1)">
-
 +
-
 </button>
-
-
 <button
 class="removeBtn"
 onclick=
 "removeItem('${i.id}','${escapeHtml(i.size)}')">
-
 REMOVER
-
 </button>
-
-
 </div>
-
 </div>
-
 `;
-
 }).join('');
-
-
 cartItems.innerHTML=
 rows||
 '<p>Carrinho vazio.</p>';
-
-
 document.querySelector('#total')
 .textContent=
-
 'Total: ' +
-
 money(
-
 cart.reduce(
-
 (sum,item)=>{
-
 const p=
 products.find(
 x=>
 String(x.id)===
 String(item.id)
 );
-
-
 return sum+
 (
 p
@@ -1175,114 +591,79 @@ item.quantity
 :
 0
 );
-
 },
-
 0
-
 )
-
 );
-
 }
-
-
 document
 .querySelector('#cart')
 .onclick=()=>{
-
 renderCart();
-
-document.querySelector('#drawer')
-.style.display='block';
-
+openPanel('drawer');
 };
-
-
 window.checkout=
 async()=>{
-
-
 const msg=
 document.querySelector('#msg');
-
-
 if(cart.length===0){
-
 msg.textContent=
 'Seu carrinho está vazio.';
-
 return;
-
 }
-
-
 const customer={
-
 name:
 document
 .querySelector('#name')
 .value
 .trim(),
-
 email:
 document
 .querySelector('#email')
 .value
 .trim(),
-
 cpf:
 document
 .querySelector('#cpf')
 .value
 .trim(),
-
 cep:
 document
 .querySelector('#cep')
 .value
 .trim(),
-
 rua:
 document
 .querySelector('#rua')
 .value
 .trim(),
-
 numero:
 document
 .querySelector('#numero')
 .value
 .trim(),
-
 complemento:
 document
 .querySelector('#complemento')
 .value
 .trim(),
-
 bairro:
 document
 .querySelector('#bairro')
 .value
 .trim(),
-
 cidade:
 document
 .querySelector('#cidade')
 .value
 .trim(),
-
 estado:
 document
 .querySelector('#estado')
 .value
 .trim()
 .toUpperCase()
-
 };
-
-
 if(
 !customer.name||
 !customer.email||
@@ -1294,161 +675,102 @@ if(
 !customer.cidade||
 !customer.estado
 ){
-
 msg.textContent=
 'Preencha todos os dados obrigatórios.';
-
 return;
-
 }
-
-
 msg.textContent=
 'Criando pagamento...';
-
-
 try{
-
-
 const response=
 await fetch(
 '/api/create-checkout',
 {
-
 method:'POST',
-
 headers:{
 'Content-Type':
 'application/json'
 },
-
 body:
 JSON.stringify({
-
 items:cart,
-
 customer
-
 })
-
 }
 );
-
-
 const data=
 await response.json();
-
-
 if(
 data.qr_code &&
 data.qr_code_base64
 ){
-
 document
 .querySelector('#pixArea')
 .style.display='block';
-
-
 document
 .querySelector('#pixQr')
 .src=
-
 `data:image/png;base64,${data.qr_code_base64}`;
-
-
 document
 .querySelector('#pixCode')
 .value=
 data.qr_code;
-
-
 document
 .querySelector('#pixStatus')
 .textContent=
 'Aguardando pagamento...';
-
-
 msg.textContent=
 'Pix gerado com sucesso!';
-
-
 }else{
-
 msg.textContent=
 data.error||
 'Erro ao gerar Pix.';
-
 }
-
-
 }catch(error){
-
 console.error(error);
-
 msg.textContent=
 'Erro ao conectar com o pagamento.';
-
 }
-
 };
-
-
 window.copyPix=
 async()=>{
-
-
 const field=
 document.querySelector(
 '#pixCode'
 );
-
-
 const code=
 field.value;
-
-
 if(!code)return;
-
-
 try{
-
-
 await navigator
 .clipboard
 .writeText(code);
-
-
 document
 .querySelector('#pixStatus')
 .textContent=
 'Código Pix copiado!';
-
-
 }catch{
-
-
 field.select();
-
 document.execCommand(
 'copy'
 );
-
-
 document
 .querySelector('#pixStatus')
 .textContent=
 'Código Pix copiado!';
-
 }
-
 };
-
-
-save();
-
-load();
-
-</script>
-
-</body>
-</html>
+let selectedCategory='';
+const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+window.filterCategory=c=>{selectedCategory=c;document.querySelector('#collectionTitle').textContent=c||'A sua próxima escolha.';document.querySelectorAll('[data-category]').forEach(b=>b.classList.toggle('active',b.dataset.category===c));renderProducts();};
+document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>filterCategory(b.dataset.category));
+let lastFocus=null;
+window.closePanels=()=>{document.querySelectorAll('.drawer').forEach(p=>p.style.display='none');document.body.style.overflow='';lastFocus?.focus();};
+window.openPanel=id=>{closePanels();lastFocus=document.activeElement;document.querySelector('#'+id).style.display='block';document.body.style.overflow='hidden';document.querySelector('#'+id+' button')?.focus();};
+window.closeCart=closePanels;
+window.openAccount=()=>openPanel('accountDrawer');
+document.querySelectorAll('.drawer').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)closePanels();}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanels();});
+function toast(t){const el=document.querySelector('#toast');el.textContent=t;el.style.display='block';setTimeout(()=>el.style.display='none',2600);}
+save();load();
+</script></body></html>
