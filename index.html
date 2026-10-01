@@ -82,7 +82,7 @@ window.removeItem = (id) => {
       return s + (p ? Number(p.price) * i.quantity : 0);
     },0)
   );
-}{const rows=cart.map(i=>{const p=products.find(x=>x.id===i.id);return p?`<div class="row"><span>${p.name} × ${i.quantity}</span><span>${money(p.price*i.quantity)}</span></div>`:''}).join('');cartItems.innerHTML=rows||'<p>Carrinho vazio.</p>';total.textContent='Total: '+money(cart.reduce((s,i)=>{const p=products.find(x=>x.id===i.id);return s+(p?Number(p.price)*i.quantity:0)},0))}document.querySelector('#cart').onclick=()=>{render();drawer.style.display='block'};window.checkout=async()=>{
+document.querySelector('#cart').onclick=()=>{render();drawer.style.display='block'};window.checkout=async()=>{
   msg.textContent='Criando pagamento...';
 
   const r=await fetch('/api/create-checkout',{
