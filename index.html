@@ -1,7 +1,21 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NEXOUS — Your Style.</title><style>*{box-sizing:border-box}body{margin:0;background:#080808;color:#eee;font-family:Arial,sans-serif}header{padding:22px 5%;display:flex;justify-content:space-between;border-bottom:1px solid #222;position:sticky;top:0;background:#080808dd;backdrop-filter:blur(12px);z-index:3}.logo{font-weight:900;letter-spacing:5px}.hero{padding:90px 5%;background:linear-gradient(120deg,#111,#050505);border-bottom:1px solid #222}.hero h1{font-size:clamp(52px,12vw,130px);margin:0;line-height:.85}.hero p{color:#888}.grid{padding:40px 5%;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}.card{background:#111;border:1px solid #222;border-radius:18px;overflow:hidden}.photo{aspect-ratio:1;background:#171717;display:grid;place-items:center;color:#555}.photo img{width:100%;height:100%;object-fit:cover}.info{padding:18px}.tag{font-size:11px;border:1px solid #555;padding:5px 8px;border-radius:99px}.price{font-size:22px;font-weight:bold}.btn{border:0;background:#eee;color:#080808;padding:12px 15px;border-radius:10px;font-weight:bold;cursor:pointer;width:100%}#cart{position:fixed;right:15px;bottom:15px;background:#eee;color:#111;border:0;border-radius:99px;padding:15px 20px;font-weight:bold;z-index:4}.drawer{display:none;position:fixed;inset:0;background:#000b;z-index:5}.panel{margin-left:auto;width:min(430px,100%);height:100%;background:#101010;padding:24px;overflow:auto}.row{display:flex;justify-content:space-between;gap:12px;margin:12px 0}.field{width:100%;padding:12px;background:#171717;color:#fff;border:1px solid #333;border-radius:9px}</style></head><body><header><div class="logo">NEXOUS</div><div>STREETWEAR / US</div></header><section class="hero"><h1>O ESTILO<br>COMEÇA AQUI.</h1><p>Crie sua própia tendência.</p></section><main id="products" class="grid"></main><button id="cart">CARRINHO (0)</button><div id="drawer" class="drawer"><div class="panel"><div class="row"><h2>Seu carrinho</h2><button onclick="closeCart()">✕</button></div><div id="cartItems"></div><h3 id="total"></h3><input id="name" class="field" placeholder="Seu nome">
 
 <input id="email" class="field" type="email" placeholder="Seu e-mail">
+<h3 style="margin-top:22px">Endereço de entrega</h3>
 
+<input id="cep" class="field" inputmode="numeric" maxlength="9" placeholder="CEP">
+
+<input id="rua" class="field" placeholder="Rua">
+
+<input id="numero" class="field" placeholder="Número">
+
+<input id="complemento" class="field" placeholder="Complemento (opcional)">
+
+<input id="bairro" class="field" placeholder="Bairro">
+
+<input id="cidade" class="field" placeholder="Cidade">
+
+<input id="estado" class="field" maxlength="2" placeholder="Estado (ex: RS)">
 <input
   id="cpf"
   class="field"
