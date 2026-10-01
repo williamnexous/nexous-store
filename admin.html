@@ -7,14 +7,13 @@
 
 <style>
 *{box-sizing:border-box}
+
 :root{
   --bg:#080808;
   --panel:#101010;
-  --panel2:#151515;
   --border:#262626;
   --text:#f4f4f4;
   --muted:#888;
-  --white:#fff;
 }
 
 body{
@@ -25,9 +24,7 @@ body{
 }
 
 button,input,textarea,select{font:inherit}
-
 button{cursor:pointer}
-
 .hide{display:none!important}
 
 /* LOGIN */
@@ -75,7 +72,9 @@ input,textarea,select{
   outline:none;
 }
 
-input:focus,textarea:focus,select:focus{
+input:focus,
+textarea:focus,
+select:focus{
   border-color:#666;
 }
 
@@ -233,7 +232,7 @@ main{
   font-size:27px;
 }
 
-/* PRODUCTS */
+/* PRODUTOS */
 
 .toolbar{
   display:flex;
@@ -326,7 +325,8 @@ main{
   margin-top:17px;
 }
 
-.secondary,.danger{
+.secondary,
+.danger{
   flex:1;
   padding:10px;
   border-radius:9px;
@@ -339,7 +339,7 @@ main{
   color:#ff8b8b;
 }
 
-/* FORM */
+/* FORMULÁRIO */
 
 .overlay{
   position:fixed;
@@ -435,6 +435,10 @@ main{
   border:0;
 }
 
+.save:disabled{
+  opacity:.6;
+}
+
 .cancel{
   flex:1;
   background:#151515;
@@ -453,10 +457,15 @@ main{
 
 /* MOBILE */
 
-.mobileTop{display:none}
+.mobileTop{
+  display:none;
+}
 
 @media(max-width:900px){
-  .sidebar{display:none}
+
+  .sidebar{
+    display:none;
+  }
 
   main{
     margin:0;
@@ -472,7 +481,7 @@ main{
     position:sticky;
     top:0;
     z-index:20;
-    background:#080808eF;
+    background:#080808ef;
     backdrop-filter:blur(10px);
   }
 
@@ -492,7 +501,9 @@ main{
     align-items:flex-start;
   }
 
-  .top h1{font-size:24px}
+  .top h1{
+    font-size:24px;
+  }
 
   .stats{
     grid-template-columns:1fr 1fr;
@@ -502,17 +513,20 @@ main{
     grid-template-columns:1fr 1fr;
   }
 
-  .productImage,.noImage{
+  .productImage,
+  .noImage{
     height:200px;
   }
 }
 
 @media(max-width:600px){
+
   .products{
     grid-template-columns:1fr;
   }
 
-  .productImage,.noImage{
+  .productImage,
+  .noImage{
     height:330px;
   }
 
@@ -559,13 +573,16 @@ Gerencie os produtos e o catálogo da sua loja.
 <input id="password" type="password" placeholder="Sua senha">
 </div>
 
-<button id="loginBtn" class="primary">ENTRAR NO PAINEL</button>
+<button id="loginBtn" class="primary">
+ENTRAR NO PAINEL
+</button>
 
 <p id="loginMsg"></p>
 
 </div>
 
 </section>
+
 
 <section id="app" class="hide">
 
@@ -579,14 +596,23 @@ Gerencie os produtos e o catálogo da sua loja.
 <button class="navBtn" disabled>□ Pedidos — em breve</button>
 </div>
 
-<button id="logout" class="logout">Sair do painel</button>
+<button id="logout" class="logout">
+Sair do painel
+</button>
 
 </div>
+
 
 <div class="mobileTop">
+
 <div class="brand">NEXOUS</div>
-<button id="mobileLogout">Sair</button>
+
+<button id="mobileLogout">
+Sair
+</button>
+
 </div>
+
 
 <main>
 
@@ -597,9 +623,12 @@ Gerencie os produtos e o catálogo da sua loja.
 <p>Gerencie o catálogo da NEXOUS.</p>
 </div>
 
-<button id="addProduct" class="addBtn">+ Novo produto</button>
+<button id="addProduct" class="addBtn">
++ Novo produto
+</button>
 
 </div>
+
 
 <div class="stats">
 
@@ -625,6 +654,7 @@ Gerencie os produtos e o catálogo da sua loja.
 
 </div>
 
+
 <div class="toolbar">
 
 <input
@@ -634,6 +664,7 @@ placeholder="Buscar produto..."
 >
 
 <select id="categoryFilter" class="filter">
+
 <option value="">Todas as categorias</option>
 <option>Camisas</option>
 <option>Bermudas</option>
@@ -642,9 +673,11 @@ placeholder="Buscar produto..."
 <option>Calças</option>
 <option>Bonés</option>
 <option>Acessórios</option>
+
 </select>
 
 </div>
+
 
 <div id="products" class="products"></div>
 
@@ -652,49 +685,95 @@ placeholder="Buscar produto..."
 
 </section>
 
+
 <div id="overlay" class="overlay hide">
 
 <div class="drawer">
 
 <div class="drawerHead">
-<h2 id="formTitle">Novo produto</h2>
-<button id="closeForm" class="close">×</button>
+
+<h2 id="formTitle">
+Novo produto
+</h2>
+
+<button id="closeForm" class="close" type="button">
+×
+</button>
+
 </div>
+
 
 <form id="productForm">
 
 <input id="editingId" type="hidden">
 
+
 <div class="field">
+
 <label>Nome do produto</label>
-<input id="name" required placeholder="Ex: Camiseta Canelada">
+
+<input
+id="name"
+required
+placeholder="Ex: Camiseta Canelada"
+>
+
 </div>
 
+
 <div class="field">
+
 <label>Descrição</label>
-<textarea id="description" placeholder="Descrição do produto"></textarea>
+
+<textarea
+id="description"
+placeholder="Descrição do produto"
+></textarea>
+
 </div>
+
 
 <div class="grid2">
 
 <div class="field">
+
 <label>Preço</label>
-<input id="price" type="number" step="0.01" min="0" required placeholder="0,00">
+
+<input
+id="price"
+type="number"
+step="0.01"
+min="0"
+required
+placeholder="0,00"
+>
+
 </div>
+
 
 <div class="field">
+
 <label>Estoque</label>
-<input id="estoque" type="number" min="0" value="0">
+
+<input
+id="stock"
+type="number"
+min="0"
+value="0"
+>
+
 </div>
 
 </div>
+
 
 <div class="grid2">
 
 <div class="field">
+
 <label>Categoria</label>
 
-<select id="categoria">
+<select id="category">
 
 <option value="">Selecionar</option>
 <option>Camisas</option>
@@ -706,537 +785,944 @@ placeholder="Buscar produto..."
 <option>Acessórios</option>
 
 </select>
+
 </div>
 
+
 <div class="field">
+
 <label>Tag</label>
 
 <select id="tag">
+
 <option>NEW</option>
 <option>DROP</option>
 <option>HOT</option>
 <option>LIMITED</option>
+
 </select>
 
 </div>
 
 </div>
+
 
 <div class="grid2">
 
 <div class="field">
+
 <label>Tipo</label>
 
 <select id="product_type">
+
 <option value="roupa">Roupa</option>
 <option value="tenis">Tênis</option>
 <option value="acessorio">Acessório</option>
+
 </select>
 
 </div>
 
+
 <div class="field">
+
 <label>Modelo / Cor</label>
-<input id="variant" placeholder="Ex: Canelada preta">
+
+<input
+id="variant"
+placeholder="Ex: Canelada preta"
+>
+
 </div>
 
 </div>
+
 
 <div class="field">
+
 <label>Tamanhos</label>
-<input id="tamanhos" placeholder="Ex: P, M, G, GG ou 38, 39, 40">
+
+<input
+id="sizes"
+placeholder="Ex: P, M, G, GG ou 38, 39, 40"
+>
+
 </div>
 
+
 <div class="field">
+
 <label>Imagem do produto</label>
-<input id="imageFile" type="file" accept="image/*">
-<img id="preview" class="preview hide">
+
+<input
+id="imageFile"
+type="file"
+accept="image/*"
+>
+
+<img
+id="preview"
+class="preview hide"
+alt="Prévia do produto"
+>
+
 </div>
+
 
 <div class="checks">
 
 <label class="check">
-<input id="active" type="checkbox" checked>
+
+<input
+id="active"
+type="checkbox"
+checked
+>
+
 Produto ativo
+
 </label>
 
+
 <label class="check">
-<input id="featured" type="checkbox">
+
+<input
+id="featured"
+type="checkbox"
+>
+
 Produto em destaque
+
 </label>
 
 </div>
 
+
 <div class="formActions">
-<button type="button" id="cancelForm" class="cancel">Cancelar</button>
-<button type="submit" class="save">SALVAR PRODUTO</button>
+
+<button
+type="button"
+id="cancelForm"
+class="cancel"
+>
+Cancelar
+</button>
+
+<button
+type="submit"
+class="save"
+>
+SALVAR PRODUTO
+</button>
+
 </div>
 
 </form>
 
 </div>
+
 </div>
+
 
 <script type="module">
 
 import {createClient}
 from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
+
 const sb=createClient(
-'https://tcszjspirwwxrkabhtgi.supabase.co',
-'sb_publishable_bZIkwmhElVzFMsGbk0bBgw_eFVWJuXV'
+  'https://tcszjspirwwxrkabhtgi.supabase.co',
+  'sb_publishable_bZIkwmhElVzFMsGbk0bBgw_eFVWJuXV'
 );
+
 
 let allProducts=[];
 
 const $=id=>document.getElementById(id);
 
+
+/* =========================
+   LOGIN / ADMIN
+========================= */
+
 async function isAdmin(){
 
-const {data:{user}}=await sb.auth.getUser();
+  const {data:{user}}=
+  await sb.auth.getUser();
 
-if(!user)return false;
+  if(!user)return false;
 
-const {data}=await sb
-.from('admins')
-.select('user_id')
-.eq('user_id',user.id)
-.maybeSingle();
+  const {data,error}=
+  await sb
+  .from('admins')
+  .select('user_id')
+  .eq('user_id',user.id)
+  .maybeSingle();
 
-return !!data;
+  if(error){
+    console.error(error);
+    return false;
+  }
 
+  return !!data;
 }
+
 
 async function boot(){
 
-if(await isAdmin()){
+  if(await isAdmin()){
 
-$('login').classList.add('hide');
-$('app').classList.remove('hide');
+    $('login').classList.add('hide');
+    $('app').classList.remove('hide');
 
-await load();
+    await load();
 
-}else{
+  }else{
 
-$('app').classList.add('hide');
-$('login').classList.remove('hide');
+    $('app').classList.add('hide');
+    $('login').classList.remove('hide');
+
+  }
 
 }
 
-}
 
 $('loginBtn').onclick=async()=>{
 
-$('loginMsg').textContent='Entrando...';
+  $('loginMsg').textContent='Entrando...';
 
-const {error}=await sb.auth.signInWithPassword({
-email:$('email').value,
-password:$('password').value
-});
+  const {error}=
+  await sb.auth.signInWithPassword({
 
-if(error){
+    email:$('email').value.trim(),
+    password:$('password').value
 
-$('loginMsg').textContent=error.message;
-return;
+  });
 
-}
+  if(error){
 
-$('loginMsg').textContent='';
+    $('loginMsg').textContent=error.message;
+    return;
 
-boot();
+  }
+
+  $('loginMsg').textContent='';
+
+  await boot();
 
 };
 
+
 async function logout(){
 
-await sb.auth.signOut();
-location.reload();
+  await sb.auth.signOut();
+
+  location.reload();
 
 }
+
 
 $('logout').onclick=logout;
 $('mobileLogout').onclick=logout;
 
+
+/* =========================
+   CARREGAR PRODUTOS
+========================= */
+
 async function load(){
 
-const {data,error}=await sb
-.from('products')
-.select('*')
-.order('created_at',{ascending:false});
+  const {data,error}=
+  await sb
+  .from('products')
+  .select('*')
+  .order('created_at',{ascending:false});
 
-if(error){
+  if(error){
 
-alert(error.message);
-return;
+    alert(error.message);
+    return;
+
+  }
+
+  allProducts=data||[];
+
+  updateStats();
+  render();
 
 }
 
-allProducts=data||[];
 
-updateStats();
-render();
-
-}
+/* =========================
+   ESTATÍSTICAS
+========================= */
 
 function updateStats(){
 
-$('totalProducts').textContent=allProducts.length;
+  $('totalProducts').textContent=
+  allProducts.length;
 
-$('activeProducts').textContent=
-allProducts.filter(p=>p.active!==false).length;
 
-$('featuredProducts').textContent=
-allProducts.filter(p=>p.featured===true).length;
+  $('activeProducts').textContent=
+  allProducts.filter(
+    p=>p.active!==false
+  ).length;
 
-$('totalStock').textContent=
-allProducts.reduce((s,p)=>s+(Number(p.estoque)||0),0);
+
+  $('featuredProducts').textContent=
+  allProducts.filter(
+    p=>p.featured===true
+  ).length;
+
+
+  $('totalStock').textContent=
+  allProducts.reduce(
+    (total,p)=>
+    total+(Number(p.stock)||0),
+    0
+  );
 
 }
+
+
+/* =========================
+   FORMATAÇÃO
+========================= */
 
 function money(value){
 
-return Number(value||0).toLocaleString('pt-BR',{
-style:'currency',
-currency:'BRL'
-});
+  return Number(value||0)
+  .toLocaleString('pt-BR',{
+
+    style:'currency',
+    currency:'BRL'
+
+  });
 
 }
+
 
 function escapeHtml(v=''){
 
-return String(v)
-.replaceAll('&','&amp;')
-.replaceAll('<','&lt;')
-.replaceAll('>','&gt;')
-.replaceAll('"','&quot;');
+  return String(v)
+
+  .replaceAll('&','&amp;')
+  .replaceAll('<','&lt;')
+  .replaceAll('>','&gt;')
+  .replaceAll('"','&quot;')
+  .replaceAll("'","&#039;");
 
 }
+
+
+/* =========================
+   MOSTRAR PRODUTOS
+========================= */
 
 function render(){
 
-const search=$('search').value.toLowerCase().trim();
-const cat=$('categoryFilter').value;
+  const search=
+  $('search')
+  .value
+  .toLowerCase()
+  .trim();
 
-const filtered=allProducts.filter(p=>{
 
-const matchesSearch=
-(p.name||'').toLowerCase().includes(search)||
-(p.variant||'').toLowerCase().includes(search);
+  const category=
+  $('categoryFilter').value;
 
-const matchesCategory=!cat||p.categoria===cat;
 
-return matchesSearch&&matchesCategory;
+  const filtered=
+  allProducts.filter(p=>{
 
-});
+    const matchesSearch=
 
-if(!filtered.length){
+    (p.name||'')
+    .toLowerCase()
+    .includes(search)
 
-$('products').innerHTML=
-'<div class="empty">Nenhum produto encontrado.</div>';
+    ||
 
-return;
+    (p.variant||'')
+    .toLowerCase()
+    .includes(search);
+
+
+    const matchesCategory=
+
+    !category ||
+    p.category===category;
+
+
+    return(
+      matchesSearch &&
+      matchesCategory
+    );
+
+  });
+
+
+  if(!filtered.length){
+
+    $('products').innerHTML=
+    '<div class="empty">Nenhum produto encontrado.</div>';
+
+    return;
+
+  }
+
+
+  $('products').innerHTML=
+  filtered.map(p=>`
+
+  <div class="product">
+
+    ${
+      p.image_url
+
+      ? `<img
+          class="productImage"
+          src="${escapeHtml(p.image_url)}"
+          alt="${escapeHtml(p.name||'Produto')}"
+        >`
+
+      : `<div class="noImage">
+          SEM IMAGEM
+        </div>`
+    }
+
+
+    <div class="productBody">
+
+      <div class="productTop">
+
+        <div>
+
+          <h3>
+            ${escapeHtml(p.name||'Sem nome')}
+          </h3>
+
+          <div class="meta">
+
+            ${escapeHtml(
+              p.category||'Sem categoria'
+            )}
+
+            ${
+              p.variant
+              ? ' • '+escapeHtml(p.variant)
+              : ''
+            }
+
+          </div>
+
+        </div>
+
+
+        <div class="price">
+          ${money(p.price)}
+        </div>
+
+      </div>
+
+
+      <div class="badges">
+
+        <span class="badge">
+          ${escapeHtml(p.tag||'NEW')}
+        </span>
+
+
+        <span class="badge">
+          Estoque: ${Number(p.stock)||0}
+        </span>
+
+
+        ${
+          p.featured===true
+
+          ? `<span class="badge">
+              DESTAQUE
+            </span>`
+
+          : ''
+        }
+
+
+        ${
+          p.active===false
+
+          ? `<span class="badge">
+              INATIVO
+            </span>`
+
+          : ''
+        }
+
+      </div>
+
+
+      <div class="productActions">
+
+        <button
+          class="secondary"
+          data-edit="${p.id}"
+        >
+          Editar
+        </button>
+
+
+        <button
+          class="danger"
+          data-delete="${p.id}"
+        >
+          Excluir
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  `).join('');
+
+
+  document
+  .querySelectorAll('[data-edit]')
+  .forEach(btn=>{
+
+    btn.onclick=()=>
+    openEdit(btn.dataset.edit);
+
+  });
+
+
+  document
+  .querySelectorAll('[data-delete]')
+  .forEach(btn=>{
+
+    btn.onclick=()=>
+    removeProduct(btn.dataset.delete);
+
+  });
 
 }
 
-$('products').innerHTML=filtered.map(p=>`
-
-<div class="product">
-
-${p.image_url
-?`<img class="productImage" src="${escapeHtml(p.image_url)}">`
-:`<div class="noImage">SEM IMAGEM</div>`
-}
-
-<div class="productBody">
-
-<div class="productTop">
-
-<div>
-<h3>${escapeHtml(p.name||'Sem nome')}</h3>
-<div class="meta">
-${escapeHtml(p.categoria||'Sem categoria')}
-${p.variant?' • '+escapeHtml(p.variant):''}
-</div>
-</div>
-
-<div class="price">${money(p.price)}</div>
-
-</div>
-
-<div class="badges">
-
-<span class="badge">${escapeHtml(p.tag||'NEW')}</span>
-
-<span class="badge">
-Estoque: ${Number(p.estoque)||0}
-</span>
-
-${p.featured
-?'<span class="badge">DESTAQUE</span>'
-:''}
-
-${p.active===false
-?'<span class="badge">INATIVO</span>'
-:''}
-
-</div>
-
-<div class="productActions">
-
-<button
-class="secondary"
-data-edit="${p.id}">
-Editar
-</button>
-
-<button
-class="danger"
-data-delete="${p.id}">
-Excluir
-</button>
-
-</div>
-
-</div>
-</div>
-
-`).join('');
-
-document.querySelectorAll('[data-edit]').forEach(btn=>{
-
-btn.onclick=()=>openEdit(btn.dataset.edit);
-
-});
-
-document.querySelectorAll('[data-delete]').forEach(btn=>{
-
-btn.onclick=()=>removeProduct(btn.dataset.delete);
-
-});
-
-}
 
 $('search').oninput=render;
 $('categoryFilter').onchange=render;
 
+
+/* =========================
+   FORMULÁRIO
+========================= */
+
 function resetForm(){
 
-$('productForm').reset();
+  $('productForm').reset();
 
-$('editingId').value='';
-$('active').checked=true;
-$('featured').checked=false;
-$('estoque').value=0;
+  $('editingId').value='';
 
-$('preview').src='';
-$('preview').classList.add('hide');
+  $('active').checked=true;
+  $('featured').checked=false;
 
-$('formTitle').textContent='Novo produto';
+  $('stock').value=0;
+
+  $('preview').src='';
+  $('preview').classList.add('hide');
+
+  $('imageFile').value='';
+
+  $('formTitle').textContent=
+  'Novo produto';
 
 }
+
 
 function openNew(){
 
-resetForm();
-$('overlay').classList.remove('hide');
+  resetForm();
+
+  $('overlay')
+  .classList
+  .remove('hide');
 
 }
+
 
 function openEdit(id){
 
-const p=allProducts.find(x=>String(x.id)===String(id));
+  const p=
+  allProducts.find(
+    x=>String(x.id)===String(id)
+  );
 
-if(!p)return;
 
-resetForm();
+  if(!p)return;
 
-$('editingId').value=p.id;
-$('name').value=p.name||'';
-$('description').value=p.description||'';
-$('price').value=p.price||'';
-$('estoque').value=p.estoque||0;
-$('categoria').value=p.categoria||'';
-$('tag').value=p.tag||'NEW';
-$('product_type').value=p.product_type||'roupa';
-$('variant').value=p.variant||'';
 
-$('tamanhos').value=
-Array.isArray(p.tamanhos)
-?p.tamanhos.join(', ')
-:'';
+  resetForm();
 
-$('active').checked=p.active!==false;
-$('featured').checked=p.featured===true;
 
-if(p.image_url){
+  $('editingId').value=
+  p.id;
 
-$('preview').src=p.image_url;
-$('preview').classList.remove('hide');
+
+  $('name').value=
+  p.name||'';
+
+
+  $('description').value=
+  p.description||'';
+
+
+  $('price').value=
+  p.price??'';
+
+
+  $('stock').value=
+  p.stock??0;
+
+
+  $('category').value=
+  p.category||'';
+
+
+  $('tag').value=
+  p.tag||'NEW';
+
+
+  $('product_type').value=
+  p.product_type||'roupa';
+
+
+  $('variant').value=
+  p.variant||'';
+
+
+  $('sizes').value=
+
+  Array.isArray(p.sizes)
+
+  ? p.sizes.join(', ')
+
+  : '';
+
+
+  $('active').checked=
+  p.active!==false;
+
+
+  $('featured').checked=
+  p.featured===true;
+
+
+  if(p.image_url){
+
+    $('preview').src=
+    p.image_url;
+
+    $('preview')
+    .classList
+    .remove('hide');
+
+  }
+
+
+  $('formTitle').textContent=
+  'Editar produto';
+
+
+  $('overlay')
+  .classList
+  .remove('hide');
 
 }
 
-$('formTitle').textContent='Editar produto';
-
-$('overlay').classList.remove('hide');
-
-}
 
 function closeForm(){
 
-$('overlay').classList.add('hide');
+  $('overlay')
+  .classList
+  .add('hide');
 
 }
 
-$('addProduct').onclick=openNew;
-$('closeForm').onclick=closeForm;
-$('cancelForm').onclick=closeForm;
+
+$('addProduct').onclick=
+openNew;
+
+
+$('closeForm').onclick=
+closeForm;
+
+
+$('cancelForm').onclick=
+closeForm;
+
+
+/* =========================
+   PRÉVIA DA IMAGEM
+========================= */
 
 $('imageFile').onchange=e=>{
 
-const file=e.target.files[0];
+  const file=
+  e.target.files[0];
 
-if(!file)return;
 
-$('preview').src=URL.createObjectURL(file);
-$('preview').classList.remove('hide');
+  if(!file)return;
+
+
+  $('preview').src=
+  URL.createObjectURL(file);
+
+
+  $('preview')
+  .classList
+  .remove('hide');
 
 };
+
+
+/* =========================
+   UPLOAD DA IMAGEM
+========================= */
 
 async function upload(file){
 
-if(!file)return null;
+  if(!file)return null;
 
-const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
 
-const path=
-`${crypto.randomUUID()}.${ext}`;
+  const ext=
+  (
+    file.name
+    .split('.')
+    .pop()||'jpg'
+  )
+  .toLowerCase();
 
-const {error}=await sb.storage
-.from('products')
-.upload(path,file,{upsert:false});
 
-if(error)throw error;
+  const path=
+  `${crypto.randomUUID()}.${ext}`;
 
-return sb.storage
-.from('products')
-.getPublicUrl(path)
-.data.publicUrl;
+
+  const {error}=
+  await sb.storage
+  .from('products')
+  .upload(
+    path,
+    file,
+    {upsert:false}
+  );
+
+
+  if(error)
+  throw error;
+
+
+  const {data}=
+  sb.storage
+  .from('products')
+  .getPublicUrl(path);
+
+
+  return data.publicUrl;
 
 }
 
-$('productForm').onsubmit=async e=>{
 
-e.preventDefault();
+/* =========================
+   SALVAR PRODUTO
+========================= */
 
-const saveButton=
-$('productForm').querySelector('.save');
+$('productForm').onsubmit=
+async e=>{
 
-saveButton.disabled=true;
-saveButton.textContent='SALVANDO...';
+  e.preventDefault();
 
-try{
 
-const sizes=$('tamanhos').value
-.split(',')
-.map(x=>x.trim())
-.filter(Boolean);
+  const saveButton=
+  $('productForm')
+  .querySelector('.save');
 
-const product={
 
-name:$('name').value.trim(),
+  saveButton.disabled=true;
 
-description:$('description').value.trim(),
+  saveButton.textContent=
+  'SALVANDO...';
 
-price:Number($('price').value),
 
-estoque:Number($('estoque').value)||0,
+  try{
 
-categoria:$('categoria').value,
 
-tag:$('tag').value,
+    const sizes=
 
-product_type:$('product_type').value,
+    $('sizes')
+    .value
+    .split(',')
+    .map(x=>x.trim())
+    .filter(Boolean);
 
-variant:$('variant').value.trim(),
 
-tamanhos:sizes,
+    const product={
 
-active:$('active').checked,
+      name:
+      $('name')
+      .value
+      .trim(),
 
-featured:$('featured').checked
+      description:
+      $('description')
+      .value
+      .trim(),
+
+      price:
+      Number(
+        $('price').value
+      ),
+
+      stock:
+      Number(
+        $('stock').value
+      )||0,
+
+      category:
+      $('category').value,
+
+      tag:
+      $('tag').value,
+
+      product_type:
+      $('product_type').value,
+
+      variant:
+      $('variant')
+      .value
+      .trim(),
+
+      sizes:
+      sizes,
+
+      active:
+      $('active').checked,
+
+      featured:
+      $('featured').checked
+
+    };
+
+
+    const file=
+    $('imageFile')
+    .files[0];
+
+
+    if(file){
+
+      product.image_url=
+      await upload(file);
+
+    }
+
+
+    const id=
+    $('editingId').value;
+
+
+    let result;
+
+
+    if(id){
+
+      result=
+      await sb
+      .from('products')
+      .update(product)
+      .eq('id',id);
+
+    }else{
+
+      result=
+      await sb
+      .from('products')
+      .insert(product);
+
+    }
+
+
+    if(result.error)
+    throw result.error;
+
+
+    closeForm();
+
+    await load();
+
+
+  }catch(err){
+
+    console.error(err);
+
+    alert(err.message);
+
+  }finally{
+
+    saveButton.disabled=false;
+
+    saveButton.textContent=
+    'SALVAR PRODUTO';
+
+  }
 
 };
 
-const file=$('imageFile').files[0];
 
-if(file){
-
-product.image_url=await upload(file);
-
-}
-
-const id=$('editingId').value;
-
-let result;
-
-if(id){
-
-result=await sb
-.from('products')
-.update(product)
-.eq('id',id);
-
-}else{
-
-result=await sb
-.from('products')
-.insert(product);
-
-}
-
-if(result.error)throw result.error;
-
-closeForm();
-await load();
-
-}catch(err){
-
-alert(err.message);
-
-}finally{
-
-saveButton.disabled=false;
-saveButton.textContent='SALVAR PRODUTO';
-
-}
-
-};
+/* =========================
+   EXCLUIR PRODUTO
+========================= */
 
 async function removeProduct(id){
 
-const p=allProducts.find(
-x=>String(x.id)===String(id)
-);
+  const p=
+  allProducts.find(
+    x=>String(x.id)===String(id)
+  );
 
-if(!confirm(
-`Excluir "${p?.name||'este produto'}"?`
-))return;
 
-const {error}=await sb
-.from('products')
-.delete()
-.eq('id',id);
+  const ok=
+  confirm(
+    `Excluir "${p?.name||'este produto'}"?`
+  );
 
-if(error){
 
-alert(error.message);
-return;
+  if(!ok)return;
+
+
+  const {error}=
+  await sb
+  .from('products')
+  .delete()
+  .eq('id',id);
+
+
+  if(error){
+
+    alert(error.message);
+    return;
+
+  }
+
+
+  await load();
 
 }
 
-await load();
 
-}
+/* =========================
+   INICIAR
+========================= */
 
 boot();
 
