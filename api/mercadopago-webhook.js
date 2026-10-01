@@ -1,9 +1,32 @@
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 
+// ======================================================
+// SUPABASE
+// ======================================================
+
+const supabaseUrl =
+  process.env.SUPABASE_URL ||
+  process.env.URL_SUPABASE;
+
+const supabaseServiceKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl) {
+  throw new Error(
+    'SUPABASE_URL/URL_SUPABASE não configurada na Vercel'
+  );
+}
+
+if (!supabaseServiceKey) {
+  throw new Error(
+    'SUPABASE_SERVICE_ROLE_KEY não configurada na Vercel'
+  );
+}
+
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  supabaseUrl,
+  supabaseServiceKey
 );
 
 // ======================================================
@@ -17,12 +40,15 @@ function validateSignature(req, dataId) {
   const xRequestId = req.headers['x-request-id'];
 
   if (!secret || !xSignature || !xRequestId || !dataId) {
-    console.error('Dados ausentes para validar assinatura', {
-      hasSecret: !!secret,
-      hasSignature: !!xSignature,
-      hasRequestId: !!xRequestId,
-      hasDataId: !!dataId
-    });
+    console.error(
+      'Dados ausentes para validar assinatura',
+      {
+        hasSecret: !!secret,
+        hasSignature: !!xSignature,
+        hasRequestId: !!xRequestId,
+        hasDataId: !!dataId
+      }
+    );
 
     return false;
   }
@@ -45,8 +71,8 @@ function validateSignature(req, dataId) {
     return false;
   }
 
-  // O Mercado Pago usa o data.id recebido na URL
-  const normalizedDataId = String(dataId).toLowerCase();
+  const normalizedDataId =
+    String(dataId).toLowerCase();
 
   const manifest =
     `id:${normalizedDataId};` +
@@ -59,10 +85,16 @@ function validateSignature(req, dataId) {
     .digest('hex');
 
   try {
-    const receivedBuffer = Buffer.from(receivedHash, 'hex');
-    const calculatedBuffer = Buffer.from(calculatedHash, 'hex');
+    const receivedBuffer =
+      Buffer.from(receivedHash, 'hex');
 
-    if (receivedBuffer.length !== calculatedBuffer.length) {
+    const calculatedBuffer =
+      Buffer.from(calculatedHash, 'hex');
+
+    if (
+      receivedBuffer.length !==
+      calculatedBuffer.length
+    ) {
       return false;
     }
 
@@ -70,8 +102,13 @@ function validateSignature(req, dataId) {
       receivedBuffer,
       calculatedBuffer
     );
+
   } catch (error) {
-    console.error('Erro ao comparar assinatura:', error);
+    console.error(
+      'Erro ao comparar assinatura:',
+      error
+    );
+
     return false;
   }
 }
@@ -90,36 +127,40 @@ export default async function handler(req, res) {
 
   try {
 
-    // --------------------------------------------------
-    // IMPORTANTE:
-    // assinatura usa data.id DA URL
-    // --------------------------------------------------
+    // ==================================================
+    // PEGAR ID DO PAGAMENTO
+    // ==================================================
 
-    const dataId = req.query?.['data.id'];
+    const dataId =
+      req.query?.['data.id'];
 
-    // ID do pagamento que será consultado
     const paymentId =
       dataId ||
       req.body?.data?.id;
 
-    console.log('Webhook Mercado Pago recebido', {
-      type: req.body?.type,
-      action: req.body?.action,
-      paymentId,
-      dataId
-    });
+    console.log(
+      'Webhook Mercado Pago recebido',
+      {
+        type: req.body?.type,
+        action: req.body?.action,
+        paymentId,
+        dataId
+      }
+    );
 
     if (!paymentId) {
-      console.log('Webhook sem ID de pagamento.');
+      console.log(
+        'Webhook sem ID de pagamento.'
+      );
 
       return res.status(200).json({
         ok: true
       });
     }
 
-    // --------------------------------------------------
+    // ==================================================
     // VALIDAR ASSINATURA
-    // --------------------------------------------------
+    // ==================================================
 
     if (!validateSignature(req, dataId)) {
 
@@ -132,25 +173,31 @@ export default async function handler(req, res) {
       });
     }
 
-    console.log('Assinatura Mercado Pago válida.');
+    console.log(
+      'Assinatura Mercado Pago válida.'
+    );
 
-    // --------------------------------------------------
+    // ==================================================
     // CONSULTAR PAGAMENTO NO MERCADO PAGO
-    // --------------------------------------------------
+    // ==================================================
 
     const response = await fetch(
       `https://api.mercadopago.com/v1/payments/${encodeURIComponent(paymentId)}`,
       {
         method: 'GET',
+
         headers: {
           Authorization:
             `Bearer ${process.env.MP_ACCESS_TOKEN}`,
-          'Content-Type': 'application/json'
+
+          'Content-Type':
+            'application/json'
         }
       }
     );
 
-    const payment = await response.json();
+    const payment =
+      await response.json();
 
     if (!response.ok) {
 
@@ -159,24 +206,29 @@ export default async function handler(req, res) {
         payment
       );
 
-      // Retorna 200 para evitar repetição infinita
-      // da mesma notificação
+      // Evita que o Mercado Pago fique
+      // reenviando infinitamente a notificação.
       return res.status(200).json({
         ok: true
       });
     }
 
-    console.log('Pagamento consultado:', {
-      id: payment.id,
-      status: payment.status,
-      external_reference: payment.external_reference
-    });
+    console.log(
+      'Pagamento consultado:',
+      {
+        id: payment.id,
+        status: payment.status,
+        external_reference:
+          payment.external_reference
+      }
+    );
 
-    // --------------------------------------------------
+    // ==================================================
     // CONVERTER STATUS
-    // --------------------------------------------------
+    // ==================================================
 
-    let statusPedido = payment.status;
+    let statusPedido =
+      payment.status;
 
     if (payment.status === 'approved') {
       statusPedido = 'pago';
@@ -206,22 +258,25 @@ export default async function handler(req, res) {
       statusPedido = 'estornado';
     }
 
-    // --------------------------------------------------
+    // ==================================================
     // ATUALIZAR PEDIDO NO SUPABASE
-    // --------------------------------------------------
+    // ==================================================
 
-    const { data: pedidosAtualizados, error } =
-      await supabase
-        .from('pedidos')
-        .update({
-          status: statusPedido,
-          id_do_pagamento: String(payment.id)
-        })
-        .eq(
-          'id_do_pagamento',
+    const {
+      data: pedidosAtualizados,
+      error
+    } = await supabase
+      .from('pedidos')
+      .update({
+        status: statusPedido,
+        id_do_pagamento:
           String(payment.id)
-        )
-        .select();
+      })
+      .eq(
+        'id_do_pagamento',
+        String(payment.id)
+      )
+      .select();
 
     if (error) {
 
@@ -231,7 +286,8 @@ export default async function handler(req, res) {
       );
 
       return res.status(500).json({
-        error: 'Erro ao atualizar pedido'
+        error:
+          'Erro ao atualizar pedido'
       });
     }
 
@@ -240,16 +296,24 @@ export default async function handler(req, res) {
       pedidosAtualizados
     );
 
-    // --------------------------------------------------
+    // ==================================================
     // SUCESSO
-    // --------------------------------------------------
+    // ==================================================
 
     return res.status(200).json({
       ok: true,
-      payment_id: String(payment.id),
-      payment_status: payment.status,
-      order_status: statusPedido,
-      updated: pedidosAtualizados?.length || 0
+
+      payment_id:
+        String(payment.id),
+
+      payment_status:
+        payment.status,
+
+      order_status:
+        statusPedido,
+
+      updated:
+        pedidosAtualizados?.length || 0
     });
 
   } catch (error) {
