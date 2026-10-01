@@ -13,7 +13,36 @@
 
 <button class="btn" onclick="checkout()">
   PAGAR COM PIX
-</button><p id="msg"></p></div></div><script type="module">
+</button><p id="msg"></p><div id="pixArea" style="display:none;margin-top:20px;text-align:center">
+
+  <h2>Pagamento via Pix</h2>
+
+  <p style="color:#aaa">
+    Escaneie o QR Code ou copie o código Pix.
+  </p>
+
+  <img
+    id="pixQr"
+    alt="QR Code Pix"
+    style="width:220px;max-width:100%;background:white;padding:10px;border-radius:12px;margin:10px auto"
+  >
+
+  <textarea
+    id="pixCode"
+    class="field"
+    readonly
+    style="height:100px;resize:none;margin:12px 0"
+  ></textarea>
+
+  <button class="btn" type="button" onclick="copyPix()">
+    COPIAR CÓDIGO PIX
+  </button>
+
+  <p id="pixStatus" style="color:#aaa">
+    Aguardando pagamento...
+  </p>
+
+</div></div></div><script type="module">
 import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 const CONFIG={url:'https://tcszjspirwwxrkabhtgi.supabase.co',anon:'sb_publishable_bZIkwmhElVzFMsGbk0bBgw_eFVWJuXV'};const sb=createClient(CONFIG.url,CONFIG.anon);let products=[],cart=JSON.parse(localStorage.nexousCart||'[]').filter(i=>i.size);
 const money=n=>Number(n).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});function save(){localStorage.nexousCart=JSON.stringify(cart);document.querySelector('#cart').textContent=`CARRINHO (${cart.reduce((a,b)=>a+b.quantity,0)})`}
@@ -181,10 +210,28 @@ document.querySelector('#cart').onclick=()=>{render();drawer.style.display='bloc
   const d=await r.json();
 
   if(d.checkout_url){
-    location.href=d.checkout_url;
-  }else{
-    msg.textContent=d.error||'Erro no checkout';
-  }
+    if(d.qr_code && d.qr_code_base64){
+
+  document.querySelector('#pixArea').style.display = 'block';
+
+  document.querySelector('#pixQr').src =
+    `data:image/png;base64,${d.qr_code_base64}`;
+
+  document.querySelector('#pixCode').value =
+    d.qr_code;
+
+  document.querySelector('#pixStatus').textContent =
+    'Aguardando pagamento...';
+
+  msg.textContent =
+    'Pix gerado com sucesso!';
+
+}else{
+
+  msg.textContent =
+    d.error || 'Erro ao gerar Pix';
+
+}
 };
 
 save();
