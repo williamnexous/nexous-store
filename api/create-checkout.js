@@ -21,8 +21,14 @@ export default async function handler(req, res) {
       });
     }
 
-    // Buscar produtos reais no Supabase
-    const ids = items.map(item => item.product_id);
+    // Buscar produtos reais no // Buscar produtos reais no Supabase
+const ids = items.map(item => item.product_id || item.id);
+
+if (ids.some(id => !id)) {
+  return res.status(400).json({
+    error: 'ID do produto não encontrado no carrinho'
+  });
+}
 
     const { data: products, error } = await supabase
       .from('products')
@@ -46,8 +52,8 @@ export default async function handler(req, res) {
     const orderItems = products.map(product => {
 
       const item = items.find(
-        i => i.product_id === product.id
-      );
+  i => (i.product_id || i.id) === product.id
+);
 
       const quantity = item?.quantity || 1;
 
