@@ -53,23 +53,30 @@ function add(id){
   save();
 }
 
-window.changeQty = (id, amount) => {
-  const item = cart.find(i => i.id === id);
+window.changeQty = (id, size, amount) => {
+  const item = cart.find(i =>
+    i.id === id && i.size === size
+  );
 
   if(!item) return;
 
   item.quantity += amount;
 
   if(item.quantity <= 0){
-    cart = cart.filter(i => i.id !== id);
+    cart = cart.filter(i =>
+      !(i.id === id && i.size === size)
+    );
   }
 
   save();
   render();
 };
 
-window.removeItem = (id) => {
-  cart = cart.filter(i => i.id !== id);
+window.removeItem = (id, size) => {
+  cart = cart.filter(i =>
+    !(i.id === id && i.size === size)
+  );
+
   save();
   render();
 };window.closeCart=()=>drawer.style.display='none';function render(){
@@ -79,26 +86,32 @@ window.removeItem = (id) => {
     return p ? `
       <div style="border-bottom:1px solid #222;padding:15px 0">
 
-        <div class="row">
-          <strong>${p.name}</strong>
-          <strong>${money(p.price * i.quantity)}</strong>
-        </div>
+       <div class="row">
+  <div>
+    <strong>${p.name}</strong>
+    <div style="color:#999;font-size:13px;margin-top:5px">
+      ${p.product_type === 'tenis' ? 'Número' : 'Tamanho'}: ${i.size}
+    </div>
+  </div>
+
+  <strong>${money(p.price * i.quantity)}</strong>
+</div>
 
         <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
 
-          <button onclick="changeQty('${i.id}',-1)"
+        <button onclick="changeQty('${i.id}','${i.size}',-1)"
             style="padding:8px 12px;border:0;border-radius:7px;cursor:pointer">
             −
           </button>
 
           <strong>${i.quantity}</strong>
 
-          <button onclick="changeQty('${i.id}',1)"
+          <button onclick="changeQty('${i.id}','${i.size}',1)"
             style="padding:8px 12px;border:0;border-radius:7px;cursor:pointer">
             +
           </button>
 
-          <button onclick="removeItem('${i.id}')"
+          <button onclick="removeItem('${i.id}','${i.size}')"
             style="margin-left:auto;padding:8px 12px;border:1px solid #444;background:#171717;color:#eee;border-radius:7px;cursor:pointer">
             REMOVER
           </button>
