@@ -13,16 +13,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { items, customer, customer_name, customer_email } = req.body;
+    const { items, customer, customer_name, customer_email, customer_cpf } = req.body;
 
 const customerData = {
   name: customer?.name || customer_name || '',
-  email: customer?.email || customer_email || ''
+  email: customer?.email || customer_email || '',
+  cpf: customer?.cpf || ''
 };
 
-if (!customerData.name || !customerData.email) {
+if (!customerData.name || !customerData.email || !customerData.cpf) {
   return res.status(400).json({
-    error: 'Nome e e-mail são obrigatórios'
+    error: 'Nome, e-mail e CPF são obrigatórios!'
   });
 }
     if (!items || !items.length) {
