@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 const customerData = {
   name: customer?.name || customer_name || '',
   email: customer?.email || customer_email || '',
-  cpf: customer?.cpf || ''
+  cpf: customer?.cpf || customer_cpf || ''
 };
 
 if (!customerData.name || !customerData.email || !customerData.cpf) {
