@@ -17,10 +17,17 @@ export default async function handler(req, res) {
     const { items, customer } = req.body;
 
     const customerData = {
-      name: String(customer?.name || '').trim(),
-      email: String(customer?.email || '').trim(),
-      cpf: String(customer?.cpf || '').replace(/\D/g, '')
-    };
+  name: String(customer?.name || '').trim(),
+  email: String(customer?.email || '').trim(),
+  cpf: String(customer?.cpf || '').replace(/\D/g, ''),
+  cep: String(customer?.cep || '').replace(/\D/g, ''),
+  rua: String(customer?.rua || '').trim(),
+  numero: String(customer?.numero || '').trim(),
+  complemento: String(customer?.complemento || '').trim(),
+  bairro: String(customer?.bairro || '').trim(),
+  cidade: String(customer?.cidade || '').trim(),
+  estado: String(customer?.estado || '').trim().toUpperCase()
+};
 
     if (
       !customerData.name ||
