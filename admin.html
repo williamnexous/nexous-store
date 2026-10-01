@@ -1,12 +1,22 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
 <title>NEXOUS — Admin</title>
 
 <style>
-*{box-sizing:border-box}
+
+*{
+  box-sizing:border-box;
+}
 
 :root{
   --bg:#080808;
@@ -23,11 +33,25 @@ body{
   font-family:Arial,Helvetica,sans-serif;
 }
 
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-.hide{display:none!important}
+button,
+input,
+textarea,
+select{
+  font:inherit;
+}
 
-/* LOGIN */
+button{
+  cursor:pointer;
+}
+
+.hide{
+  display:none!important;
+}
+
+
+/* =========================
+   LOGIN
+========================= */
 
 #login{
   min-height:100vh;
@@ -62,7 +86,22 @@ button{cursor:pointer}
   line-height:1.6;
 }
 
-input,textarea,select{
+.field{
+  margin-top:14px;
+}
+
+.field label{
+  display:block;
+  color:#aaa;
+  font-size:12px;
+  margin-bottom:7px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+input,
+textarea,
+select{
   width:100%;
   background:#111;
   border:1px solid #292929;
@@ -83,19 +122,6 @@ textarea{
   resize:vertical;
 }
 
-.field{
-  margin-top:14px;
-}
-
-.field label{
-  display:block;
-  color:#aaa;
-  font-size:12px;
-  margin-bottom:7px;
-  text-transform:uppercase;
-  letter-spacing:1px;
-}
-
 .primary{
   width:100%;
   border:0;
@@ -112,7 +138,10 @@ textarea{
   font-size:13px;
 }
 
-/* APP */
+
+/* =========================
+   APP
+========================= */
 
 #app{
   min-height:100vh;
@@ -175,6 +204,11 @@ main{
   max-width:1450px;
 }
 
+
+/* =========================
+   TOPO
+========================= */
+
 .top{
   display:flex;
   justify-content:space-between;
@@ -203,7 +237,10 @@ main{
   white-space:nowrap;
 }
 
-/* DASHBOARD */
+
+/* =========================
+   ESTATÍSTICAS
+========================= */
 
 .stats{
   display:grid;
@@ -232,7 +269,10 @@ main{
   font-size:27px;
 }
 
-/* PRODUTOS */
+
+/* =========================
+   FILTROS
+========================= */
 
 .toolbar{
   display:flex;
@@ -245,8 +285,13 @@ main{
 }
 
 .filter{
-  max-width:200px;
+  max-width:220px;
 }
+
+
+/* =========================
+   PRODUTOS
+========================= */
 
 .products{
   display:grid;
@@ -304,6 +349,12 @@ main{
   margin-top:8px;
 }
 
+.sizesText{
+  color:#999;
+  font-size:12px;
+  margin-top:8px;
+}
+
 .badges{
   display:flex;
   gap:6px;
@@ -339,7 +390,10 @@ main{
   color:#ff8b8b;
 }
 
-/* FORMULÁRIO */
+
+/* =========================
+   FORMULÁRIO
+========================= */
 
 .overlay{
   position:fixed;
@@ -410,7 +464,7 @@ main{
 
 .preview{
   width:100%;
-  max-height:260px;
+  max-height:350px;
   object-fit:cover;
   border-radius:14px;
   margin-top:12px;
@@ -435,10 +489,6 @@ main{
   border:0;
 }
 
-.save:disabled{
-  opacity:.6;
-}
-
 .cancel{
   flex:1;
   background:#151515;
@@ -455,7 +505,18 @@ main{
   grid-column:1/-1;
 }
 
-/* MOBILE */
+.help{
+  display:block;
+  color:#666;
+  font-size:11px;
+  margin-top:6px;
+  line-height:1.4;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
 
 .mobileTop{
   display:none;
@@ -517,6 +578,7 @@ main{
   .noImage{
     height:200px;
   }
+
 }
 
 @media(max-width:600px){
@@ -545,37 +607,80 @@ main{
   .drawer{
     padding:22px 16px;
   }
+
+  .checks{
+    grid-template-columns:1fr 1fr;
+  }
+
 }
+
 </style>
+
 </head>
 
+
 <body>
+
+
+<!-- =========================
+     LOGIN
+========================= -->
 
 <section id="login">
 
 <div class="loginBox">
 
-<div class="brand">NEXOUS</div>
+<div class="brand">
+NEXOUS
+</div>
 
-<h1>Painel administrativo</h1>
+<h1>
+Painel administrativo
+</h1>
 
 <p class="muted">
 Gerencie os produtos e o catálogo da sua loja.
 </p>
 
-<div class="field">
-<label>E-mail</label>
-<input id="email" type="email" placeholder="Seu e-mail">
-</div>
 
 <div class="field">
-<label>Senha</label>
-<input id="password" type="password" placeholder="Sua senha">
+
+<label>
+E-mail
+</label>
+
+<input
+  id="email"
+  type="email"
+  placeholder="Seu e-mail"
+>
+
 </div>
 
-<button id="loginBtn" class="primary">
+
+<div class="field">
+
+<label>
+Senha
+</label>
+
+<input
+  id="password"
+  type="password"
+  placeholder="Sua senha"
+>
+
+</div>
+
+
+<button
+  id="loginBtn"
+  class="primary">
+
 ENTRAR NO PAINEL
+
 </button>
+
 
 <p id="loginMsg"></p>
 
@@ -584,28 +689,64 @@ ENTRAR NO PAINEL
 </section>
 
 
-<section id="app" class="hide">
+<!-- =========================
+     ADMIN
+========================= -->
+
+<section
+  id="app"
+  class="hide">
+
 
 <div class="sidebar">
 
-<div class="brand">NEXOUS</div>
-<small>ADMINISTRATION</small>
-
-<div class="nav">
-<button class="navBtn active">▦ Produtos</button>
-<button class="navBtn" disabled>□ Pedidos — em breve</button>
+<div class="brand">
+NEXOUS
 </div>
 
-<button id="logout" class="logout">
-Sair do painel
+<small>
+ADMINISTRATION
+</small>
+
+
+<div class="nav">
+
+<button
+  class="navBtn active">
+
+▦ Produtos
+
+</button>
+
+<button
+  class="navBtn"
+  disabled>
+
+□ Pedidos — em breve
+
 </button>
 
 </div>
 
 
+<button
+  id="logout"
+  class="logout">
+
+Sair do painel
+
+</button>
+
+</div>
+
+
+<!-- MOBILE -->
+
 <div class="mobileTop">
 
-<div class="brand">NEXOUS</div>
+<div class="brand">
+NEXOUS
+</div>
 
 <button id="mobileLogout">
 Sair
@@ -614,58 +755,116 @@ Sair
 </div>
 
 
+<!-- CONTEÚDO -->
+
 <main>
+
 
 <div class="top">
 
 <div>
-<h1>Produtos</h1>
-<p>Gerencie o catálogo da NEXOUS.</p>
+
+<h1>
+Produtos
+</h1>
+
+<p>
+Gerencie o catálogo da NEXOUS.
+</p>
+
 </div>
 
-<button id="addProduct" class="addBtn">
+
+<button
+  id="addProduct"
+  class="addBtn">
+
 + Novo produto
+
 </button>
 
 </div>
 
 
+<!-- ESTATÍSTICAS -->
+
 <div class="stats">
 
-<div class="stat">
-<span>Produtos</span>
-<strong id="totalProducts">0</strong>
-</div>
 
 <div class="stat">
-<span>Ativos</span>
-<strong id="activeProducts">0</strong>
+
+<span>
+Produtos
+</span>
+
+<strong id="totalProducts">
+0
+</strong>
+
 </div>
+
 
 <div class="stat">
-<span>Destaques</span>
-<strong id="featuredProducts">0</strong>
+
+<span>
+Ativos
+</span>
+
+<strong id="activeProducts">
+0
+</strong>
+
 </div>
+
 
 <div class="stat">
-<span>Estoque total</span>
-<strong id="totalStock">0</strong>
-</div>
+
+<span>
+Destaques
+</span>
+
+<strong id="featuredProducts">
+0
+</strong>
 
 </div>
 
+
+<div class="stat">
+
+<span>
+Estoque total
+</span>
+
+<strong id="totalStock">
+0
+</strong>
+
+</div>
+
+
+</div>
+
+
+<!-- FILTRO -->
 
 <div class="toolbar">
 
 <input
-id="search"
-class="search"
-placeholder="Buscar produto..."
+  id="search"
+  class="search"
+  placeholder="Buscar produto..."
 >
 
-<select id="categoryFilter" class="filter">
 
-<option value="">Todas as categorias</option>
+<select
+  id="categoryFilter"
+  class="filter">
+
+<option value="">
+Todas as categorias
+</option>
+
 <option>Camisas</option>
 <option>Bermudas</option>
 <option>Tênis</option>
@@ -679,16 +878,28 @@ placeholder="Buscar produto..."
 </div>
 
 
-<div id="products" class="products"></div>
+<div
+  id="products"
+  class="products">
+</div>
+
 
 </main>
 
 </section>
 
 
-<div id="overlay" class="overlay hide">
+<!-- =========================
+     FORMULÁRIO
+========================= -->
+
+<div
+  id="overlay"
+  class="overlay hide">
+
 
 <div class="drawer">
+
 
 <div class="drawerHead">
 
@@ -696,8 +907,13 @@ placeholder="Buscar produto..."
 Novo produto
 </h2>
 
-<button id="closeForm" class="close" type="button">
+<button
+  id="closeForm"
+  class="close"
+  type="button">
+
 ×
+
 </button>
 
 </div>
@@ -705,47 +921,64 @@ Novo produto
 
 <form id="productForm">
 
-<input id="editingId" type="hidden">
 
+<input
+  id="editingId"
+  type="hidden"
+>
+
+
+<!-- NOME -->
 
 <div class="field">
 
-<label>Nome do produto</label>
+<label>
+Nome do produto
+</label>
 
 <input
-id="name"
-required
-placeholder="Ex: Camiseta Canelada"
+  id="name"
+  required
+  placeholder="Ex: TN Deadpool"
 >
 
 </div>
 
 
+<!-- DESCRIÇÃO -->
+
 <div class="field">
 
-<label>Descrição</label>
+<label>
+Descrição
+</label>
 
 <textarea
-id="description"
-placeholder="Descrição do produto"
-></textarea>
+  id="description"
+  placeholder="Descrição do produto">
+</textarea>
 
 </div>
 
 
+<!-- PREÇO + ESTOQUE -->
+
 <div class="grid2">
+
 
 <div class="field">
 
-<label>Preço</label>
+<label>
+Preço
+</label>
 
 <input
-id="price"
-type="number"
-step="0.01"
-min="0"
-required
-placeholder="0,00"
+  id="price"
+  type="number"
+  step="0.01"
+  min="0"
+  required
+  placeholder="259,90"
 >
 
 </div>
@@ -753,29 +986,40 @@ placeholder="0,00"
 
 <div class="field">
 
-<label>Estoque</label>
+<label>
+Estoque
+</label>
 
 <input
-id="stock"
-type="number"
-min="0"
-value="0"
+  id="stock"
+  type="number"
+  min="0"
+  value="0"
 >
 
 </div>
 
+
 </div>
 
 
+<!-- CATEGORIA + TAG -->
+
 <div class="grid2">
+
 
 <div class="field">
 
-<label>Categoria</label>
+<label>
+Categoria
+</label>
 
 <select id="category">
 
-<option value="">Selecionar</option>
+<option value="">
+Selecionar
+</option>
+
 <option>Camisas</option>
 <option>Bermudas</option>
 <option>Tênis</option>
@@ -791,7 +1035,9 @@ value="0"
 
 <div class="field">
 
-<label>Tag</label>
+<label>
+Tag
+</label>
 
 <select id="tag">
 
@@ -804,20 +1050,34 @@ value="0"
 
 </div>
 
+
 </div>
 
 
+<!-- TIPO + MODELO -->
+
 <div class="grid2">
+
 
 <div class="field">
 
-<label>Tipo</label>
+<label>
+Tipo
+</label>
 
 <select id="product_type">
 
-<option value="roupa">Roupa</option>
-<option value="tenis">Tênis</option>
-<option value="acessorio">Acessório</option>
+<option value="roupa">
+Roupa
+</option>
+
+<option value="tenis">
+Tênis
+</option>
+
+<option value="acessorio">
+Acessório
+</option>
 
 </select>
 
@@ -826,57 +1086,75 @@ value="0"
 
 <div class="field">
 
-<label>Modelo / Cor</label>
+<label>
+Modelo / Cor
+</label>
 
 <input
-id="variant"
-placeholder="Ex: Canelada preta"
->
-
-</div>
-
-</div>
-
-
-<div class="field">
-
-<label>Tamanhos</label>
-
-<input
-id="sizes"
-placeholder="Ex: P, M, G, GG ou 38, 39, 40"
+  id="variant"
+  placeholder="Ex: TN Deadpool ou Canelada preta"
 >
 
 </div>
 
 
+</div>
+
+
+<!-- TAMANHOS -->
+
 <div class="field">
 
-<label>Imagem do produto</label>
+<label>
+Tamanhos / Numeração
+</label>
 
 <input
-id="imageFile"
-type="file"
-accept="image/*"
+  id="sizes"
+  placeholder="Ex: 38, 39, 40, 41, 42"
+>
+
+<small class="help">
+Separe cada tamanho por vírgula. Exemplo para tênis: 38, 39, 40, 41, 42. Para roupas: P, M, G, GG.
+</small>
+
+</div>
+
+
+<!-- IMAGEM -->
+
+<div class="field">
+
+<label>
+Imagem do produto
+</label>
+
+<input
+  id="imageFile"
+  type="file"
+  accept="image/*"
 >
 
 <img
-id="preview"
-class="preview hide"
-alt="Prévia do produto"
+  id="preview"
+  class="preview hide"
+  alt="Prévia da imagem"
 >
 
 </div>
 
 
+<!-- CHECKBOXES -->
+
 <div class="checks">
+
 
 <label class="check">
 
 <input
-id="active"
-type="checkbox"
-checked
+  id="active"
+  type="checkbox"
+  checked
 >
 
 Produto ativo
@@ -887,35 +1165,42 @@ Produto ativo
 <label class="check">
 
 <input
-id="featured"
-type="checkbox"
+  id="featured"
+  type="checkbox"
 >
 
 Produto em destaque
 
 </label>
 
+
 </div>
 
+
+<!-- BOTÕES -->
 
 <div class="formActions">
 
 <button
-type="button"
-id="cancelForm"
-class="cancel"
->
+  type="button"
+  id="cancelForm"
+  class="cancel">
+
 Cancelar
+
 </button>
 
+
 <button
-type="submit"
-class="save"
->
+  type="submit"
+  class="save">
+
 SALVAR PRODUTO
+
 </button>
 
 </div>
+
 
 </form>
 
@@ -924,94 +1209,201 @@ SALVAR PRODUTO
 </div>
 
 
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
 <script type="module">
 
-import {createClient}
+
+/* SUPABASE */
+
+import { createClient }
 from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 
-const sb=createClient(
+const sb = createClient(
+
   'https://tcszjspirwwxrkabhtgi.supabase.co',
+
   'sb_publishable_bZIkwmhElVzFMsGbk0bBgw_eFVWJuXV'
+
 );
 
 
-let allProducts=[];
+let allProducts = [];
 
-const $=id=>document.getElementById(id);
+
+const $ =
+  id =>
+    document.getElementById(id);
 
 
 /* =========================
-   LOGIN / ADMIN
+   ADMIN
 ========================= */
 
 async function isAdmin(){
 
-  const {data:{user}}=
-  await sb.auth.getUser();
+  const {
+    data:{
+      user
+    }
+  } =
+    await sb.auth.getUser();
 
-  if(!user)return false;
 
-  const {data,error}=
-  await sb
-  .from('admins')
-  .select('user_id')
-  .eq('user_id',user.id)
-  .maybeSingle();
+  if(!user){
 
-  if(error){
-    console.error(error);
     return false;
+
   }
 
+
+  const {
+    data,
+    error
+  } =
+    await sb
+
+      .from('admins')
+
+      .select('user_id')
+
+      .eq(
+        'user_id',
+        user.id
+      )
+
+      .maybeSingle();
+
+
+  if(error){
+
+    console.error(
+      error
+    );
+
+    return false;
+
+  }
+
+
   return !!data;
+
 }
 
+
+/* =========================
+   INICIAR
+========================= */
 
 async function boot(){
 
-  if(await isAdmin()){
+  const admin =
+    await isAdmin();
 
-    $('login').classList.add('hide');
-    $('app').classList.remove('hide');
+
+  if(admin){
+
+    $('login')
+      .classList
+      .add('hide');
+
+
+    $('app')
+      .classList
+      .remove('hide');
+
 
     await load();
 
-  }else{
+  }
 
-    $('app').classList.add('hide');
-    $('login').classList.remove('hide');
+  else{
+
+    $('app')
+      .classList
+      .add('hide');
+
+
+    $('login')
+      .classList
+      .remove('hide');
 
   }
 
 }
 
 
-$('loginBtn').onclick=async()=>{
+/* =========================
+   LOGIN
+========================= */
 
-  $('loginMsg').textContent='Entrando...';
+$('loginBtn').onclick =
+async () => {
 
-  const {error}=
-  await sb.auth.signInWithPassword({
 
-    email:$('email').value.trim(),
-    password:$('password').value
+  $('loginMsg').textContent =
+    'Entrando...';
 
-  });
+
+  const {
+    error
+  } =
+    await sb.auth
+      .signInWithPassword({
+
+        email:
+          $('email')
+            .value
+            .trim(),
+
+        password:
+          $('password')
+            .value
+
+      });
+
 
   if(error){
 
-    $('loginMsg').textContent=error.message;
+    $('loginMsg').textContent =
+      error.message;
+
     return;
 
   }
 
-  $('loginMsg').textContent='';
+
+  const admin =
+    await isAdmin();
+
+
+  if(!admin){
+
+    await sb.auth.signOut();
+
+    $('loginMsg').textContent =
+      'Esta conta não possui acesso administrativo.';
+
+    return;
+
+  }
+
+
+  $('loginMsg').textContent =
+    '';
+
 
   await boot();
 
 };
 
+
+/* =========================
+   LOGOUT
+========================= */
 
 async function logout(){
 
@@ -1022,8 +1414,12 @@ async function logout(){
 }
 
 
-$('logout').onclick=logout;
-$('mobileLogout').onclick=logout;
+$('logout').onclick =
+  logout;
+
+
+$('mobileLogout').onclick =
+  logout;
 
 
 /* =========================
@@ -1032,22 +1428,45 @@ $('mobileLogout').onclick=logout;
 
 async function load(){
 
-  const {data,error}=
-  await sb
-  .from('products')
-  .select('*')
-  .order('created_at',{ascending:false});
+  const {
+    data,
+    error
+  } =
+    await sb
+
+      .from('products')
+
+      .select('*')
+
+      .order(
+        'created_at',
+        {
+          ascending:false
+        }
+      );
+
 
   if(error){
 
-    alert(error.message);
+    alert(
+      error.message
+    );
+
+    console.error(
+      error
+    );
+
     return;
 
   }
 
-  allProducts=data||[];
+
+  allProducts =
+    data || [];
+
 
   updateStats();
+
   render();
 
 }
@@ -1059,58 +1478,104 @@ async function load(){
 
 function updateStats(){
 
-  $('totalProducts').textContent=
-  allProducts.length;
+  $('totalProducts')
+    .textContent =
+      allProducts.length;
 
 
-  $('activeProducts').textContent=
-  allProducts.filter(
-    p=>p.active!==false
-  ).length;
+  $('activeProducts')
+    .textContent =
+
+      allProducts.filter(
+        product =>
+          product.active !== false
+      ).length;
 
 
-  $('featuredProducts').textContent=
-  allProducts.filter(
-    p=>p.featured===true
-  ).length;
+  $('featuredProducts')
+    .textContent =
+
+      allProducts.filter(
+        product =>
+          product.featured === true
+      ).length;
 
 
-  $('totalStock').textContent=
-  allProducts.reduce(
-    (total,p)=>
-    total+(Number(p.stock)||0),
-    0
+  $('totalStock')
+    .textContent =
+
+      allProducts.reduce(
+
+        (total,product) =>
+
+          total +
+          (
+            Number(
+              product.stock
+            ) || 0
+          ),
+
+        0
+
+      );
+
+}
+
+
+/* =========================
+   DINHEIRO
+========================= */
+
+function money(value){
+
+  return Number(
+    value || 0
+  ).toLocaleString(
+
+    'pt-BR',
+
+    {
+      style:'currency',
+      currency:'BRL'
+    }
+
   );
 
 }
 
 
 /* =========================
-   FORMATAÇÃO
+   SEGURANÇA HTML
 ========================= */
 
-function money(value){
+function escapeHtml(value = ''){
 
-  return Number(value||0)
-  .toLocaleString('pt-BR',{
+  return String(value)
 
-    style:'currency',
-    currency:'BRL'
+    .replaceAll(
+      '&',
+      '&amp;'
+    )
 
-  });
+    .replaceAll(
+      '<',
+      '&lt;'
+    )
 
-}
+    .replaceAll(
+      '>',
+      '&gt;'
+    )
 
+    .replaceAll(
+      '"',
+      '&quot;'
+    )
 
-function escapeHtml(v=''){
-
-  return String(v)
-
-  .replaceAll('&','&amp;')
-  .replaceAll('<','&lt;')
-  .replaceAll('>','&gt;')
-  .replaceAll('"','&quot;')
-  .replaceAll("'","&#039;");
+    .replaceAll(
+      "'",
+      '&#039;'
+    );
 
 }
 
@@ -1121,411 +1586,662 @@ function escapeHtml(v=''){
 
 function render(){
 
-  const search=
-  $('search')
-  .value
-  .toLowerCase()
-  .trim();
+  const search =
+    $('search')
+      .value
+      .toLowerCase()
+      .trim();
 
 
-  const category=
-  $('categoryFilter').value;
+  const category =
+    $('categoryFilter')
+      .value;
 
 
-  const filtered=
-  allProducts.filter(p=>{
+  const filtered =
 
-    const matchesSearch=
-
-    (p.name||'')
-    .toLowerCase()
-    .includes(search)
-
-    ||
-
-    (p.variant||'')
-    .toLowerCase()
-    .includes(search);
+    allProducts.filter(
+      product => {
 
 
-    const matchesCategory=
+        const matchesSearch =
 
-    !category ||
-    p.category===category;
+          (
+            product.name ||
+            ''
+          )
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          (
+            product.variant ||
+            ''
+          )
+            .toLowerCase()
+            .includes(search);
 
 
-    return(
-      matchesSearch &&
-      matchesCategory
+        const matchesCategory =
+
+          !category
+
+          ||
+
+          product.category ===
+          category;
+
+
+        return (
+
+          matchesSearch
+
+          &&
+
+          matchesCategory
+
+        );
+
+      }
     );
 
-  });
 
+  if(
+    filtered.length === 0
+  ){
 
-  if(!filtered.length){
+    $('products').innerHTML =
 
-    $('products').innerHTML=
-    '<div class="empty">Nenhum produto encontrado.</div>';
+      '<div class="empty">Nenhum produto encontrado.</div>';
 
     return;
 
   }
 
 
-  $('products').innerHTML=
-  filtered.map(p=>`
+  $('products').innerHTML =
 
-  <div class="product">
-
-    ${
-      p.image_url
-
-      ? `<img
-          class="productImage"
-          src="${escapeHtml(p.image_url)}"
-          alt="${escapeHtml(p.name||'Produto')}"
-        >`
-
-      : `<div class="noImage">
-          SEM IMAGEM
-        </div>`
-    }
+    filtered.map(
+      product => {
 
 
-    <div class="productBody">
+        const sizes =
 
-      <div class="productTop">
+          Array.isArray(
+            product.sizes
+          )
 
-        <div>
+            ? product.sizes
 
-          <h3>
-            ${escapeHtml(p.name||'Sem nome')}
-          </h3>
+            : [];
 
-          <div class="meta">
 
-            ${escapeHtml(
-              p.category||'Sem categoria'
-            )}
+        return `
+
+          <div class="product">
+
 
             ${
-              p.variant
-              ? ' • '+escapeHtml(p.variant)
-              : ''
+              product.image_url
+
+                ? `
+
+                  <img
+
+                    class="productImage"
+
+                    src="${escapeHtml(
+                      product.image_url
+                    )}"
+
+                    alt="${escapeHtml(
+                      product.name ||
+                      'Produto'
+                    )}"
+
+                  >
+
+                `
+
+                : `
+
+                  <div class="noImage">
+                    SEM IMAGEM
+                  </div>
+
+                `
             }
+
+
+            <div class="productBody">
+
+
+              <div class="productTop">
+
+
+                <div>
+
+
+                  <h3>
+
+                    ${escapeHtml(
+                      product.name ||
+                      'Sem nome'
+                    )}
+
+                  </h3>
+
+
+                  <div class="meta">
+
+                    ${escapeHtml(
+                      product.category ||
+                      'Sem categoria'
+                    )}
+
+                    ${
+                      product.variant
+
+                        ? ' • ' +
+                          escapeHtml(
+                            product.variant
+                          )
+
+                        : ''
+                    }
+
+                  </div>
+
+
+                </div>
+
+
+                <div class="price">
+
+                  ${money(
+                    product.price
+                  )}
+
+                </div>
+
+
+              </div>
+
+
+              ${
+                sizes.length
+
+                  ? `
+
+                    <div class="sizesText">
+
+                      Tamanhos:
+                      ${escapeHtml(
+                        sizes.join(', ')
+                      )}
+
+                    </div>
+
+                  `
+
+                  : ''
+              }
+
+
+              <div class="badges">
+
+
+                <span class="badge">
+
+                  ${escapeHtml(
+                    product.tag ||
+                    'NEW'
+                  )}
+
+                </span>
+
+
+                <span class="badge">
+
+                  Estoque:
+                  ${
+                    Number(
+                      product.stock
+                    ) || 0
+                  }
+
+                </span>
+
+
+                ${
+                  product.featured
+
+                    ? `
+
+                      <span class="badge">
+                        DESTAQUE
+                      </span>
+
+                    `
+
+                    : ''
+                }
+
+
+                ${
+                  product.active === false
+
+                    ? `
+
+                      <span class="badge">
+                        INATIVO
+                      </span>
+
+                    `
+
+                    : ''
+                }
+
+
+              </div>
+
+
+              <div class="productActions">
+
+
+                <button
+
+                  class="secondary"
+
+                  data-edit="${product.id}">
+
+                  Editar
+
+                </button>
+
+
+                <button
+
+                  class="danger"
+
+                  data-delete="${product.id}">
+
+                  Excluir
+
+                </button>
+
+
+              </div>
+
+
+            </div>
+
 
           </div>
 
-        </div>
+        `;
 
+      }
 
-        <div class="price">
-          ${money(p.price)}
-        </div>
-
-      </div>
-
-
-      <div class="badges">
-
-        <span class="badge">
-          ${escapeHtml(p.tag||'NEW')}
-        </span>
-
-
-        <span class="badge">
-          Estoque: ${Number(p.stock)||0}
-        </span>
-
-
-        ${
-          p.featured===true
-
-          ? `<span class="badge">
-              DESTAQUE
-            </span>`
-
-          : ''
-        }
-
-
-        ${
-          p.active===false
-
-          ? `<span class="badge">
-              INATIVO
-            </span>`
-
-          : ''
-        }
-
-      </div>
-
-
-      <div class="productActions">
-
-        <button
-          class="secondary"
-          data-edit="${p.id}"
-        >
-          Editar
-        </button>
-
-
-        <button
-          class="danger"
-          data-delete="${p.id}"
-        >
-          Excluir
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  `).join('');
+    ).join('');
 
 
   document
-  .querySelectorAll('[data-edit]')
-  .forEach(btn=>{
+    .querySelectorAll(
+      '[data-edit]'
+    )
+    .forEach(
+      button => {
 
-    btn.onclick=()=>
-    openEdit(btn.dataset.edit);
+        button.onclick =
+          () =>
+            openEdit(
+              button.dataset.edit
+            );
 
-  });
+      }
+    );
 
 
   document
-  .querySelectorAll('[data-delete]')
-  .forEach(btn=>{
+    .querySelectorAll(
+      '[data-delete]'
+    )
+    .forEach(
+      button => {
 
-    btn.onclick=()=>
-    removeProduct(btn.dataset.delete);
+        button.onclick =
+          () =>
+            removeProduct(
+              button.dataset.delete
+            );
 
-  });
+      }
+    );
 
 }
 
 
-$('search').oninput=render;
-$('categoryFilter').onchange=render;
+$('search').oninput =
+  render;
+
+
+$('categoryFilter').onchange =
+  render;
 
 
 /* =========================
-   FORMULÁRIO
+   RESETAR FORMULÁRIO
 ========================= */
 
 function resetForm(){
 
-  $('productForm').reset();
+  $('productForm')
+    .reset();
 
-  $('editingId').value='';
 
-  $('active').checked=true;
-  $('featured').checked=false;
+  $('editingId').value =
+    '';
 
-  $('stock').value=0;
 
-  $('preview').src='';
-  $('preview').classList.add('hide');
+  $('active').checked =
+    true;
 
-  $('imageFile').value='';
 
-  $('formTitle').textContent=
-  'Novo produto';
+  $('featured').checked =
+    false;
+
+
+  $('stock').value =
+    0;
+
+
+  $('tag').value =
+    'NEW';
+
+
+  $('product_type').value =
+    'roupa';
+
+
+  $('preview').src =
+    '';
+
+
+  $('preview')
+    .classList
+    .add('hide');
+
+
+  $('imageFile').value =
+    '';
+
+
+  $('formTitle').textContent =
+    'Novo produto';
 
 }
 
+
+/* =========================
+   NOVO PRODUTO
+========================= */
 
 function openNew(){
 
   resetForm();
 
+
   $('overlay')
-  .classList
-  .remove('hide');
+    .classList
+    .remove('hide');
 
 }
 
 
+/* =========================
+   EDITAR PRODUTO
+========================= */
+
 function openEdit(id){
 
-  const p=
-  allProducts.find(
-    x=>String(x.id)===String(id)
-  );
+  const product =
+
+    allProducts.find(
+
+      item =>
+        String(item.id) ===
+        String(id)
+
+    );
 
 
-  if(!p)return;
+  if(!product){
+
+    return;
+
+  }
 
 
   resetForm();
 
 
-  $('editingId').value=
-  p.id;
+  $('editingId').value =
+    product.id;
 
 
-  $('name').value=
-  p.name||'';
+  $('name').value =
+    product.name ||
+    '';
 
 
-  $('description').value=
-  p.description||'';
+  $('description').value =
+    product.description ||
+    '';
 
 
-  $('price').value=
-  p.price??'';
+  $('price').value =
+    product.price ??
+    '';
 
 
-  $('stock').value=
-  p.stock??0;
+  $('stock').value =
+    product.stock ??
+    0;
 
 
-  $('category').value=
-  p.category||'';
+  $('category').value =
+    product.category ||
+    '';
 
 
-  $('tag').value=
-  p.tag||'NEW';
+  $('tag').value =
+    product.tag ||
+    'NEW';
 
 
-  $('product_type').value=
-  p.product_type||'roupa';
+  $('product_type').value =
+    product.product_type ||
+    'roupa';
 
 
-  $('variant').value=
-  p.variant||'';
+  $('variant').value =
+    product.variant ||
+    '';
 
 
-  $('sizes').value=
+  $('sizes').value =
 
-  Array.isArray(p.sizes)
+    Array.isArray(
+      product.sizes
+    )
 
-  ? p.sizes.join(', ')
+      ? product.sizes.join(', ')
 
-  : '';
-
-
-  $('active').checked=
-  p.active!==false;
+      : '';
 
 
-  $('featured').checked=
-  p.featured===true;
+  $('active').checked =
+    product.active !== false;
 
 
-  if(p.image_url){
+  $('featured').checked =
+    product.featured === true;
 
-    $('preview').src=
-    p.image_url;
+
+  if(
+    product.image_url
+  ){
+
+    $('preview').src =
+      product.image_url;
+
 
     $('preview')
-    .classList
-    .remove('hide');
+      .classList
+      .remove('hide');
 
   }
 
 
-  $('formTitle').textContent=
-  'Editar produto';
+  $('formTitle').textContent =
+    'Editar produto';
 
 
   $('overlay')
-  .classList
-  .remove('hide');
+    .classList
+    .remove('hide');
 
 }
 
+
+/* =========================
+   FECHAR FORMULÁRIO
+========================= */
 
 function closeForm(){
 
   $('overlay')
-  .classList
-  .add('hide');
+    .classList
+    .add('hide');
 
 }
 
 
-$('addProduct').onclick=
-openNew;
+$('addProduct').onclick =
+  openNew;
 
 
-$('closeForm').onclick=
-closeForm;
+$('closeForm').onclick =
+  closeForm;
 
 
-$('cancelForm').onclick=
-closeForm;
+$('cancelForm').onclick =
+  closeForm;
 
 
 /* =========================
-   PRÉVIA DA IMAGEM
+   PREVIEW DA FOTO
 ========================= */
 
-$('imageFile').onchange=e=>{
-
-  const file=
-  e.target.files[0];
+$('imageFile').onchange =
+event => {
 
 
-  if(!file)return;
+  const file =
+    event.target.files[0];
 
 
-  $('preview').src=
-  URL.createObjectURL(file);
+  if(!file){
+
+    return;
+
+  }
+
+
+  $('preview').src =
+    URL.createObjectURL(
+      file
+    );
 
 
   $('preview')
-  .classList
-  .remove('hide');
+    .classList
+    .remove('hide');
 
 };
 
 
 /* =========================
-   UPLOAD DA IMAGEM
+   UPLOAD DA FOTO
 ========================= */
 
 async function upload(file){
 
-  if(!file)return null;
+  if(!file){
+
+    return null;
+
+  }
 
 
-  const ext=
-  (
-    file.name
-    .split('.')
-    .pop()||'jpg'
-  )
-  .toLowerCase();
+  const ext =
+
+    (
+      file.name
+        .split('.')
+        .pop()
+
+      ||
+
+      'jpg'
+
+    ).toLowerCase();
 
 
-  const path=
-  `${crypto.randomUUID()}.${ext}`;
+  const path =
+
+    `${crypto.randomUUID()}.${ext}`;
 
 
-  const {error}=
-  await sb.storage
-  .from('products')
-  .upload(
-    path,
-    file,
-    {upsert:false}
-  );
+  const {
+    error
+  } =
+
+    await sb.storage
+
+      .from('products')
+
+      .upload(
+
+        path,
+
+        file,
+
+        {
+          upsert:false
+        }
+
+      );
 
 
-  if(error)
-  throw error;
+  if(error){
+
+    throw error;
+
+  }
 
 
-  const {data}=
-  sb.storage
-  .from('products')
-  .getPublicUrl(path);
+  const {
+    data
+  } =
+
+    sb.storage
+
+      .from('products')
+
+      .getPublicUrl(path);
 
 
   return data.publicUrl;
@@ -1537,142 +2253,243 @@ async function upload(file){
    SALVAR PRODUTO
 ========================= */
 
-$('productForm').onsubmit=
-async e=>{
-
-  e.preventDefault();
+$('productForm').onsubmit =
+async event => {
 
 
-  const saveButton=
-  $('productForm')
-  .querySelector('.save');
+  event.preventDefault();
 
 
-  saveButton.disabled=true;
+  const saveButton =
 
-  saveButton.textContent=
-  'SALVANDO...';
+    $('productForm')
+      .querySelector(
+        '.save'
+      );
+
+
+  saveButton.disabled =
+    true;
+
+
+  saveButton.textContent =
+    'SALVANDO...';
 
 
   try{
 
 
-    const sizes=
+    /* TAMANHOS */
 
-    $('sizes')
-    .value
-    .split(',')
-    .map(x=>x.trim())
-    .filter(Boolean);
+    const sizes =
+
+      $('sizes')
+        .value
+
+        .split(',')
+
+        .map(
+          value =>
+            value.trim()
+        )
+
+        .filter(Boolean);
 
 
-    const product={
+    /*
+      Remove tamanho duplicado.
+
+      Exemplo:
+      39, 39, 40
+
+      vira:
+      39, 40
+    */
+
+    const uniqueSizes =
+
+      [
+        ...new Set(
+          sizes
+        )
+      ];
+
+
+    /* PRODUTO */
+
+    const product = {
+
 
       name:
-      $('name')
-      .value
-      .trim(),
+
+        $('name')
+          .value
+          .trim(),
+
 
       description:
-      $('description')
-      .value
-      .trim(),
+
+        $('description')
+          .value
+          .trim(),
+
 
       price:
-      Number(
-        $('price').value
-      ),
+
+        Number(
+          $('price').value
+        ),
+
 
       stock:
-      Number(
-        $('stock').value
-      )||0,
+
+        Number(
+          $('stock').value
+        ) || 0,
+
 
       category:
-      $('category').value,
+
+        $('category').value,
+
 
       tag:
-      $('tag').value,
+
+        $('tag').value,
+
 
       product_type:
-      $('product_type').value,
+
+        $('product_type').value,
+
 
       variant:
-      $('variant')
-      .value
-      .trim(),
+
+        $('variant')
+          .value
+          .trim(),
+
 
       sizes:
-      sizes,
+
+        uniqueSizes,
+
 
       active:
-      $('active').checked,
+
+        $('active').checked,
+
 
       featured:
-      $('featured').checked
+
+        $('featured').checked
+
 
     };
 
 
-    const file=
-    $('imageFile')
-    .files[0];
+    /* FOTO */
+
+    const file =
+      $('imageFile')
+        .files[0];
 
 
     if(file){
 
-      product.image_url=
-      await upload(file);
+      product.image_url =
+        await upload(file);
 
     }
 
 
-    const id=
-    $('editingId').value;
+    /* ID */
+
+    const id =
+      $('editingId').value;
 
 
     let result;
 
 
+    /* EDITAR */
+
     if(id){
 
-      result=
-      await sb
-      .from('products')
-      .update(product)
-      .eq('id',id);
+      result =
 
-    }else{
+        await sb
 
-      result=
-      await sb
-      .from('products')
-      .insert(product);
+          .from('products')
+
+          .update(product)
+
+          .eq(
+            'id',
+            id
+          );
 
     }
 
 
-    if(result.error)
-    throw result.error;
+    /* CRIAR */
+
+    else{
+
+      result =
+
+        await sb
+
+          .from('products')
+
+          .insert(product);
+
+    }
+
+
+    if(
+      result.error
+    ){
+
+      throw result.error;
+
+    }
 
 
     closeForm();
 
+
     await load();
 
 
-  }catch(err){
+  }
 
-    console.error(err);
+  catch(error){
 
-    alert(err.message);
 
-  }finally{
+    console.error(
+      error
+    );
 
-    saveButton.disabled=false;
 
-    saveButton.textContent=
-    'SALVAR PRODUTO';
+    alert(
+      error.message ||
+      'Erro ao salvar produto.'
+    );
+
+
+  }
+
+  finally{
+
+
+    saveButton.disabled =
+      false;
+
+
+    saveButton.textContent =
+      'SALVAR PRODUTO';
+
 
   }
 
@@ -1685,31 +2502,58 @@ async e=>{
 
 async function removeProduct(id){
 
-  const p=
-  allProducts.find(
-    x=>String(x.id)===String(id)
-  );
+  const product =
+
+    allProducts.find(
+
+      item =>
+        String(item.id) ===
+        String(id)
+
+    );
 
 
-  const ok=
-  confirm(
-    `Excluir "${p?.name||'este produto'}"?`
-  );
+  const confirmed =
+
+    confirm(
+
+      `Excluir "${
+        product?.name ||
+        'este produto'
+      }"?`
+
+    );
 
 
-  if(!ok)return;
+  if(!confirmed){
+
+    return;
+
+  }
 
 
-  const {error}=
-  await sb
-  .from('products')
-  .delete()
-  .eq('id',id);
+  const {
+    error
+  } =
+
+    await sb
+
+      .from('products')
+
+      .delete()
+
+      .eq(
+        'id',
+        id
+      );
 
 
   if(error){
 
-    alert(error.message);
+    alert(
+      error.message
+    );
+
     return;
 
   }
@@ -1726,7 +2570,10 @@ async function removeProduct(id){
 
 boot();
 
+
 </script>
 
+
 </body>
+
 </html>
