@@ -28,7 +28,30 @@ export default async function handler(req, res) {
   cidade: String(customer?.cidade || '').trim(),
   estado: String(customer?.estado || '').trim().toUpperCase()
 };
+if (
+  !customerData.cep ||
+  !customerData.rua ||
+  !customerData.numero ||
+  !customerData.bairro ||
+  !customerData.cidade ||
+  !customerData.estado
+) {
+  return res.status(400).json({
+    error: 'Preencha todos os campos obrigatórios do endereço.'
+  });
+}
 
+if (customerData.cep.length !== 8) {
+  return res.status(400).json({
+    error: 'CEP inválido.'
+  });
+}
+
+if (customerData.estado.length !== 2) {
+  return res.status(400).json({
+    error: 'Estado inválido. Use a sigla, por exemplo: RS.'
+  });
+}
     if (
       !customerData.name ||
       !customerData.email ||
