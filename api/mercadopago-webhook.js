@@ -6,12 +6,24 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-function validateSignature(req, paymentId) {
+// ======================================================
+// VALIDAR ASSINATURA DO MERCADO PAGO
+// ======================================================
+
+function validateSignature(req, dataId) {
   const secret = process.env.MP_WEBHOOK_SECRET;
+
   const xSignature = req.headers['x-signature'];
   const xRequestId = req.headers['x-request-id'];
 
-  if (!secret || !xSignature || !xRequestId || !paymentId) {
+  if (!secret || !xSignature || !xRequestId || !dataId) {
+    console.error('Dados ausentes para validar assinatura', {
+      hasSecret: !!secret,
+      hasSignature: !!xSignature,
+      hasRequestId: !!xRequestId,
+      hasDataId: !!dataId
+    });
+
     return false;
   }
 
@@ -29,11 +41,15 @@ function validateSignature(req, paymentId) {
   const receivedHash = parts.v1;
 
   if (!ts || !receivedHash) {
+    console.error('x-signature incompleto');
     return false;
   }
 
+  // O Mercado Pago usa o data.id recebido na URL
+  const normalizedDataId = String(dataId).toLowerCase();
+
   const manifest =
-    `id:${String(paymentId).toLowerCase()};` +
+    `id:${normalizedDataId};` +
     `request-id:${xRequestId};` +
     `ts:${ts};`;
 
@@ -42,22 +58,30 @@ function validateSignature(req, paymentId) {
     .update(manifest)
     .digest('hex');
 
-  const receivedBuffer = Buffer.from(receivedHash, 'hex');
-  const calculatedBuffer = Buffer.from(calculatedHash, 'hex');
+  try {
+    const receivedBuffer = Buffer.from(receivedHash, 'hex');
+    const calculatedBuffer = Buffer.from(calculatedHash, 'hex');
 
-  if (
-    receivedBuffer.length !== calculatedBuffer.length
-  ) {
+    if (receivedBuffer.length !== calculatedBuffer.length) {
+      return false;
+    }
+
+    return crypto.timingSafeEqual(
+      receivedBuffer,
+      calculatedBuffer
+    );
+  } catch (error) {
+    console.error('Erro ao comparar assinatura:', error);
     return false;
   }
-
-  return crypto.timingSafeEqual(
-    receivedBuffer,
-    calculatedBuffer
-  );
 }
 
+// ======================================================
+// WEBHOOK
+// ======================================================
+
 export default async function handler(req, res) {
+
   if (req.method !== 'POST') {
     return res.status(405).json({
       error: 'Método não permitido'
@@ -65,30 +89,63 @@ export default async function handler(req, res) {
   }
 
   try {
+
+    // --------------------------------------------------
+    // IMPORTANTE:
+    // assinatura usa data.id DA URL
+    // --------------------------------------------------
+
+    const dataId = req.query?.['data.id'];
+
+    // ID do pagamento que será consultado
     const paymentId =
-      req.body?.data?.id ||
-      req.query?.['data.id'];
+      dataId ||
+      req.body?.data?.id;
+
+    console.log('Webhook Mercado Pago recebido', {
+      type: req.body?.type,
+      action: req.body?.action,
+      paymentId,
+      dataId
+    });
 
     if (!paymentId) {
-      return res.status(200).json({ ok: true });
+      console.log('Webhook sem ID de pagamento.');
+
+      return res.status(200).json({
+        ok: true
+      });
     }
 
-    // Validar se a notificação realmente veio do Mercado Pago
-    if (!validateSignature(req, paymentId)) {
-      console.error('Assinatura do webhook inválida');
+    // --------------------------------------------------
+    // VALIDAR ASSINATURA
+    // --------------------------------------------------
+
+    if (!validateSignature(req, dataId)) {
+
+      console.error(
+        'Assinatura do Mercado Pago inválida'
+      );
 
       return res.status(401).json({
         error: 'Assinatura inválida'
       });
     }
 
-    // Consultar o pagamento diretamente no Mercado Pago
+    console.log('Assinatura Mercado Pago válida.');
+
+    // --------------------------------------------------
+    // CONSULTAR PAGAMENTO NO MERCADO PAGO
+    // --------------------------------------------------
+
     const response = await fetch(
-      `https://api.mercadopago.com/v1/payments/${paymentId}`,
+      `https://api.mercadopago.com/v1/payments/${encodeURIComponent(paymentId)}`,
       {
+        method: 'GET',
         headers: {
           Authorization:
-            `Bearer ${process.env.MP_ACCESS_TOKEN}`
+            `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json'
         }
       }
     );
@@ -96,32 +153,80 @@ export default async function handler(req, res) {
     const payment = await response.json();
 
     if (!response.ok) {
+
       console.error(
-        'Erro ao consultar Mercado Pago:',
+        'Erro ao consultar pagamento no Mercado Pago:',
         payment
       );
 
-      return res.status(200).json({ ok: true });
+      // Retorna 200 para evitar repetição infinita
+      // da mesma notificação
+      return res.status(200).json({
+        ok: true
+      });
     }
 
-    const orderId = payment.external_reference;
+    console.log('Pagamento consultado:', {
+      id: payment.id,
+      status: payment.status,
+      external_reference: payment.external_reference
+    });
 
-    if (!orderId) {
-      return res.status(200).json({ ok: true });
+    // --------------------------------------------------
+    // CONVERTER STATUS
+    // --------------------------------------------------
+
+    let statusPedido = payment.status;
+
+    if (payment.status === 'approved') {
+      statusPedido = 'pago';
     }
 
-    // Atualizar pedido
-    const { error } = await supabase
-      .from('orders')
-      .update({
-        status: payment.status,
-        payment_id: String(payment.id)
-      })
-      .eq('id', orderId);
+    if (payment.status === 'pending') {
+      statusPedido = 'pendente';
+    }
+
+    if (payment.status === 'in_process') {
+      statusPedido = 'processando';
+    }
+
+    if (payment.status === 'rejected') {
+      statusPedido = 'rejeitado';
+    }
+
+    if (payment.status === 'cancelled') {
+      statusPedido = 'cancelado';
+    }
+
+    if (payment.status === 'refunded') {
+      statusPedido = 'reembolsado';
+    }
+
+    if (payment.status === 'charged_back') {
+      statusPedido = 'estornado';
+    }
+
+    // --------------------------------------------------
+    // ATUALIZAR PEDIDO NO SUPABASE
+    // --------------------------------------------------
+
+    const { data: pedidosAtualizados, error } =
+      await supabase
+        .from('pedidos')
+        .update({
+          status: statusPedido,
+          id_do_pagamento: String(payment.id)
+        })
+        .eq(
+          'id_do_pagamento',
+          String(payment.id)
+        )
+        .select();
 
     if (error) {
+
       console.error(
-        'Erro ao atualizar pedido:',
+        'Erro ao atualizar pedido no Supabase:',
         error
       );
 
@@ -130,12 +235,29 @@ export default async function handler(req, res) {
       });
     }
 
+    console.log(
+      'Pedidos atualizados:',
+      pedidosAtualizados
+    );
+
+    // --------------------------------------------------
+    // SUCESSO
+    // --------------------------------------------------
+
     return res.status(200).json({
-      ok: true
+      ok: true,
+      payment_id: String(payment.id),
+      payment_status: payment.status,
+      order_status: statusPedido,
+      updated: pedidosAtualizados?.length || 0
     });
 
   } catch (error) {
-    console.error('Erro webhook:', error);
+
+    console.error(
+      'Erro geral no webhook:',
+      error
+    );
 
     return res.status(500).json({
       error: 'Erro interno'
