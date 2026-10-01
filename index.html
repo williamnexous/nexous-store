@@ -207,10 +207,9 @@ document.querySelector('#cart').onclick=()=>{render();drawer.style.display='bloc
     })
   });
 
-  const d=await r.json();
+  const d = await r.json();
 
-  if(d.checkout_url){
-    if(d.qr_code && d.qr_code_base64){
+if (d.qr_code && d.qr_code_base64) {
 
   document.querySelector('#pixArea').style.display = 'block';
 
@@ -226,12 +225,42 @@ document.querySelector('#cart').onclick=()=>{render();drawer.style.display='bloc
   msg.textContent =
     'Pix gerado com sucesso!';
 
-}else{
+} else {
 
   msg.textContent =
     d.error || 'Erro ao gerar Pix';
 
 }
+
+};
+
+window.copyPix = async () => {
+
+  const code =
+    document.querySelector('#pixCode').value;
+
+  try {
+
+    await navigator.clipboard.writeText(code);
+
+    document.querySelector('#pixStatus').textContent =
+      'Código Pix copiado!';
+
+  } catch {
+
+    const field =
+      document.querySelector('#pixCode');
+
+    field.select();
+
+    document.execCommand('copy');
+
+    document.querySelector('#pixStatus').textContent =
+      'Código Pix copiado!';
+
+  }
+
+};
 };
 
 save();
