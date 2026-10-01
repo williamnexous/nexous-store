@@ -1,291 +1,2035 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NEXOUS — Your Style.</title><style>*{box-sizing:border-box}body{margin:0;background:#080808;color:#eee;font-family:Arial,sans-serif}header{padding:22px 5%;display:flex;justify-content:space-between;border-bottom:1px solid #222;position:sticky;top:0;background:#080808dd;backdrop-filter:blur(12px);z-index:3}.logo{font-weight:900;letter-spacing:5px}.hero{padding:90px 5%;background:linear-gradient(120deg,#111,#050505);border-bottom:1px solid #222}.hero h1{font-size:clamp(52px,12vw,130px);margin:0;line-height:.85}.hero p{color:#888}.grid{padding:40px 5%;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}.card{background:#111;border:1px solid #222;border-radius:18px;overflow:hidden}.photo{aspect-ratio:1;background:#171717;display:grid;place-items:center;color:#555}.photo img{width:100%;height:100%;object-fit:cover}.info{padding:18px}.tag{font-size:11px;border:1px solid #555;padding:5px 8px;border-radius:99px}.price{font-size:22px;font-weight:bold}.btn{border:0;background:#eee;color:#080808;padding:12px 15px;border-radius:10px;font-weight:bold;cursor:pointer;width:100%}#cart{position:fixed;right:15px;bottom:15px;background:#eee;color:#111;border:0;border-radius:99px;padding:15px 20px;font-weight:bold;z-index:4}.drawer{display:none;position:fixed;inset:0;background:#000b;z-index:5}.panel{margin-left:auto;width:min(430px,100%);height:100%;background:#101010;padding:24px;overflow:auto}.row{display:flex;justify-content:space-between;gap:12px;margin:12px 0}.field{width:100%;padding:12px;background:#171717;color:#fff;border:1px solid #333;border-radius:9px}</style></head><body><header><div class="logo">NEXOUS</div><div>STREETWEAR / US</div></header><section class="hero"><h1>O ESTILO<br>COMEÇA AQUI.</h1><p>Crie sua própia tendência.</p></section><main id="products" class="grid"></main><button id="cart">CARRINHO (0)</button><div id="drawer" class="drawer"><div class="panel"><div class="row"><h2>Seu carrinho</h2><button onclick="closeCart()">✕</button></div><div id="cartItems"></div><h3 id="total"></h3><input id="name" class="field" placeholder="Seu nome">
+<!doctype html>
+<html lang="pt-BR">
 
-<input id="email" class="field" type="email" placeholder="Seu e-mail">
-<h3 style="margin-top:22px">Endereço de entrega</h3>
+<head>
+<meta charset="utf-8">
 
-<input id="cep" class="field" inputmode="numeric" maxlength="9" placeholder="CEP">
-
-<input id="rua" class="field" placeholder="Rua">
-
-<input id="numero" class="field" placeholder="Número">
-
-<input id="complemento" class="field" placeholder="Complemento (opcional)">
-
-<input id="bairro" class="field" placeholder="Bairro">
-
-<input id="cidade" class="field" placeholder="Cidade">
-
-<input id="estado" class="field" maxlength="2" placeholder="Estado (ex: RS)">
-<input
-  id="cpf"
-  class="field"
-  inputmode="numeric"
-  maxlength="14"
-  autocomplete="off"
-  placeholder="CPF"
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
 >
 
-<button class="btn" onclick="checkout()">
-  PAGAR COM PIX
-</button><p id="msg"></p><div id="pixArea" style="display:none;margin-top:20px;text-align:center">
+<title>NEXOUS — Your Style.</title>
 
-  <h2>Pagamento via Pix</h2>
+<style>
 
-  <p style="color:#aaa">
-    Escaneie o QR Code ou copie o código Pix.
-  </p>
-
-  <img
-    id="pixQr"
-    alt="QR Code Pix"
-    style="width:220px;max-width:100%;background:white;padding:10px;border-radius:12px;margin:10px auto"
-  >
-
-  <textarea
-    id="pixCode"
-    class="field"
-    readonly
-    style="height:100px;resize:none;margin:12px 0"
-  ></textarea>
-
-  <button class="btn" type="button" onclick="copyPix()">
-    COPIAR CÓDIGO PIX
-  </button>
-
-  <p id="pixStatus" style="color:#aaa">
-    Aguardando pagamento...
-  </p>
-
-</div></div></div><script type="module">
-import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-const CONFIG={url:'https://tcszjspirwwxrkabhtgi.supabase.co',anon:'sb_publishable_bZIkwmhElVzFMsGbk0bBgw_eFVWJuXV'};const sb=createClient(CONFIG.url,CONFIG.anon);let products=[],cart=JSON.parse(localStorage.nexousCart||'[]').filter(i=>i.size);
-const money=n=>Number(n).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});function save(){localStorage.nexousCart=JSON.stringify(cart);document.querySelector('#cart').textContent=`CARRINHO (${cart.reduce((a,b)=>a+b.quantity,0)})`}
-async function load(){const{data,error}=await sb.from('products').select('*').eq('active',true).order('created_at',{ascending:false});if(error){
-document.querySelector('#products').innerHTML='<p>ERRO SUPABASE: '+error.message+'</p>';
-console.error(error);
-return;
-}products=data;document.querySelector('#products').innerHTML=data.map(p=>`<article class="card"><div class="photo">${p.image_url?`<img src="${p.image_url}" alt="">`:'NEXOUS'}</div><div class="info"><span class="tag">${p.tag||'DROP'}</span>
-
-<h3>${p.name}</h3>
-
-${p.variant ? `
-  <p style="color:#bbb;font-weight:bold;margin:6px 0">
-    ${p.product_type === 'tenis' ? 'Modelo' : 'Cor'}: ${p.variant}
-  </p>
-` : ''}
-
-<p>${p.description||''}</p>
-
-<p class="price">${money(p.price)}</p>
-
-${p.product_type === 'tenis' ? `
-  <select id="size-${p.id}" class="field" style="margin-bottom:10px">
-    <option value="">Escolha o número</option>
-    <option value="38">38</option>
-    <option value="39">39</option>
-    <option value="40">40</option>
-    <option value="41">41</option>
-    <option value="42">42</option>
-  </select>
-` : `
-  <select id="size-${p.id}" class="field" style="margin-bottom:10px">
-    <option value="">Escolha o tamanho</option>
-    <option value="P">P</option>
-    <option value="M">M</option>
-    <option value="G">G</option>
-  </select>
-`}
-
-<button class="btn" data-add="${p.id}">ADICIONAR</button></div></article>`).join('');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add))}
-function add(id){
-  const sizeSelect = document.querySelector(`#size-${id}`);
-  const size = sizeSelect?.value;
-
-  if(!size){
-    alert('Escolha o tamanho ou número antes de adicionar.');
-    return;
-  }
-
-  const x = cart.find(i =>
-    i.id === id && i.size === size
-  );
-
-  if(x){
-    x.quantity++;
-  }else{
-    cart.push({
-      id,
-      size,
-      quantity: 1
-    });
-  }
-
-  save();
+*{
+  box-sizing:border-box;
 }
 
-window.changeQty = (id, size, amount) => {
-  const item = cart.find(i =>
-    i.id === id && i.size === size
-  );
+body{
+  margin:0;
+  background:#080808;
+  color:#eee;
+  font-family:Arial,sans-serif;
+}
 
-  if(!item) return;
+header{
+  padding:22px 5%;
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid #222;
+  position:sticky;
+  top:0;
+  background:#080808dd;
+  backdrop-filter:blur(12px);
+  z-index:3;
+}
 
-  item.quantity += amount;
+.logo{
+  font-weight:900;
+  letter-spacing:5px;
+}
 
-  if(item.quantity <= 0){
-    cart = cart.filter(i =>
-      !(i.id === id && i.size === size)
-    );
+.hero{
+  padding:90px 5%;
+  background:linear-gradient(120deg,#111,#050505);
+  border-bottom:1px solid #222;
+}
+
+.hero h1{
+  font-size:clamp(52px,12vw,130px);
+  margin:0;
+  line-height:.85;
+}
+
+.hero p{
+  color:#888;
+}
+
+.grid{
+  padding:40px 5%;
+  display:grid;
+  grid-template-columns:
+    repeat(auto-fit,minmax(230px,1fr));
+  gap:20px;
+}
+
+.card{
+  background:#111;
+  border:1px solid #222;
+  border-radius:18px;
+  overflow:hidden;
+}
+
+.photo{
+  aspect-ratio:1;
+  background:#171717;
+  display:grid;
+  place-items:center;
+  color:#555;
+}
+
+.photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.info{
+  padding:18px;
+}
+
+.info h3{
+  margin-bottom:8px;
+}
+
+.info p{
+  line-height:1.5;
+}
+
+.tag{
+  font-size:11px;
+  border:1px solid #555;
+  padding:5px 8px;
+  border-radius:99px;
+}
+
+.price{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.btn{
+  border:0;
+  background:#eee;
+  color:#080808;
+  padding:12px 15px;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+  width:100%;
+}
+
+.btn:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+}
+
+#cart{
+  position:fixed;
+  right:15px;
+  bottom:15px;
+  background:#eee;
+  color:#111;
+  border:0;
+  border-radius:99px;
+  padding:15px 20px;
+  font-weight:bold;
+  z-index:4;
+  cursor:pointer;
+}
+
+.drawer{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#000b;
+  z-index:5;
+}
+
+.panel{
+  margin-left:auto;
+  width:min(430px,100%);
+  height:100%;
+  background:#101010;
+  padding:24px;
+  overflow:auto;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin:12px 0;
+}
+
+.field{
+  width:100%;
+  padding:12px;
+  background:#171717;
+  color:#fff;
+  border:1px solid #333;
+  border-radius:9px;
+  margin-bottom:10px;
+}
+
+.field:focus{
+  outline:none;
+  border-color:#777;
+}
+
+.closeBtn{
+  background:#171717;
+  color:#fff;
+  border:1px solid #333;
+  border-radius:8px;
+  padding:8px 12px;
+  cursor:pointer;
+}
+
+.stock{
+  color:#777;
+  font-size:12px;
+}
+
+.soldout{
+  color:#ff8b8b;
+  font-weight:bold;
+}
+
+.category{
+  color:#777;
+  font-size:13px;
+  margin:6px 0;
+}
+
+.variant{
+  color:#bbb;
+  font-weight:bold;
+  margin:6px 0;
+}
+
+.cartProduct{
+  border-bottom:1px solid #222;
+  padding:15px 0;
+}
+
+.cartSize{
+  color:#999;
+  font-size:13px;
+  margin-top:5px;
+}
+
+.quantity{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:10px;
+}
+
+.qtyBtn{
+  padding:8px 12px;
+  border:0;
+  border-radius:7px;
+  cursor:pointer;
+}
+
+.removeBtn{
+  margin-left:auto;
+  padding:8px 12px;
+  border:1px solid #444;
+  background:#171717;
+  color:#eee;
+  border-radius:7px;
+  cursor:pointer;
+}
+
+#msg{
+  color:#aaa;
+  line-height:1.5;
+}
+
+#pixStatus{
+  color:#aaa;
+}
+
+@media(max-width:600px){
+
+  header{
+    font-size:13px;
   }
 
-  save();
-  render();
-};
+  .logo{
+    font-size:16px;
+  }
 
-window.removeItem = (id, size) => {
-  cart = cart.filter(i =>
-    !(i.id === id && i.size === size)
-  );
+  .hero{
+    padding:70px 5%;
+  }
 
-  save();
-  render();
-};window.closeCart=()=>drawer.style.display='none';function render(){
-  const rows = cart.map(i => {
-    const p = products.find(x => x.id === i.id);
+  .grid{
+    padding:25px 4%;
+  }
 
-    return p ? `
-      <div style="border-bottom:1px solid #222;padding:15px 0">
+  .panel{
+    padding:20px;
+  }
 
-       <div class="row">
-  <div>
-    <strong>${p.name}</strong>
-    <div style="color:#999;font-size:13px;margin-top:5px">
-      ${p.product_type === 'tenis' ? 'Número' : 'Tamanho'}: ${i.size}
-    </div>
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- CABEÇALHO -->
+
+<header>
+
+  <div class="logo">
+    NEXOUS
   </div>
 
-  <strong>${money(p.price * i.quantity)}</strong>
+  <div>
+    STREETWEAR / US
+  </div>
+
+</header>
+
+
+<!-- BANNER -->
+
+<section class="hero">
+
+  <h1>
+    O ESTILO<br>
+    COMEÇA AQUI.
+  </h1>
+
+  <p>
+    Crie sua própria tendência.
+  </p>
+
+</section>
+
+
+<!-- PRODUTOS -->
+
+<main
+  id="products"
+  class="grid">
+</main>
+
+
+<!-- BOTÃO CARRINHO -->
+
+<button id="cart">
+  CARRINHO (0)
+</button>
+
+
+<!-- CARRINHO -->
+
+<div
+  id="drawer"
+  class="drawer">
+
+  <div class="panel">
+
+
+    <div class="row">
+
+      <h2>
+        Seu carrinho
+      </h2>
+
+      <button
+        class="closeBtn"
+        onclick="closeCart()">
+        ✕
+      </button>
+
+    </div>
+
+
+    <div id="cartItems">
+    </div>
+
+
+    <h3 id="total">
+      Total: R$ 0,00
+    </h3>
+
+
+    <!-- CLIENTE -->
+
+    <h3>
+      Seus dados
+    </h3>
+
+
+    <input
+      id="name"
+      class="field"
+      placeholder="Seu nome"
+    >
+
+
+    <input
+      id="email"
+      class="field"
+      type="email"
+      placeholder="Seu e-mail"
+    >
+
+
+    <input
+      id="cpf"
+      class="field"
+      inputmode="numeric"
+      maxlength="14"
+      autocomplete="off"
+      placeholder="CPF"
+    >
+
+
+    <!-- ENDEREÇO -->
+
+    <h3 style="margin-top:22px">
+      Endereço de entrega
+    </h3>
+
+
+    <input
+      id="cep"
+      class="field"
+      inputmode="numeric"
+      maxlength="9"
+      placeholder="CEP"
+    >
+
+
+    <input
+      id="rua"
+      class="field"
+      placeholder="Rua"
+    >
+
+
+    <input
+      id="numero"
+      class="field"
+      placeholder="Número"
+    >
+
+
+    <input
+      id="complemento"
+      class="field"
+      placeholder="Complemento (opcional)"
+    >
+
+
+    <input
+      id="bairro"
+      class="field"
+      placeholder="Bairro"
+    >
+
+
+    <input
+      id="cidade"
+      class="field"
+      placeholder="Cidade"
+    >
+
+
+    <input
+      id="estado"
+      class="field"
+      maxlength="2"
+      placeholder="Estado (ex: RS)"
+    >
+
+
+    <!-- PAGAMENTO -->
+
+    <button
+      class="btn"
+      onclick="checkout()">
+      PAGAR COM PIX
+    </button>
+
+
+    <p id="msg">
+    </p>
+
+
+    <!-- PIX -->
+
+    <div
+      id="pixArea"
+      style="
+        display:none;
+        margin-top:20px;
+        text-align:center
+      ">
+
+      <h2>
+        Pagamento via Pix
+      </h2>
+
+      <p style="color:#aaa">
+        Escaneie o QR Code ou copie o código Pix.
+      </p>
+
+
+      <img
+        id="pixQr"
+        alt="QR Code Pix"
+        style="
+          width:220px;
+          max-width:100%;
+          background:white;
+          padding:10px;
+          border-radius:12px;
+          margin:10px auto
+        "
+      >
+
+
+      <textarea
+        id="pixCode"
+        class="field"
+        readonly
+        style="
+          height:100px;
+          resize:none;
+          margin:12px 0
+        "
+      ></textarea>
+
+
+      <button
+        class="btn"
+        type="button"
+        onclick="copyPix()">
+
+        COPIAR CÓDIGO PIX
+
+      </button>
+
+
+      <p id="pixStatus">
+        Aguardando pagamento...
+      </p>
+
+    </div>
+
+
+  </div>
+
 </div>
 
-        <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
 
-        <button onclick="changeQty('${i.id}','${i.size}',-1)"
-            style="padding:8px 12px;border:0;border-radius:7px;cursor:pointer">
-            −
-          </button>
+<script type="module">
 
-          <strong>${i.quantity}</strong>
+/* =========================================
+   SUPABASE
+========================================= */
 
-          <button onclick="changeQty('${i.id}','${i.size}',1)"
-            style="padding:8px 12px;border:0;border-radius:7px;cursor:pointer">
-            +
-          </button>
+import { createClient }
+from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-          <button onclick="removeItem('${i.id}','${i.size}')"
-            style="margin-left:auto;padding:8px 12px;border:1px solid #444;background:#171717;color:#eee;border-radius:7px;cursor:pointer">
-            REMOVER
-          </button>
 
-        </div>
-      </div>
-    ` : '';
-  }).join('');
+const CONFIG = {
 
-  cartItems.innerHTML = rows || '<p>Carrinho vazio.</p>';
+  url:
+    'https://tcszjspirwwxrkabhtgi.supabase.co',
 
-  total.textContent = 'Total: ' + money(
-    cart.reduce((s,i) => {
-      const p = products.find(x => x.id === i.id);
-      return s + (p ? Number(p.price) * i.quantity : 0);
-    },0)
-  );}
-document.querySelector('#cart').onclick=()=>{render();drawer.style.display='block'};window.checkout=async()=>{
-    if(cart.length === 0){
-    msg.textContent='Seu carrinho está vazio.';
-    return;
-  }
-  msg.textContent='Criando pagamento...';
-
-  const r=await fetch('/api/create-checkout',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json'
-    },
-    body: JSON.stringify({
-  items: cart,
-  customer: {
-    name: document.querySelector('#name').value,
-    email: document.querySelector('#email').value,
-    cpf: document.querySelector('#cpf').value,
-    cep: document.querySelector('#cep').value,
-    rua: document.querySelector('#rua').value,
-    numero: document.querySelector('#numero').value,
-    complemento: document.querySelector('#complemento').value,
-    bairro: document.querySelector('#bairro').value,
-    cidade: document.querySelector('#cidade').value,
-    estado: document.querySelector('#estado').value.toUpperCase()
-  }
-})
-});
-
-const d = await r.json();
-
-if (d.qr_code && d.qr_code_base64) {
-
-  document.querySelector('#pixArea').style.display = 'block';
-
-  document.querySelector('#pixQr').src =
-    `data:image/png;base64,${d.qr_code_base64}`;
-
-  document.querySelector('#pixCode').value =
-    d.qr_code;
-
-  document.querySelector('#pixStatus').textContent =
-    'Aguardando pagamento...';
-
-  msg.textContent =
-    'Pix gerado com sucesso!';
-
-} else {
-
-  msg.textContent =
-    d.error || 'Erro ao gerar Pix';
-
-}
+  anon:
+    'sb_publishable_bZIkwmhElVzFMsGbk0bBgw_eFVWJuXV'
 
 };
 
-window.copyPix = async () => {
+
+const sb =
+  createClient(
+    CONFIG.url,
+    CONFIG.anon
+  );
+
+
+/* =========================================
+   DADOS
+========================================= */
+
+let products = [];
+
+
+let cart =
+  JSON.parse(
+    localStorage.nexousCart || '[]'
+  );
+
+
+/* Remove itens antigos sem tamanho */
+
+cart =
+  cart.filter(
+    item =>
+      item &&
+      item.id &&
+      item.size
+  );
+
+
+/* =========================================
+   UTILIDADES
+========================================= */
+
+function money(value){
+
+  return Number(value || 0)
+    .toLocaleString(
+      'pt-BR',
+      {
+        style:'currency',
+        currency:'BRL'
+      }
+    );
+
+}
+
+
+function escapeHtml(value = ''){
+
+  return String(value)
+
+    .replaceAll(
+      '&',
+      '&amp;'
+    )
+
+    .replaceAll(
+      '<',
+      '&lt;'
+    )
+
+    .replaceAll(
+      '>',
+      '&gt;'
+    )
+
+    .replaceAll(
+      '"',
+      '&quot;'
+    )
+
+    .replaceAll(
+      "'",
+      '&#039;'
+    );
+
+}
+
+
+/* =========================================
+   SALVAR CARRINHO
+========================================= */
+
+function save(){
+
+  localStorage.nexousCart =
+    JSON.stringify(cart);
+
+
+  const quantity =
+    cart.reduce(
+      (total,item) =>
+        total +
+        Number(item.quantity || 0),
+      0
+    );
+
+
+  document
+    .querySelector('#cart')
+    .textContent =
+      `CARRINHO (${quantity})`;
+
+}
+
+
+/* =========================================
+   CARREGAR PRODUTOS
+========================================= */
+
+async function load(){
+
+  const productsArea =
+    document.querySelector(
+      '#products'
+    );
+
+
+  productsArea.innerHTML =
+    '<p>Carregando produtos...</p>';
+
+
+  const {
+    data,
+    error
+  } =
+    await sb
+
+      .from('products')
+
+      .select('*')
+
+      .eq(
+        'active',
+        true
+      )
+
+      .order(
+        'created_at',
+        {
+          ascending:false
+        }
+      );
+
+
+  if(error){
+
+    console.error(error);
+
+
+    productsArea.innerHTML =
+
+      `<p>
+        ERRO SUPABASE:
+        ${escapeHtml(error.message)}
+      </p>`;
+
+
+    return;
+
+  }
+
+
+  products =
+    data || [];
+
+
+  renderProducts();
+
+}
+
+
+/* =========================================
+   MOSTRAR PRODUTOS
+========================================= */
+
+function renderProducts(){
+
+  const area =
+    document.querySelector(
+      '#products'
+    );
+
+
+  if(
+    products.length === 0
+  ){
+
+    area.innerHTML =
+      '<p>Nenhum produto disponível.</p>';
+
+    return;
+
+  }
+
+
+  area.innerHTML =
+
+    products.map(product => {
+
+
+      /* TAMANHOS VINDOS DO SUPABASE */
+
+      const sizes =
+        Array.isArray(product.sizes)
+
+          ? product.sizes
+              .map(size =>
+                String(size).trim()
+              )
+              .filter(Boolean)
+
+          : [];
+
+
+      /* ESTOQUE */
+
+      const stock =
+        Number(
+          product.stock
+        ) || 0;
+
+
+      const soldOut =
+        stock <= 0;
+
+
+      /* TIPO */
+
+      const isShoes =
+        product.product_type ===
+        'tenis';
+
+
+      const sizeLabel =
+        isShoes
+
+          ? 'Escolha o número'
+
+          : 'Escolha o tamanho';
+
+
+      const variantLabel =
+        isShoes
+
+          ? 'Modelo'
+
+          : 'Cor';
+
+
+      /* OPTIONS */
+
+      const sizeOptions =
+
+        sizes.map(size => `
+
+          <option
+            value="${escapeHtml(size)}">
+
+            ${escapeHtml(size)}
+
+          </option>
+
+        `).join('');
+
+
+      return `
+
+        <article class="card">
+
+
+          <!-- FOTO -->
+
+          <div class="photo">
+
+            ${
+              product.image_url
+
+                ? `
+
+                  <img
+                    src="${escapeHtml(
+                      product.image_url
+                    )}"
+
+                    alt="${escapeHtml(
+                      product.name ||
+                      'Produto NEXOUS'
+                    )}"
+                  >
+
+                `
+
+                : 'NEXOUS'
+            }
+
+          </div>
+
+
+          <!-- INFORMAÇÕES -->
+
+          <div class="info">
+
+
+            <span class="tag">
+
+              ${escapeHtml(
+                product.tag ||
+                'DROP'
+              )}
+
+            </span>
+
+
+            <h3>
+
+              ${escapeHtml(
+                product.name ||
+                ''
+              )}
+
+            </h3>
+
+
+            ${
+              product.variant
+
+                ? `
+
+                  <p class="variant">
+
+                    ${variantLabel}:
+
+                    ${escapeHtml(
+                      product.variant
+                    )}
+
+                  </p>
+
+                `
+
+                : ''
+            }
+
+
+            ${
+              product.category
+
+                ? `
+
+                  <p class="category">
+
+                    ${escapeHtml(
+                      product.category
+                    )}
+
+                  </p>
+
+                `
+
+                : ''
+            }
+
+
+            <p>
+
+              ${escapeHtml(
+                product.description ||
+                ''
+              )}
+
+            </p>
+
+
+            <p class="price">
+
+              ${money(
+                product.price
+              )}
+
+            </p>
+
+
+            ${
+              soldOut
+
+                ? `
+
+                  <p class="soldout">
+                    ESGOTADO
+                  </p>
+
+                `
+
+                : `
+
+                  <p class="stock">
+
+                    ${stock}
+                    em estoque
+
+                  </p>
+
+                `
+            }
+
+
+            ${
+              !soldOut &&
+              sizes.length > 0
+
+                ? `
+
+                  <select
+                    id="size-${product.id}"
+                    class="field">
+
+                    <option value="">
+
+                      ${sizeLabel}
+
+                    </option>
+
+                    ${sizeOptions}
+
+                  </select>
+
+                `
+
+                : ''
+            }
+
+
+            ${
+              !soldOut &&
+              sizes.length === 0
+
+                ? `
+
+                  <p style="
+                    color:#999;
+                    font-size:13px
+                  ">
+
+                    Tamanhos indisponíveis.
+
+                  </p>
+
+                `
+
+                : ''
+            }
+
+
+            <button
+
+              class="btn"
+
+              data-add="${product.id}"
+
+              ${
+                soldOut ||
+                sizes.length === 0
+
+                  ? 'disabled'
+
+                  : ''
+              }
+
+            >
+
+              ${
+                soldOut
+
+                  ? 'ESGOTADO'
+
+                  : 'ADICIONAR'
+              }
+
+            </button>
+
+
+          </div>
+
+        </article>
+
+      `;
+
+
+    }).join('');
+
+
+  /* BOTÕES ADICIONAR */
+
+  document
+    .querySelectorAll(
+      '[data-add]'
+    )
+    .forEach(button => {
+
+      button.onclick =
+        () => {
+
+          add(
+            button.dataset.add
+          );
+
+        };
+
+    });
+
+}
+
+
+/* =========================================
+   ADICIONAR AO CARRINHO
+========================================= */
+
+function add(id){
+
+  const product =
+
+    products.find(
+
+      item =>
+        String(item.id) ===
+        String(id)
+
+    );
+
+
+  if(!product){
+
+    return;
+
+  }
+
+
+  const select =
+
+    document.querySelector(
+
+      `#size-${CSS.escape(
+        String(id)
+      )}`
+
+    );
+
+
+  const size =
+    select?.value;
+
+
+  if(!size){
+
+    alert(
+
+      product.product_type ===
+      'tenis'
+
+        ? 'Escolha o número antes de adicionar.'
+
+        : 'Escolha o tamanho antes de adicionar.'
+
+    );
+
+    return;
+
+  }
+
+
+  const stock =
+    Number(
+      product.stock
+    ) || 0;
+
+
+  if(stock <= 0){
+
+    alert(
+      'Este produto está esgotado.'
+    );
+
+    return;
+
+  }
+
+
+  /* TOTAL DESSE PRODUTO NO CARRINHO */
+
+  const productQuantity =
+
+    cart
+
+      .filter(
+        item =>
+          String(item.id) ===
+          String(id)
+      )
+
+      .reduce(
+        (total,item) =>
+          total +
+          Number(item.quantity || 0),
+        0
+      );
+
+
+  if(
+    productQuantity >= stock
+  ){
+
+    alert(
+
+      `Só temos ${stock} unidade(s) deste produto em estoque.`
+
+    );
+
+    return;
+
+  }
+
+
+  /* PROCURA MESMO TAMANHO */
+
+  const existing =
+
+    cart.find(
+
+      item =>
+
+        String(item.id) ===
+        String(id)
+
+        &&
+
+        String(item.size) ===
+        String(size)
+
+    );
+
+
+  if(existing){
+
+    existing.quantity++;
+
+  }
+
+  else{
+
+    cart.push({
+
+      id:
+        product.id,
+
+      size:
+        size,
+
+      quantity:
+        1
+
+    });
+
+  }
+
+
+  save();
+
+
+  alert(
+    'Produto adicionado ao carrinho!'
+  );
+
+}
+
+
+/* =========================================
+   ALTERAR QUANTIDADE
+========================================= */
+
+window.changeQty =
+function(
+  id,
+  size,
+  amount
+){
+
+  const product =
+
+    products.find(
+
+      item =>
+        String(item.id) ===
+        String(id)
+
+    );
+
+
+  const item =
+
+    cart.find(
+
+      item =>
+
+        String(item.id) ===
+        String(id)
+
+        &&
+
+        String(item.size) ===
+        String(size)
+
+    );
+
+
+  if(
+    !product ||
+    !item
+  ){
+
+    return;
+
+  }
+
+
+  /* AUMENTANDO */
+
+  if(amount > 0){
+
+    const stock =
+      Number(
+        product.stock
+      ) || 0;
+
+
+    const quantity =
+
+      cart
+
+        .filter(
+          cartItem =>
+            String(cartItem.id) ===
+            String(id)
+        )
+
+        .reduce(
+          (total,cartItem) =>
+            total +
+            Number(
+              cartItem.quantity ||
+              0
+            ),
+          0
+        );
+
+
+    if(
+      quantity >= stock
+    ){
+
+      alert(
+
+        `Só temos ${stock} unidade(s) deste produto em estoque.`
+
+      );
+
+      return;
+
+    }
+
+  }
+
+
+  item.quantity +=
+    amount;
+
+
+  /* REMOVE QUANDO CHEGAR A ZERO */
+
+  if(
+    item.quantity <= 0
+  ){
+
+    cart =
+      cart.filter(
+
+        cartItem =>
+
+          !(
+
+            String(cartItem.id) ===
+            String(id)
+
+            &&
+
+            String(cartItem.size) ===
+            String(size)
+
+          )
+
+      );
+
+  }
+
+
+  save();
+
+  renderCart();
+
+};
+
+
+/* =========================================
+   REMOVER ITEM
+========================================= */
+
+window.removeItem =
+function(
+  id,
+  size
+){
+
+  cart =
+    cart.filter(
+
+      item =>
+
+        !(
+
+          String(item.id) ===
+          String(id)
+
+          &&
+
+          String(item.size) ===
+          String(size)
+
+        )
+
+    );
+
+
+  save();
+
+  renderCart();
+
+};
+
+
+/* =========================================
+   ABRIR CARRINHO
+========================================= */
+
+document
+  .querySelector('#cart')
+  .onclick =
+function(){
+
+  renderCart();
+
+
+  document
+    .querySelector('#drawer')
+    .style.display =
+      'block';
+
+};
+
+
+/* =========================================
+   FECHAR CARRINHO
+========================================= */
+
+window.closeCart =
+function(){
+
+  document
+    .querySelector('#drawer')
+    .style.display =
+      'none';
+
+};
+
+
+/* =========================================
+   MOSTRAR CARRINHO
+========================================= */
+
+function renderCart(){
+
+  const cartItems =
+    document.querySelector(
+      '#cartItems'
+    );
+
+
+  const totalElement =
+    document.querySelector(
+      '#total'
+    );
+
+
+  const rows =
+
+    cart.map(item => {
+
+
+      const product =
+
+        products.find(
+
+          product =>
+            String(product.id) ===
+            String(item.id)
+
+        );
+
+
+      if(!product){
+
+        return '';
+
+      }
+
+
+      const sizeLabel =
+
+        product.product_type ===
+        'tenis'
+
+          ? 'Número'
+
+          : 'Tamanho';
+
+
+      return `
+
+        <div class="cartProduct">
+
+
+          <div class="row">
+
+
+            <div>
+
+              <strong>
+
+                ${escapeHtml(
+                  product.name
+                )}
+
+              </strong>
+
+
+              <div class="cartSize">
+
+                ${sizeLabel}:
+
+                ${escapeHtml(
+                  item.size
+                )}
+
+              </div>
+
+            </div>
+
+
+            <strong>
+
+              ${money(
+
+                Number(
+                  product.price
+                )
+
+                *
+
+                Number(
+                  item.quantity
+                )
+
+              )}
+
+            </strong>
+
+
+          </div>
+
+
+          <div class="quantity">
+
+
+            <button
+
+              class="qtyBtn"
+
+              onclick="
+                changeQty(
+                  '${item.id}',
+                  '${escapeHtml(item.size)}',
+                  -1
+                )
+              ">
+
+              −
+
+            </button>
+
+
+            <strong>
+
+              ${item.quantity}
+
+            </strong>
+
+
+            <button
+
+              class="qtyBtn"
+
+              onclick="
+                changeQty(
+                  '${item.id}',
+                  '${escapeHtml(item.size)}',
+                  1
+                )
+              ">
+
+              +
+
+            </button>
+
+
+            <button
+
+              class="removeBtn"
+
+              onclick="
+                removeItem(
+                  '${item.id}',
+                  '${escapeHtml(item.size)}'
+                )
+              ">
+
+              REMOVER
+
+            </button>
+
+
+          </div>
+
+
+        </div>
+
+      `;
+
+
+    }).join('');
+
+
+  cartItems.innerHTML =
+
+    rows ||
+
+    '<p>Carrinho vazio.</p>';
+
+
+  /* TOTAL */
+
+  const value =
+
+    cart.reduce(
+
+      (total,item) => {
+
+
+        const product =
+
+          products.find(
+
+            product =>
+
+              String(product.id) ===
+              String(item.id)
+
+          );
+
+
+        if(!product){
+
+          return total;
+
+        }
+
+
+        return (
+
+          total
+
+          +
+
+          Number(
+            product.price
+          )
+
+          *
+
+          Number(
+            item.quantity
+          )
+
+        );
+
+
+      },
+
+      0
+
+    );
+
+
+  totalElement.textContent =
+
+    'Total: ' +
+    money(value);
+
+}
+
+
+/* =========================================
+   CHECKOUT PIX
+========================================= */
+
+window.checkout =
+async function(){
+
+  const msg =
+    document.querySelector(
+      '#msg'
+    );
+
+
+  /* CARRINHO */
+
+  if(
+    cart.length === 0
+  ){
+
+    msg.textContent =
+      'Seu carrinho está vazio.';
+
+    return;
+
+  }
+
+
+  /* CLIENTE */
+
+  const customer = {
+
+    name:
+      document
+        .querySelector('#name')
+        .value
+        .trim(),
+
+    email:
+      document
+        .querySelector('#email')
+        .value
+        .trim(),
+
+    cpf:
+      document
+        .querySelector('#cpf')
+        .value
+        .trim(),
+
+    cep:
+      document
+        .querySelector('#cep')
+        .value
+        .trim(),
+
+    rua:
+      document
+        .querySelector('#rua')
+        .value
+        .trim(),
+
+    numero:
+      document
+        .querySelector('#numero')
+        .value
+        .trim(),
+
+    complemento:
+      document
+        .querySelector('#complemento')
+        .value
+        .trim(),
+
+    bairro:
+      document
+        .querySelector('#bairro')
+        .value
+        .trim(),
+
+    cidade:
+      document
+        .querySelector('#cidade')
+        .value
+        .trim(),
+
+    estado:
+      document
+        .querySelector('#estado')
+        .value
+        .trim()
+        .toUpperCase()
+
+  };
+
+
+  /* CAMPOS OBRIGATÓRIOS */
+
+  if(
+
+    !customer.name ||
+
+    !customer.email ||
+
+    !customer.cpf ||
+
+    !customer.cep ||
+
+    !customer.rua ||
+
+    !customer.numero ||
+
+    !customer.bairro ||
+
+    !customer.cidade ||
+
+    !customer.estado
+
+  ){
+
+    msg.textContent =
+
+      'Preencha todos os dados obrigatórios.';
+
+    return;
+
+  }
+
+
+  msg.textContent =
+    'Criando pagamento...';
+
+
+  try{
+
+
+    const response =
+
+      await fetch(
+
+        '/api/create-checkout',
+
+        {
+
+          method:
+            'POST',
+
+          headers:{
+
+            'Content-Type':
+              'application/json'
+
+          },
+
+          body:
+            JSON.stringify({
+
+              items:
+                cart,
+
+              customer:
+                customer
+
+            })
+
+        }
+
+      );
+
+
+    const data =
+      await response.json();
+
+
+    /* PIX CRIADO */
+
+    if(
+
+      response.ok &&
+
+      data.qr_code &&
+
+      data.qr_code_base64
+
+    ){
+
+
+      const pixArea =
+        document.querySelector(
+          '#pixArea'
+        );
+
+
+      pixArea.style.display =
+        'block';
+
+
+      document
+        .querySelector('#pixQr')
+        .src =
+
+          `data:image/png;base64,${data.qr_code_base64}`;
+
+
+      document
+        .querySelector('#pixCode')
+        .value =
+
+          data.qr_code;
+
+
+      document
+        .querySelector('#pixStatus')
+        .textContent =
+
+          'Aguardando pagamento...';
+
+
+      msg.textContent =
+
+        'Pix gerado com sucesso!';
+
+
+      pixArea.scrollIntoView({
+
+        behavior:
+          'smooth'
+
+      });
+
+
+    }
+
+    else{
+
+
+      msg.textContent =
+
+        data.error ||
+
+        'Erro ao gerar Pix.';
+
+
+    }
+
+
+  }
+
+  catch(error){
+
+
+    console.error(
+      error
+    );
+
+
+    msg.textContent =
+
+      'Erro de conexão ao gerar o Pix.';
+
+
+  }
+
+};
+
+
+/* =========================================
+   COPIAR PIX
+========================================= */
+
+window.copyPix =
+async function(){
+
+
+  const field =
+    document.querySelector(
+      '#pixCode'
+    );
+
 
   const code =
-    document.querySelector('#pixCode').value;
+    field.value;
 
-  try {
 
-    await navigator.clipboard.writeText(code);
+  if(!code){
 
-    document.querySelector('#pixStatus').textContent =
-      'Código Pix copiado!';
+    return;
 
-  } catch {
+  }
 
-    const field =
-      document.querySelector('#pixCode');
+
+  try{
+
+
+    await navigator
+      .clipboard
+      .writeText(
+        code
+      );
+
+
+    document
+      .querySelector('#pixStatus')
+      .textContent =
+
+        'Código Pix copiado!';
+
+
+  }
+
+  catch(error){
+
 
     field.select();
 
-    document.execCommand('copy');
 
-    document.querySelector('#pixStatus').textContent =
-      'Código Pix copiado!';
+    document.execCommand(
+      'copy'
+    );
+
+
+    document
+      .querySelector('#pixStatus')
+      .textContent =
+
+        'Código Pix copiado!';
+
 
   }
 
 };
 
-save();
-load();
-</script>
-</body>
-</html>
 
+/* =========================================
+   INICIAR NEXOUS
+========================================= */
+
+save();
+
+load();
+
+</script>
+
+
+</body>
+
+</html>
