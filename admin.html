@@ -1,13 +1,1246 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NEXOUS Admin</title><style>body{background:#090909;color:#eee;font-family:Arial;margin:0;padding:24px;max-width:900px;margin:auto}input,textarea,select,button{width:100%;padding:12px;margin:6px 0;background:#151515;color:#fff;border:1px solid #333;border-radius:9px}button{background:#eee;color:#111;font-weight:bold}.card{border:1px solid #292929;border-radius:14px;padding:16px;margin:14px 0}.hide{display:none}img{max-width:120px;border-radius:8px}</style></head><body><h1>NEXOUS / ADMIN</h1><section id="login"><input id="email" type="email" placeholder="E-mail"><input id="password" type="password" placeholder="Senha"><button id="loginBtn">ENTRAR</button><p id="loginMsg"></p></section><section id="app" class="hide"><button id="logout">SAIR</button><h2>Novo produto</h2><div id="newForm"></div><button id="create">ADICIONAR PRODUTO</button><h2>Produtos</h2><div id="list"></div></section><script type="module">
-import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';const sb=createClient(
-  'https://tcszjspirwwxrkabhtgi.supabase.co',
-  'sb_publishable_bZIkwmhElVzFMsGbk0bBgw_eFVWJuXV'
-);const fields=(p={})=>`<input data-f="name" placeholder="Nome" value="${p.name||''}"><textarea data-f="description" placeholder="Descrição">${p.description||''}</textarea><input data-f="price" type="number" step="0.01" placeholder="Preço" value="${p.price||''}"><select data-f="tag">${['NEW','DROP','HOT','LIMITED'].map(x=>`<option ${p.tag===x?'selected':''}>${x}</option>`)}</select><select data-f="product_type">
-  <option value="roupa" ${p.product_type==='roupa'?'selected':''}>Roupa</option>
-  <option value="tenis" ${p.product_type==='tenis'?'selected':''}>Tênis</option>
-</select><input
-  data-f="variant"
-  placeholder="Modelo / Cor (ex: TN Atlanta ou Canelada Branca)"
-  value="${p.variant||''}"
-><label><input data-f="active" type="checkbox" ${p.active!==false?'checked':''}> Ativo</label><input data-file type="file" accept="image/*">${p.image_url?`<img src="${p.image_url}">`:''}`;newForm.innerHTML=fields();
-async function isAdmin(){const{data:{user}}=await sb.auth.getUser();if(!user)return false;const{data}=await sb.from('admins').select('user_id').eq('user_id',user.id).maybeSingle();return !!data}async function boot(){if(await isAdmin()){login.classList.add('hide');app.classList.remove('hide');load()}else{app.classList.add('hide');login.classList.remove('hide')}}loginBtn.onclick=async()=>{loginMsg.textContent='Entrando...';const{error}=await sb.auth.signInWithPassword({email:email.value,password:password.value});loginMsg.textContent=error?error.message:'';boot()};logout.onclick=async()=>{await sb.auth.signOut();boot()};async function upload(file){if(!file)return null;const ext=file.name.split('.').pop();const path=`${crypto.randomUUID()}.${ext}`;const{error}=await sb.storage.from('products').upload(path,file,{upsert:false});if(error)throw error;return sb.storage.from('products').getPublicUrl(path).data.publicUrl}function values(root){const o={};root.querySelectorAll('[data-f]').forEach(e=>o[e.dataset.f]=e.type==='checkbox'?e.checked:e.value);o.price=Number(o.price);return o}create.onclick=async()=>{try{const o=values(newForm),url=await upload(newForm.querySelector('[data-file]').files[0]);if(url)o.image_url=url;const{error}=await sb.from('products').insert(o);if(error)throw error;newForm.innerHTML=fields();load()}catch(e){alert(e.message)}};async function load(){const{data,error}=await sb.from('products').select('*').order('created_at',{ascending:false});if(error)return alert(error.message);list.innerHTML=data.map(p=>`<div class="card" data-id="${p.id}">${fields(p)}<button data-save>SALVAR</button><button data-del>EXCLUIR</button></div>`).join('');list.querySelectorAll('.card').forEach(c=>{c.querySelector('[data-save]').onclick=()=>save(c);c.querySelector('[data-del]').onclick=()=>del(c)})}async function save(c){try{const o=values(c),url=await upload(c.querySelector('[data-file]').files[0]);if(url)o.image_url=url;const{error}=await sb.from('products').update(o).eq('id',c.dataset.id);if(error)throw error;load()}catch(e){alert(e.message)}}async function del(c){if(confirm('Excluir produto?')){const{error}=await sb.from('products').delete().eq('id',c.dataset.id);if(error)alert(error.message);else load()}}boot();</script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXOUS — Admin</title>
+
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#080808;
+  --panel:#101010;
+  --panel2:#151515;
+  --border:#262626;
+  --text:#f4f4f4;
+  --muted:#888;
+  --white:#fff;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+button,input,textarea,select{font:inherit}
+
+button{cursor:pointer}
+
+.hide{display:none!important}
+
+/* LOGIN */
+
+#login{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+.loginBox{
+  width:100%;
+  max-width:420px;
+  background:#0e0e0e;
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:32px;
+}
+
+.brand{
+  font-size:25px;
+  font-weight:900;
+  letter-spacing:5px;
+}
+
+.loginBox h1{
+  margin:45px 0 8px;
+  font-size:30px;
+}
+
+.muted{
+  color:var(--muted);
+  line-height:1.6;
+}
+
+input,textarea,select{
+  width:100%;
+  background:#111;
+  border:1px solid #292929;
+  color:#fff;
+  border-radius:12px;
+  padding:14px;
+  outline:none;
+}
+
+input:focus,textarea:focus,select:focus{
+  border-color:#666;
+}
+
+textarea{
+  min-height:105px;
+  resize:vertical;
+}
+
+.field{
+  margin-top:14px;
+}
+
+.field label{
+  display:block;
+  color:#aaa;
+  font-size:12px;
+  margin-bottom:7px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+.primary{
+  width:100%;
+  border:0;
+  background:#fff;
+  color:#050505;
+  border-radius:12px;
+  padding:15px;
+  font-weight:900;
+  margin-top:18px;
+}
+
+#loginMsg{
+  color:#aaa;
+  font-size:13px;
+}
+
+/* APP */
+
+#app{
+  min-height:100vh;
+}
+
+.sidebar{
+  width:245px;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  background:#0b0b0b;
+  border-right:1px solid var(--border);
+  padding:28px 20px;
+}
+
+.sidebar small{
+  display:block;
+  color:#666;
+  margin-top:8px;
+}
+
+.nav{
+  margin-top:45px;
+}
+
+.navBtn{
+  display:block;
+  width:100%;
+  text-align:left;
+  background:transparent;
+  color:#999;
+  border:0;
+  padding:13px 12px;
+  border-radius:10px;
+  margin-bottom:5px;
+}
+
+.navBtn.active{
+  background:#181818;
+  color:#fff;
+}
+
+.logout{
+  position:absolute;
+  bottom:25px;
+  left:20px;
+  right:20px;
+  width:calc(100% - 40px);
+  background:transparent;
+  color:#aaa;
+  border:1px solid #292929;
+  border-radius:10px;
+  padding:12px;
+}
+
+main{
+  margin-left:245px;
+  padding:38px;
+  max-width:1450px;
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  align-items:center;
+  margin-bottom:35px;
+}
+
+.top h1{
+  margin:0;
+  font-size:28px;
+}
+
+.top p{
+  margin:8px 0 0;
+  color:#777;
+}
+
+.addBtn{
+  background:#fff;
+  color:#000;
+  border:0;
+  padding:13px 18px;
+  border-radius:11px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+/* DASHBOARD */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:30px;
+}
+
+.stat{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:21px;
+}
+
+.stat span{
+  color:#777;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+.stat strong{
+  display:block;
+  margin-top:12px;
+  font-size:27px;
+}
+
+/* PRODUCTS */
+
+.toolbar{
+  display:flex;
+  gap:12px;
+  margin-bottom:20px;
+}
+
+.search{
+  flex:1;
+}
+
+.filter{
+  max-width:200px;
+}
+
+.products{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.product{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+}
+
+.productImage{
+  width:100%;
+  height:250px;
+  object-fit:cover;
+  background:#161616;
+  display:block;
+}
+
+.noImage{
+  height:250px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#555;
+  background:#131313;
+}
+
+.productBody{
+  padding:17px;
+}
+
+.productTop{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.product h3{
+  margin:0;
+  font-size:17px;
+}
+
+.price{
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.meta{
+  color:#777;
+  font-size:13px;
+  margin-top:8px;
+}
+
+.badges{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:13px;
+}
+
+.badge{
+  border:1px solid #303030;
+  border-radius:20px;
+  padding:5px 8px;
+  font-size:10px;
+  color:#bbb;
+}
+
+.productActions{
+  display:flex;
+  gap:8px;
+  margin-top:17px;
+}
+
+.secondary,.danger{
+  flex:1;
+  padding:10px;
+  border-radius:9px;
+  background:#181818;
+  color:#eee;
+  border:1px solid #303030;
+}
+
+.danger{
+  color:#ff8b8b;
+}
+
+/* FORM */
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:#000b;
+  z-index:50;
+  display:flex;
+  justify-content:flex-end;
+}
+
+.drawer{
+  height:100%;
+  width:min(620px,100%);
+  background:#0c0c0c;
+  border-left:1px solid #292929;
+  overflow:auto;
+  padding:28px;
+}
+
+.drawerHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+
+.drawerHead h2{
+  margin:0;
+}
+
+.close{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:1px solid #333;
+  background:#151515;
+  color:#fff;
+  font-size:20px;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:13px;
+}
+
+.checks{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:18px;
+}
+
+.check{
+  background:#111;
+  border:1px solid #292929;
+  border-radius:12px;
+  padding:13px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.check input{
+  width:auto;
+  margin:0;
+}
+
+.preview{
+  width:100%;
+  max-height:260px;
+  object-fit:cover;
+  border-radius:14px;
+  margin-top:12px;
+}
+
+.formActions{
+  display:flex;
+  gap:10px;
+  margin-top:25px;
+}
+
+.formActions button{
+  padding:14px;
+  border-radius:11px;
+  font-weight:bold;
+}
+
+.save{
+  flex:2;
+  background:#fff;
+  color:#000;
+  border:0;
+}
+
+.cancel{
+  flex:1;
+  background:#151515;
+  color:#fff;
+  border:1px solid #303030;
+}
+
+.empty{
+  padding:50px 20px;
+  text-align:center;
+  color:#666;
+  border:1px dashed #292929;
+  border-radius:15px;
+  grid-column:1/-1;
+}
+
+/* MOBILE */
+
+.mobileTop{display:none}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+
+  main{
+    margin:0;
+    padding:20px 16px 90px;
+  }
+
+  .mobileTop{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 16px;
+    border-bottom:1px solid #222;
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:#080808eF;
+    backdrop-filter:blur(10px);
+  }
+
+  .mobileTop .brand{
+    font-size:17px;
+  }
+
+  .mobileTop button{
+    background:#151515;
+    color:#fff;
+    border:1px solid #292929;
+    border-radius:9px;
+    padding:8px 11px;
+  }
+
+  .top{
+    align-items:flex-start;
+  }
+
+  .top h1{font-size:24px}
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .products{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .productImage,.noImage{
+    height:200px;
+  }
+}
+
+@media(max-width:600px){
+  .products{
+    grid-template-columns:1fr;
+  }
+
+  .productImage,.noImage{
+    height:330px;
+  }
+
+  .toolbar{
+    flex-direction:column;
+  }
+
+  .filter{
+    max-width:none;
+  }
+
+  .grid2{
+    grid-template-columns:1fr;
+  }
+
+  .drawer{
+    padding:22px 16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<section id="login">
+
+<div class="loginBox">
+
+<div class="brand">NEXOUS</div>
+
+<h1>Painel administrativo</h1>
+
+<p class="muted">
+Gerencie os produtos e o catálogo da sua loja.
+</p>
+
+<div class="field">
+<label>E-mail</label>
+<input id="email" type="email" placeholder="Seu e-mail">
+</div>
+
+<div class="field">
+<label>Senha</label>
+<input id="password" type="password" placeholder="Sua senha">
+</div>
+
+<button id="loginBtn" class="primary">ENTRAR NO PAINEL</button>
+
+<p id="loginMsg"></p>
+
+</div>
+
+</section>
+
+<section id="app" class="hide">
+
+<div class="sidebar">
+
+<div class="brand">NEXOUS</div>
+<small>ADMINISTRATION</small>
+
+<div class="nav">
+<button class="navBtn active">▦ Produtos</button>
+<button class="navBtn" disabled>□ Pedidos — em breve</button>
+</div>
+
+<button id="logout" class="logout">Sair do painel</button>
+
+</div>
+
+<div class="mobileTop">
+<div class="brand">NEXOUS</div>
+<button id="mobileLogout">Sair</button>
+</div>
+
+<main>
+
+<div class="top">
+
+<div>
+<h1>Produtos</h1>
+<p>Gerencie o catálogo da NEXOUS.</p>
+</div>
+
+<button id="addProduct" class="addBtn">+ Novo produto</button>
+
+</div>
+
+<div class="stats">
+
+<div class="stat">
+<span>Produtos</span>
+<strong id="totalProducts">0</strong>
+</div>
+
+<div class="stat">
+<span>Ativos</span>
+<strong id="activeProducts">0</strong>
+</div>
+
+<div class="stat">
+<span>Destaques</span>
+<strong id="featuredProducts">0</strong>
+</div>
+
+<div class="stat">
+<span>Estoque total</span>
+<strong id="totalStock">0</strong>
+</div>
+
+</div>
+
+<div class="toolbar">
+
+<input
+id="search"
+class="search"
+placeholder="Buscar produto..."
+>
+
+<select id="categoryFilter" class="filter">
+<option value="">Todas as categorias</option>
+<option>Camisas</option>
+<option>Bermudas</option>
+<option>Tênis</option>
+<option>Moletons</option>
+<option>Calças</option>
+<option>Bonés</option>
+<option>Acessórios</option>
+</select>
+
+</div>
+
+<div id="products" class="products"></div>
+
+</main>
+
+</section>
+
+<div id="overlay" class="overlay hide">
+
+<div class="drawer">
+
+<div class="drawerHead">
+<h2 id="formTitle">Novo produto</h2>
+<button id="closeForm" class="close">×</button>
+</div>
+
+<form id="productForm">
+
+<input id="editingId" type="hidden">
+
+<div class="field">
+<label>Nome do produto</label>
+<input id="name" required placeholder="Ex: Camiseta Canelada">
+</div>
+
+<div class="field">
+<label>Descrição</label>
+<textarea id="description" placeholder="Descrição do produto"></textarea>
+</div>
+
+<div class="grid2">
+
+<div class="field">
+<label>Preço</label>
+<input id="price" type="number" step="0.01" min="0" required placeholder="0,00">
+</div>
+
+<div class="field">
+<label>Estoque</label>
+<input id="estoque" type="number" min="0" value="0">
+</div>
+
+</div>
+
+<div class="grid2">
+
+<div class="field">
+<label>Categoria</label>
+
+<select id="categoria">
+
+<option value="">Selecionar</option>
+<option>Camisas</option>
+<option>Bermudas</option>
+<option>Tênis</option>
+<option>Moletons</option>
+<option>Calças</option>
+<option>Bonés</option>
+<option>Acessórios</option>
+
+</select>
+</div>
+
+<div class="field">
+<label>Tag</label>
+
+<select id="tag">
+<option>NEW</option>
+<option>DROP</option>
+<option>HOT</option>
+<option>LIMITED</option>
+</select>
+
+</div>
+
+</div>
+
+<div class="grid2">
+
+<div class="field">
+<label>Tipo</label>
+
+<select id="product_type">
+<option value="roupa">Roupa</option>
+<option value="tenis">Tênis</option>
+<option value="acessorio">Acessório</option>
+</select>
+
+</div>
+
+<div class="field">
+<label>Modelo / Cor</label>
+<input id="variant" placeholder="Ex: Canelada preta">
+</div>
+
+</div>
+
+<div class="field">
+<label>Tamanhos</label>
+<input id="tamanhos" placeholder="Ex: P, M, G, GG ou 38, 39, 40">
+</div>
+
+<div class="field">
+<label>Imagem do produto</label>
+<input id="imageFile" type="file" accept="image/*">
+<img id="preview" class="preview hide">
+</div>
+
+<div class="checks">
+
+<label class="check">
+<input id="active" type="checkbox" checked>
+Produto ativo
+</label>
+
+<label class="check">
+<input id="apresentou" type="checkbox">
+Produto em destaque
+</label>
+
+</div>
+
+<div class="formActions">
+<button type="button" id="cancelForm" class="cancel">Cancelar</button>
+<button type="submit" class="save">SALVAR PRODUTO</button>
+</div>
+
+</form>
+
+</div>
+</div>
+
+<script type="module">
+
+import {createClient}
+from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const sb=createClient(
+'https://tcszjspirwwxrkabhtgi.supabase.co',
+'sb_publishable_bZIkwmhElVzFMsGbk0bBgw_eFVWJuXV'
+);
+
+let allProducts=[];
+
+const $=id=>document.getElementById(id);
+
+async function isAdmin(){
+
+const {data:{user}}=await sb.auth.getUser();
+
+if(!user)return false;
+
+const {data}=await sb
+.from('admins')
+.select('user_id')
+.eq('user_id',user.id)
+.maybeSingle();
+
+return !!data;
+
+}
+
+async function boot(){
+
+if(await isAdmin()){
+
+$('login').classList.add('hide');
+$('app').classList.remove('hide');
+
+await load();
+
+}else{
+
+$('app').classList.add('hide');
+$('login').classList.remove('hide');
+
+}
+
+}
+
+$('loginBtn').onclick=async()=>{
+
+$('loginMsg').textContent='Entrando...';
+
+const {error}=await sb.auth.signInWithPassword({
+email:$('email').value,
+password:$('password').value
+});
+
+if(error){
+
+$('loginMsg').textContent=error.message;
+return;
+
+}
+
+$('loginMsg').textContent='';
+
+boot();
+
+};
+
+async function logout(){
+
+await sb.auth.signOut();
+location.reload();
+
+}
+
+$('logout').onclick=logout;
+$('mobileLogout').onclick=logout;
+
+async function load(){
+
+const {data,error}=await sb
+.from('products')
+.select('*')
+.order('created_at',{ascending:false});
+
+if(error){
+
+alert(error.message);
+return;
+
+}
+
+allProducts=data||[];
+
+updateStats();
+render();
+
+}
+
+function updateStats(){
+
+$('totalProducts').textContent=allProducts.length;
+
+$('activeProducts').textContent=
+allProducts.filter(p=>p.active!==false).length;
+
+$('featuredProducts').textContent=
+allProducts.filter(p=>p.apresentou===true).length;
+
+$('totalStock').textContent=
+allProducts.reduce((s,p)=>s+(Number(p.estoque)||0),0);
+
+}
+
+function money(value){
+
+return Number(value||0).toLocaleString('pt-BR',{
+style:'currency',
+currency:'BRL'
+});
+
+}
+
+function escapeHtml(v=''){
+
+return String(v)
+.replaceAll('&','&amp;')
+.replaceAll('<','&lt;')
+.replaceAll('>','&gt;')
+.replaceAll('"','&quot;');
+
+}
+
+function render(){
+
+const search=$('search').value.toLowerCase().trim();
+const cat=$('categoryFilter').value;
+
+const filtered=allProducts.filter(p=>{
+
+const matchesSearch=
+(p.name||'').toLowerCase().includes(search)||
+(p.variant||'').toLowerCase().includes(search);
+
+const matchesCategory=!cat||p.categoria===cat;
+
+return matchesSearch&&matchesCategory;
+
+});
+
+if(!filtered.length){
+
+$('products').innerHTML=
+'<div class="empty">Nenhum produto encontrado.</div>';
+
+return;
+
+}
+
+$('products').innerHTML=filtered.map(p=>`
+
+<div class="product">
+
+${p.image_url
+?`<img class="productImage" src="${escapeHtml(p.image_url)}">`
+:`<div class="noImage">SEM IMAGEM</div>`
+}
+
+<div class="productBody">
+
+<div class="productTop">
+
+<div>
+<h3>${escapeHtml(p.name||'Sem nome')}</h3>
+<div class="meta">
+${escapeHtml(p.categoria||'Sem categoria')}
+${p.variant?' • '+escapeHtml(p.variant):''}
+</div>
+</div>
+
+<div class="price">${money(p.price)}</div>
+
+</div>
+
+<div class="badges">
+
+<span class="badge">${escapeHtml(p.tag||'NEW')}</span>
+
+<span class="badge">
+Estoque: ${Number(p.estoque)||0}
+</span>
+
+${p.apresentou
+?'<span class="badge">DESTAQUE</span>'
+:''}
+
+${p.active===false
+?'<span class="badge">INATIVO</span>'
+:''}
+
+</div>
+
+<div class="productActions">
+
+<button
+class="secondary"
+data-edit="${p.id}">
+Editar
+</button>
+
+<button
+class="danger"
+data-delete="${p.id}">
+Excluir
+</button>
+
+</div>
+
+</div>
+</div>
+
+`).join('');
+
+document.querySelectorAll('[data-edit]').forEach(btn=>{
+
+btn.onclick=()=>openEdit(btn.dataset.edit);
+
+});
+
+document.querySelectorAll('[data-delete]').forEach(btn=>{
+
+btn.onclick=()=>removeProduct(btn.dataset.delete);
+
+});
+
+}
+
+$('search').oninput=render;
+$('categoryFilter').onchange=render;
+
+function resetForm(){
+
+$('productForm').reset();
+
+$('editingId').value='';
+$('active').checked=true;
+$('apresentou').checked=false;
+$('estoque').value=0;
+
+$('preview').src='';
+$('preview').classList.add('hide');
+
+$('formTitle').textContent='Novo produto';
+
+}
+
+function openNew(){
+
+resetForm();
+$('overlay').classList.remove('hide');
+
+}
+
+function openEdit(id){
+
+const p=allProducts.find(x=>String(x.id)===String(id));
+
+if(!p)return;
+
+resetForm();
+
+$('editingId').value=p.id;
+$('name').value=p.name||'';
+$('description').value=p.description||'';
+$('price').value=p.price||'';
+$('estoque').value=p.estoque||0;
+$('categoria').value=p.categoria||'';
+$('tag').value=p.tag||'NEW';
+$('product_type').value=p.product_type||'roupa';
+$('variant').value=p.variant||'';
+
+$('tamanhos').value=
+Array.isArray(p.tamanhos)
+?p.tamanhos.join(', ')
+:'';
+
+$('active').checked=p.active!==false;
+$('apresentou').checked=p.apresentou===true;
+
+if(p.image_url){
+
+$('preview').src=p.image_url;
+$('preview').classList.remove('hide');
+
+}
+
+$('formTitle').textContent='Editar produto';
+
+$('overlay').classList.remove('hide');
+
+}
+
+function closeForm(){
+
+$('overlay').classList.add('hide');
+
+}
+
+$('addProduct').onclick=openNew;
+$('closeForm').onclick=closeForm;
+$('cancelForm').onclick=closeForm;
+
+$('imageFile').onchange=e=>{
+
+const file=e.target.files[0];
+
+if(!file)return;
+
+$('preview').src=URL.createObjectURL(file);
+$('preview').classList.remove('hide');
+
+};
+
+async function upload(file){
+
+if(!file)return null;
+
+const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+
+const path=
+`${crypto.randomUUID()}.${ext}`;
+
+const {error}=await sb.storage
+.from('products')
+.upload(path,file,{upsert:false});
+
+if(error)throw error;
+
+return sb.storage
+.from('products')
+.getPublicUrl(path)
+.data.publicUrl;
+
+}
+
+$('productForm').onsubmit=async e=>{
+
+e.preventDefault();
+
+const saveButton=
+$('productForm').querySelector('.save');
+
+saveButton.disabled=true;
+saveButton.textContent='SALVANDO...';
+
+try{
+
+const sizes=$('tamanhos').value
+.split(',')
+.map(x=>x.trim())
+.filter(Boolean);
+
+const product={
+
+name:$('name').value.trim(),
+
+description:$('description').value.trim(),
+
+price:Number($('price').value),
+
+estoque:Number($('estoque').value)||0,
+
+categoria:$('categoria').value,
+
+tag:$('tag').value,
+
+product_type:$('product_type').value,
+
+variant:$('variant').value.trim(),
+
+tamanhos:sizes,
+
+active:$('active').checked,
+
+apresentou:$('apresentou').checked
+
+};
+
+const file=$('imageFile').files[0];
+
+if(file){
+
+product.image_url=await upload(file);
+
+}
+
+const id=$('editingId').value;
+
+let result;
+
+if(id){
+
+result=await sb
+.from('products')
+.update(product)
+.eq('id',id);
+
+}else{
+
+result=await sb
+.from('products')
+.insert(product);
+
+}
+
+if(result.error)throw result.error;
+
+closeForm();
+await load();
+
+}catch(err){
+
+alert(err.message);
+
+}finally{
+
+saveButton.disabled=false;
+saveButton.textContent='SALVAR PRODUTO';
+
+}
+
+};
+
+async function removeProduct(id){
+
+const p=allProducts.find(
+x=>String(x.id)===String(id)
+);
+
+if(!confirm(
+`Excluir "${p?.name||'este produto'}"?`
+))return;
+
+const {error}=await sb
+.from('products')
+.delete()
+.eq('id',id);
+
+if(error){
+
+alert(error.message);
+return;
+
+}
+
+await load();
+
+}
+
+boot();
+
+</script>
+
+</body>
+</html>
