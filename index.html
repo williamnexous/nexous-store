@@ -211,25 +211,24 @@ document.querySelector('#cart').onclick=()=>{render();drawer.style.display='bloc
     headers:{
       'Content-Type':'application/json'
     },
-    body:JSON.stringify({
-      items:cart,
-      customer: {
+    body: JSON.stringify({
+  items: cart,
   customer: {
-  name: document.querySelector('#name').value,
-  email: document.querySelector('#email').value,
-  cpf: document.querySelector('#cpf').value,
-  cep: document.querySelector('#cep').value,
-  rua: document.querySelector('#rua').value,
-  numero: document.querySelector('#numero').value,
-  complemento: document.querySelector('#complemento').value,
-  bairro: document.querySelector('#bairro').value,
-  cidade: document.querySelector('#cidade').value,
-  estado: document.querySelector('#estado').value.toUpperCase()
-}
-    })
-  });
+    name: document.querySelector('#name').value,
+    email: document.querySelector('#email').value,
+    cpf: document.querySelector('#cpf').value,
+    cep: document.querySelector('#cep').value,
+    rua: document.querySelector('#rua').value,
+    numero: document.querySelector('#numero').value,
+    complemento: document.querySelector('#complemento').value,
+    bairro: document.querySelector('#bairro').value,
+    cidade: document.querySelector('#cidade').value,
+    estado: document.querySelector('#estado').value.toUpperCase()
+  }
+})
+});
 
-  const d = await r.json();
+const d = await r.json();
 
 if (d.qr_code && d.qr_code_base64) {
 
