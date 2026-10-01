@@ -38,7 +38,51 @@ window.removeItem = (id) => {
   cart = cart.filter(i => i.id !== id);
   save();
   render();
-};window.closeCart=()=>drawer.style.display='none';function render(){const rows=cart.map(i=>{const p=products.find(x=>x.id===i.id);return p?`<div class="row"><span>${p.name} × ${i.quantity}</span><span>${money(p.price*i.quantity)}</span></div>`:''}).join('');cartItems.innerHTML=rows||'<p>Carrinho vazio.</p>';total.textContent='Total: '+money(cart.reduce((s,i)=>{const p=products.find(x=>x.id===i.id);return s+(p?Number(p.price)*i.quantity:0)},0))}document.querySelector('#cart').onclick=()=>{render();drawer.style.display='block'};window.checkout=async()=>{
+};window.closeCart=()=>drawer.style.display='none';function render(){
+  const rows = cart.map(i => {
+    const p = products.find(x => x.id === i.id);
+
+    return p ? `
+      <div style="border-bottom:1px solid #222;padding:15px 0">
+
+        <div class="row">
+          <strong>${p.name}</strong>
+          <strong>${money(p.price * i.quantity)}</strong>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+
+          <button onclick="changeQty('${i.id}',-1)"
+            style="padding:8px 12px;border:0;border-radius:7px;cursor:pointer">
+            −
+          </button>
+
+          <strong>${i.quantity}</strong>
+
+          <button onclick="changeQty('${i.id}',1)"
+            style="padding:8px 12px;border:0;border-radius:7px;cursor:pointer">
+            +
+          </button>
+
+          <button onclick="removeItem('${i.id}')"
+            style="margin-left:auto;padding:8px 12px;border:1px solid #444;background:#171717;color:#eee;border-radius:7px;cursor:pointer">
+            REMOVER
+          </button>
+
+        </div>
+      </div>
+    ` : '';
+  }).join('');
+
+  cartItems.innerHTML = rows || '<p>Carrinho vazio.</p>';
+
+  total.textContent = 'Total: ' + money(
+    cart.reduce((s,i) => {
+      const p = products.find(x => x.id === i.id);
+      return s + (p ? Number(p.price) * i.quantity : 0);
+    },0)
+  );
+}{const rows=cart.map(i=>{const p=products.find(x=>x.id===i.id);return p?`<div class="row"><span>${p.name} × ${i.quantity}</span><span>${money(p.price*i.quantity)}</span></div>`:''}).join('');cartItems.innerHTML=rows||'<p>Carrinho vazio.</p>';total.textContent='Total: '+money(cart.reduce((s,i)=>{const p=products.find(x=>x.id===i.id);return s+(p?Number(p.price)*i.quantity:0)},0))}document.querySelector('#cart').onclick=()=>{render();drawer.style.display='block'};window.checkout=async()=>{
   msg.textContent='Criando pagamento...';
 
   const r=await fetch('/api/create-checkout',{
