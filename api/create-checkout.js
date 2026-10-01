@@ -13,8 +13,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { items, customer } = req.body;
+    const { items, customer, customer_name, customer_email } = req.body;
 
+const customerData = {
+  name: customer?.name || customer_name || '',
+  email: customer?.email || customer_email || ''
+};
+
+if (!customerData.name || !customerData.email) {
+  return res.status(400).json({
+    error: 'Nome e e-mail são obrigatórios'
+  });
+}
     if (!items || !items.length) {
       return res.status(400).json({
         error: 'Carrinho vazio'
