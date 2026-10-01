@@ -112,10 +112,10 @@ if (ids.some(id => !id)) {
       external_reference: order.id,
 
       back_urls: {
-        success: "https://SEU-SITE.vercel.app/sucesso.html",
-        failure: "https://SEU-SITE.vercel.app/falha.html",
-        pending: "https://SEU-SITE.vercel.app/pendente.html"
-      },
+  success: "https://nexous-store.vercel.app/sucesso.html",
+  failure: "https://nexous-store.vercel.app/falha.html",
+  pending: "https://nexous-store.vercel.app/pendente.html"
+},
 
       auto_return: "approved"
 
