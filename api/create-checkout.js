@@ -165,11 +165,20 @@ if (customerData.estado.length !== 2) {
       await supabase
         .from('orders')
         .insert({
-          customer_name: customerData.name,
-          customer_email: customerData.email,
-          total,
-          status: 'pending'
-        })
+  customer_name: customerData.name,
+  customer_email: customerData.email,
+
+  cep: customerData.cep,
+  rua: customerData.rua,
+  numero: customerData.numero,
+  complemento: customerData.complemento || null,
+  bairro: customerData.bairro,
+  cidade: customerData.cidade,
+  estado: customerData.estado,
+
+  total,
+  status: 'pending'
+})
         .select()
         .single();
 
