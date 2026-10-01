@@ -84,11 +84,11 @@ if (ids.some(id => !id)) {
       await supabase
       .from('orders')
       .insert({
-        customer_name: customer.name,
-        customer_email: customer.email,
-        total,
-        status: 'pending'
-      })
+  customer_name: customerData.name,
+  customer_email: customerData.email,
+  total,
+  status: 'pending'
+})
       .select()
       .single();
 
