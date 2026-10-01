@@ -6,7 +6,27 @@ async function load(){const{data,error}=await sb.from('products').select('*').eq
 document.querySelector('#products').innerHTML='<p>ERRO SUPABASE: '+error.message+'</p>';
 console.error(error);
 return;
-}products=data;document.querySelector('#products').innerHTML=data.map(p=>`<article class="card"><div class="photo">${p.image_url?`<img src="${p.image_url}" alt="">`:'NEXOUS'}</div><div class="info"><span class="tag">${p.tag||'DROP'}</span><h3>${p.name}</h3><p>${p.description||''}</p><p class="price">${money(p.price)}</p><button class="btn" data-add="${p.id}">ADICIONAR</button></div></article>`).join('');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add))}
+}products=data;document.querySelector('#products').innerHTML=data.map(p=>`<article class="card"><div class="photo">${p.image_url?`<img src="${p.image_url}" alt="">`:'NEXOUS'}</div><div class="info"><span class="tag">${p.tag||'DROP'}</span><h3>${p.name}</h3><p>${p.description||''}</p><p class="price">${money(p.price)}</p>
+
+${p.product_type === 'tenis' ? `
+  <select id="size-${p.id}" class="field" style="margin-bottom:10px">
+    <option value="">Escolha o número</option>
+    <option value="38">38</option>
+    <option value="39">39</option>
+    <option value="40">40</option>
+    <option value="41">41</option>
+    <option value="42">42</option>
+  </select>
+` : `
+  <select id="size-${p.id}" class="field" style="margin-bottom:10px">
+    <option value="">Escolha o tamanho</option>
+    <option value="P">P</option>
+    <option value="M">M</option>
+    <option value="G">G</option>
+  </select>
+`}
+
+<button class="btn" data-add="${p.id}">ADICIONAR</button></div></article>`).join('');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add))}
 function add(id){
   const x = cart.find(i => i.id === id);
 
