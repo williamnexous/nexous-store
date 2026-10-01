@@ -170,9 +170,10 @@ document.querySelector('#cart').onclick=()=>{render();drawer.style.display='bloc
     },
     body:JSON.stringify({
       items:cart,
-      customer:{
-  name:document.querySelector('#name').value,
-  email:document.querySelector('#email').value
+      customer: {
+  name: document.querySelector('#name').value,
+  email: document.querySelector('#email').value,
+  cpf: document.querySelector('#cpf').value
 }
     })
   });
