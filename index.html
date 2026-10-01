@@ -18,9 +18,9 @@ function add(id){const x=cart.find(i=>i.id===id);x?x.quantity++:cart.push({id,qu
     body:JSON.stringify({
       items:cart,
       customer:{
-        name:name.value,
-        email:email.value
-      }
+  name:document.querySelector('#name').value,
+  email:document.querySelector('#email').value
+}
     })
   });
 
