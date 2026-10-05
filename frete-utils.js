@@ -10,8 +10,8 @@ export function totalsForRegion(subtotalCents,uf){
  if(!Number.isSafeInteger(subtotalCents)||subtotalCents<0)throw new ShippingError('Valor dos produtos inválido.');
  const entry=Object.entries(shippingRates).find(([,rate])=>rate.states.includes(uf));
  if(!entry)throw new ShippingError('Estado de entrega inválido.');
- const shipping=subtotalCents>=39900||subtotalCents===0?0:entry[1].cents;
- return {subtotal:subtotalCents/100,shipping_amount:shipping/100,total:(subtotalCents+shipping)/100,shipping_region:entry[0],discount_amount:0};
+ const shipping=subtotalCents>=49900||subtotalCents===0?0:null;
+ return {subtotal:subtotalCents/100,shipping_amount:shipping===null?null:shipping/100,total:shipping===null?null:(subtotalCents+shipping)/100,shipping_region:entry[0],shipping_consultation:shipping===null,discount_amount:0};
 }
 const cepCache=new Map();
 export async function lookupCep(input,request=fetch){
