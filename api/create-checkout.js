@@ -14,11 +14,16 @@ export default async function handler(req, res) {
   }
 
   try {
+    const token = /^Bearer (\S+)$/.exec(req.headers.authorization || '')?.[1];
+    if (!token) return res.status(401).json({error:'Entre na sua conta para comprar e acompanhar o pedido.'});
+    const {data:auth,error:authError} = await supabase.auth.getUser(token);
+    if (authError || !auth?.user) return res.status(401).json({error:'Entre novamente na sua conta.'});
+    if (!auth.user.email_confirmed_at) return res.status(403).json({error:'Confirme seu e-mail antes de comprar.'});
     const { items, customer } = req.body;
 
     const customerData = {
   name: String(customer?.name || '').trim(),
-  email: String(customer?.email || '').trim(),
+  email: auth.user.email,
   cpf: String(customer?.cpf || '').replace(/\D/g, ''),
   cep: String(customer?.cep || '').replace(/\D/g, ''),
   rua: String(customer?.rua || '').trim(),
@@ -90,7 +95,7 @@ if (customerData.estado.length !== 2) {
     const { data: products, error: productsError } =
       await supabase
         .from('products')
-        .select('id,name,price,product_type')
+        .select('id,name,price,product_type,sizes')
         .in('id', ids)
         .eq('active', true);
 
@@ -120,7 +125,7 @@ if (customerData.estado.length !== 2) {
       }
 
       const quantity = Number(item.quantity);
-      const size = String(item.size || '');
+      const size = String(item.size || (product.product_type === 'acessorio' ? 'Único' : ''));
 
       if (
         !Number.isInteger(quantity) ||
@@ -130,10 +135,13 @@ if (customerData.estado.length !== 2) {
         throw new Error('Quantidade inválida.');
       }
 
-      const validSizes =
-        product.product_type === 'tenis'
-          ? ['38', '39', '40', '41', '42']
-          : ['P', 'M', 'G'];
+      const validSizes = product.product_type === 'acessorio'
+        ? ['Único']
+        : Array.isArray(product.sizes) && product.sizes.length
+          ? product.sizes.map(String)
+          : product.product_type === 'tenis'
+            ? ['38','39','40','41','42']
+            : ['P','M','G','GG'];
 
       if (!validSizes.includes(size)) {
         throw new Error(
@@ -165,6 +173,7 @@ if (customerData.estado.length !== 2) {
       await supabase
         .from('orders')
         .insert({
+  user_id: auth.user.id,
   customer_name: customerData.name,
   customer_email: customerData.email,
 
