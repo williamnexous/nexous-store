@@ -93,7 +93,7 @@ if (customerData.estado.length !== 2) {
     const { data: products, error: productsError } =
       await supabase
         .from('products')
-        .select('id,name,price,product_type,sizes,category,color_variants')
+        .select('id,name,price,product_type,sizes,category')
         .in('id', ids)
         .eq('active', true);
 
@@ -123,10 +123,6 @@ if (customerData.estado.length !== 2) {
       }
 
       if(!['Nike', 'Lacoste', 'Adidas', 'All Star', 'Puma', 'New Balance', 'Chuteiras', 'Chinelos'].includes(product.category))throw Object.assign(new Error('Este produto não faz parte do catálogo atual.'),{status:400});
-      const variants=Array.isArray(product.color_variants)?product.color_variants:[];
-      const color=String(item.color||'');
-      if(variants.length&&!variants.some(v=>v.name===color))throw Object.assign(new Error('Escolha uma cor válida para '+product.name),{status:400});
-      if(!variants.length&&color)throw Object.assign(new Error('A cor deste produto mudou. Adicione novamente ao carrinho.'),{status:400});
       const quantity = Number(item.quantity);
       const size = String(item.size || (product.product_type === 'acessorio' ? 'Único' : ''));
 
@@ -164,12 +160,12 @@ if (customerData.estado.length !== 2) {
         product_id: product.id,
         product_name: product.name,
         size,
-        color,
         quantity,
         unit_price: price
       };
     });
 
+    if(Math.round(total*100)<49900)return res.status(409).json({error:'Consulte o frete pelo WhatsApp antes de combinar o pagamento. O Pix no site está disponível para compras com frete grátis a partir de R$ 499,00.'});
     const destination=await cepLookup(customerData.cep);
     if(destination.uf!==customerData.estado)return res.status(400).json({error:'O estado informado não corresponde ao CEP. Calcule o frete novamente.'});
     const pricing=totalsForRegion(Math.round(total*100),destination.uf);
