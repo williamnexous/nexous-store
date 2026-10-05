@@ -52,7 +52,7 @@ export function createOrdersHandler(sb) {
         const ids = (orders||[]).map(o=>o.id);
         let items = [];
         if (ids.length) {
-          const result = await sb.from('order_items').select('order_id,product_name,size,quantity,unit_price').in('order_id',ids);
+          const result = await sb.from('order_items').select('order_id,product_name,size,color,quantity,unit_price').in('order_id',ids);
           if (result.error) throw result.error;
           items = result.data||[];
         }

@@ -93,7 +93,7 @@ if (customerData.estado.length !== 2) {
     const { data: products, error: productsError } =
       await supabase
         .from('products')
-        .select('id,name,price,product_type,sizes')
+        .select('id,name,price,product_type,sizes,category,color_variants')
         .in('id', ids)
         .eq('active', true);
 
@@ -122,6 +122,11 @@ if (customerData.estado.length !== 2) {
         throw new Error('Produto inválido.');
       }
 
+      if(!['Nike', 'Lacoste', 'Adidas', 'All Star', 'Puma', 'New Balance', 'Chuteiras', 'Chinelos'].includes(product.category))throw Object.assign(new Error('Este produto não faz parte do catálogo atual.'),{status:400});
+      const variants=Array.isArray(product.color_variants)?product.color_variants:[];
+      const color=String(item.color||'');
+      if(variants.length&&!variants.some(v=>v.name===color))throw Object.assign(new Error('Escolha uma cor válida para '+product.name),{status:400});
+      if(!variants.length&&color)throw Object.assign(new Error('A cor deste produto mudou. Adicione novamente ao carrinho.'),{status:400});
       const quantity = Number(item.quantity);
       const size = String(item.size || (product.product_type === 'acessorio' ? 'Único' : ''));
 
@@ -159,6 +164,7 @@ if (customerData.estado.length !== 2) {
         product_id: product.id,
         product_name: product.name,
         size,
+        color,
         quantity,
         unit_price: price
       };
