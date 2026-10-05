@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 export const deliveryStages = ['aguardando','preparando','enviado','em_transito','entregue'];
-const fields = 'id,user_id,customer_name,customer_email,total,status,created_at,cep,rua,numero,complemento,bairro,cidade,estado,delivery_status,carrier,tracking_code,tracking_url,estimated_delivery,delivery_note,delivery_updated_at';
+const fields = 'id,user_id,customer_name,customer_email,total,subtotal,shipping_amount,shipping_region,discount_amount,status,created_at,cep,rua,numero,complemento,bairro,cidade,estado,delivery_status,carrier,tracking_code,tracking_url,estimated_delivery,delivery_note,delivery_updated_at';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export function validateDelivery(input) {
   if (!deliveryStages.includes(input.delivery_status)) throw new Error('Etapa de entrega inválida.');

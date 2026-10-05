@@ -1,12 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
+import {lookupCep,totalsForRegion} from '../frete-utils.js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
-export default async function handler(req, res) {
+export function createCheckoutHandler(supabase,paymentFetch=fetch,cepLookup=lookupCep) {
+return async function handler(req,res) {
+  res.setHeader('Cache-Control','no-store');
   if (req.method !== 'POST') {
     return res.status(405).json({
       error: 'Método não permitido'
@@ -19,7 +17,7 @@ export default async function handler(req, res) {
     const {data:auth,error:authError} = await supabase.auth.getUser(token);
     if (authError || !auth?.user) return res.status(401).json({error:'Entre novamente na sua conta.'});
     if (!auth.user.email_confirmed_at) return res.status(403).json({error:'Confirme seu e-mail antes de comprar.'});
-    const { items, customer } = req.body;
+    const { items, customer, expected_total } = req.body || {};
 
     const customerData = {
   name: String(customer?.name || '').trim(),
@@ -73,7 +71,7 @@ if (customerData.estado.length !== 2) {
       });
     }
 
-    if (!Array.isArray(items) || items.length === 0) {
+    if (!Array.isArray(items) || items.length === 0 || items.length > 50) {
       return res.status(400).json({
         error: 'Carrinho vazio.'
       });
@@ -149,7 +147,7 @@ if (customerData.estado.length !== 2) {
         );
       }
 
-      const price = Number(product.price);
+      const price = Math.round(Number(product.price)*100)/100;
 
       if (!Number.isFinite(price) || price <= 0) {
         throw new Error('Preço inválido.');
@@ -166,7 +164,11 @@ if (customerData.estado.length !== 2) {
       };
     });
 
-    total = Number(total.toFixed(2));
+    const destination=await cepLookup(customerData.cep);
+    if(destination.uf!==customerData.estado)return res.status(400).json({error:'O estado informado não corresponde ao CEP. Calcule o frete novamente.'});
+    const pricing=totalsForRegion(Math.round(total*100),destination.uf);
+    if(!Number.isFinite(Number(expected_total))||Math.round(Number(expected_total)*100)!==Math.round(pricing.total*100))return res.status(409).json({error:'O valor da compra mudou. Calcule o frete novamente antes de gerar o Pix.',pricing});
+    total=pricing.total;
 
     // Criar pedido pendente
     const { data: order, error: orderError } =
@@ -186,6 +188,10 @@ if (customerData.estado.length !== 2) {
   estado: customerData.estado,
 
   total,
+  subtotal:pricing.subtotal,
+  shipping_amount:pricing.shipping_amount,
+  shipping_region:pricing.shipping_region,
+  discount_amount:0,
   status: 'pending'
 })
         .select()
@@ -233,7 +239,7 @@ if (customerData.estado.length !== 2) {
 
     const idempotencyKey = crypto.randomUUID();
 
-    const mpResponse = await fetch(
+    const mpResponse = await paymentFetch(
       'https://api.mercadopago.com/v1/payments',
       {
         method: 'POST',
@@ -297,6 +303,7 @@ if (customerData.estado.length !== 2) {
       order_id: order.id,
       payment_id: String(payment.id),
       status: payment.status,
+      ...pricing,
 
       qr_code:
         transactionData.qr_code,
@@ -308,8 +315,13 @@ if (customerData.estado.length !== 2) {
   } catch (error) {
     console.error('Erro create-checkout:', error);
 
-    return res.status(500).json({
-      error: 'Erro ao gerar pagamento Pix.'
-    });
+    return res.status(error.status||500).json({error:error.status?error.message:'Erro ao gerar pagamento Pix.'});
   }
+}
+
+}
+let defaultHandler;
+export default async function checkout(req,res){
+ defaultHandler ||= createCheckoutHandler(createClient(process.env.SUPABASE_URL,process.env.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}}));
+ return defaultHandler(req,res);
 }
