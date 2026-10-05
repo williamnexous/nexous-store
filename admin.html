@@ -1075,12 +1075,12 @@ Tipo
 <div class="field">
 
 <label>
-Modelo
+Modelo / Cor
 </label>
 
 <input
   id="variant"
-  placeholder="Ex: Air Max TN"
+  placeholder="Ex: Air Max TN Preto"
 >
 
 </div>
@@ -1114,7 +1114,7 @@ Separe cada tamanho por vírgula. Exemplo para tênis: 38, 39, 40, 41, 42. Infor
 <div class="field">
 
 <label>
-Imagem do produto
+Foto principal do produto
 </label>
 
 <input
@@ -1132,7 +1132,7 @@ Imagem do produto
 </div>
 
 
-<section class="field"><h3>Cores e fotos do modelo</h3><p class="help">Adicione uma cor e selecione várias fotos dessa cor. O estoque e a numeração são compartilhados pelo modelo.</p><div id="colorRows"></div><button type="button" id="addColor">+ Adicionar cor</button></section><!-- CHECKBOXES -->
+<div class="field"><label for="imageFile2">Segunda foto (opcional)</label><input id="imageFile2" type="file" accept="image/*"><img id="preview2" class="preview hide" alt="Prévia da segunda foto"><button type="button" id="removeImage2">Remover segunda foto</button><small class="help">O cliente poderá alternar entre a foto principal e a segunda foto.</small></div><!-- CHECKBOXES -->
 
 <div class="checks">
 
@@ -1923,11 +1923,13 @@ $('categoryFilter').onchange =
    RESETAR FORMULÁRIO
 ========================= */
 
+let secondImageUrl=null;let secondPreviewObjectUrl=null;
 function resetForm(){
+ secondImageUrl=null;if(secondPreviewObjectUrl)URL.revokeObjectURL(secondPreviewObjectUrl);secondPreviewObjectUrl=null;$('preview2').removeAttribute('src');$('preview2').classList.add('hide');
 
   $('productForm')
     .reset();
-  $('colorRows').replaceChildren();
+
 
 
   $('editingId').value =
@@ -2093,7 +2095,8 @@ function openEdit(id){
   }
 
 
-  (product.color_variants||[]).forEach(addColorRow);
+
+  secondImageUrl=product.image_url2||null;if(secondImageUrl){$('preview2').src=secondImageUrl;$('preview2').classList.remove('hide');}
   $('formTitle').textContent =
     'Editar produto';
 
@@ -2134,6 +2137,8 @@ $('cancelForm').onclick =
    PREVIEW DA FOTO
 ========================= */
 
+$('removeImage2').onclick=()=>{secondImageUrl=null;$('imageFile2').value='';if(secondPreviewObjectUrl)URL.revokeObjectURL(secondPreviewObjectUrl);secondPreviewObjectUrl=null;$('preview2').removeAttribute('src');$('preview2').classList.add('hide');};
+$('imageFile2').onchange=()=>{const file=$('imageFile2').files[0];if(secondPreviewObjectUrl)URL.revokeObjectURL(secondPreviewObjectUrl);secondPreviewObjectUrl=null;if(file){secondPreviewObjectUrl=URL.createObjectURL(file);$('preview2').src=secondPreviewObjectUrl;$('preview2').classList.remove('hide');}else if(secondImageUrl){$('preview2').src=secondImageUrl;}else{$('preview2').classList.add('hide');}};
 $('imageFile').onchange =
 event => {
 
@@ -2242,23 +2247,6 @@ async function upload(file){
    SALVAR PRODUTO
 ========================= */
 
-function addColorRow(value={}){
- const row=document.createElement('div');row.className='color-row';row.style.cssText='border:1px solid #444;padding:15px;margin:12px 0';row.savedImages=[...(value.images||[])];
- const label=document.createElement('label');label.textContent='Nome da cor';const name=document.createElement('input');name.className='color-name';name.value=value.name||'';name.placeholder='Ex: Preto / Branco';name.required=true;label.append(name);row.append(label);
- const file=document.createElement('input');file.type='file';file.accept='image/*';file.multiple=true;file.className='color-files';file.setAttribute('aria-label','Adicionar fotos desta cor');row.append(file);
- const preview=document.createElement('div');preview.className='color-preview';row.append(preview);
- function render(){preview.replaceChildren();row.savedImages.forEach((url,index)=>{const wrap=document.createElement('div');const img=document.createElement('img');img.src=url;img.alt='Foto da cor';img.style.cssText='width:70px;height:70px;object-fit:cover';wrap.append(img);const remove=document.createElement('button');remove.type='button';remove.textContent='Remover foto';remove.onclick=()=>{row.savedImages.splice(index,1);render();};wrap.append(remove);preview.append(wrap);});}
- render();const pending=document.createElement('p');row.append(pending);file.onchange=()=>pending.textContent=file.files.length+' foto(s) selecionada(s) para enviar ao salvar';
- const remove=document.createElement('button');remove.type='button';remove.textContent='Remover esta cor';remove.onclick=()=>row.remove();row.append(remove);$('colorRows').append(row);
-}
-$('addColor').onclick=()=>addColorRow();
-async function collectColors(){
- const result=[];const seen=new Set();
- for(const row of $('colorRows').children){const name=row.querySelector('.color-name').value.trim();if(!name)throw new Error('Informe o nome de cada cor.');const key=name.toLocaleLowerCase('pt-BR');if(seen.has(key))throw new Error('Não repita o nome das cores.');seen.add(key);
- const images=[...row.savedImages];for(const file of row.querySelector('.color-files').files){if(!file.type.startsWith('image/')||file.size>8*1024*1024)throw new Error('Use imagens de até 8 MB.');images.push(await upload(file));row.savedImages=[...images];}
- row.querySelector('.color-files').value='';if(!images.length)throw new Error('Adicione ao menos uma foto para '+name);result.push({name,images});}
- return result;
-}
 $('productForm').onsubmit =
 async event => {
 
@@ -2321,13 +2309,13 @@ async event => {
       ];
 
 
-    const color_variants=await collectColors();
+
     if(!['Nike', 'Lacoste', 'Adidas', 'All Star', 'Puma', 'New Balance', 'Chuteiras', 'Chinelos'].includes($('category').value))throw new Error('Selecione a marca ou tipo.');
     if(!uniqueSizes.length)throw new Error('Informe as numerações disponíveis.');
     /* PRODUTO */
 
     const product = {
-      color_variants,
+
 
 
       name:
@@ -2413,7 +2401,10 @@ async event => {
     }
 
 
-    if(color_variants.length)product.image_url=color_variants[0].images[0];
+
+    const secondFile=$('imageFile2').files[0];
+    if(secondFile){if(!secondFile.type.startsWith('image/')||secondFile.size>8*1024*1024)throw new Error('A segunda foto deve ser uma imagem de até 8 MB.');secondImageUrl=await upload(secondFile);$('imageFile2').value='';}
+    product.image_url2=secondImageUrl;
     /* ID */
 
     const id =
