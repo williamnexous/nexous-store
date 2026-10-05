@@ -59,7 +59,7 @@ header{padding:18px 5%;gap:24px;flex-wrap:wrap}.desktop-nav{margin-left:auto}.se
 <div class="benefits"><span>FRETE GRÁTIS • BRASIL</span><span>◇ PAGAMENTO VIA PIX</span><span>＋ STREETWEAR & SNEAKERS</span></div><section id="collection"><div class="shop-head"><div><span class="eyebrow">MONTE SEU ESTILO</span><h2 id="collectionTitle">Todos os produtos</h2><p id="collectionSubtitle">Cada detalhe faz parte do seu estilo. Por onde você quer começar?</p><button class="linkbtn" id="backCategories" type="button" onclick="filterCategory('')" hidden>← Ver categorias</button></div><p id="productCount"></p></div><div class="filters"><button class="chip active" data-category="">Todos</button><button class="chip" data-category="Camisas">Camisas</button><button class="chip" data-category="Bermudas">Bermudas</button><button class="chip" data-category="Calças">Calças</button><button class="chip" data-category="Conjuntos">Conjuntos</button><button class="chip" data-category="Tênis">Tênis</button><button class="chip" data-category="Bonés">Bonés</button><button class="chip" data-category="Acessórios">Acessórios</button></div><div class="catalog-tools" id="catalogTools" hidden><p id="searchSummary" aria-live="polite"></p><label>Ordenar <select id="catalogSort"><option value="recent">Mais recentes</option><option value="price-asc">Menor preço</option><option value="price-desc">Maior preço</option><option value="name">Nome: A–Z</option></select></label></div><main id="products" class="grid"><p class="empty">Carregando coleção…</p></main></section>
 <div class="drawer" id="productDrawer" role="dialog" aria-modal="true" aria-labelledby="detailTitle"><div class="panel detail-panel"><div class="detail-top"><span class="eyebrow">NEXOUS / COLEÇÃO</span><button type="button" class="closeBtn" onclick="closePanels()" aria-label="Fechar detalhes do produto">✕</button></div><div id="productDetail"></div></div></div><footer class="footer"><div class="footer-main"><div><a class="logo" href="/">NEXOUS</a><p>Seu estilo. Suas regras.<br>Streetwear para expressar quem você é.</p></div><div><b>MINHA CONTA</b><p><a href="#" onclick="openAccount();return false">Entrar / cadastrar</a><br><a href="#" onclick="openAccount();return false">Área do cliente</a></p></div><div><b>ENTREGA & PAGAMENTO</b><p>Frete grátis para todo o Brasil.<br>Pagamento via Pix no checkout.</p></div></div><div class="footer-bottom"><span>© 2026 NEXOUS. Todos os direitos reservados.</span><span>SEU ESTILO.</span></div></footer>
 <div id="accountDrawer" class="drawer" role="dialog" aria-modal="true" aria-label="Área do cliente"><div class="panel"><div class="row"><h2 id="accountTitle">Área do cliente</h2><button class="closeBtn" onclick="closePanels()" aria-label="Fechar">×</button></div>
-<div id="signedArea" hidden><p id="signedEmail" class="notice"></p><button class="btn" onclick="document.querySelector('#cart').click()">IR PARA O CARRINHO</button><button id="signOut" class="linkbtn">Sair da conta</button></div>
+<div id="signedArea" hidden><a class="btn" href="/meus-pedidos.html">MEUS PEDIDOS</a><p id="signedEmail" class="notice"></p><button class="btn" onclick="document.querySelector('#cart').click()">IR PARA O CARRINHO</button><button id="signOut" class="linkbtn">Sair da conta</button></div>
 <div id="authArea"><div class="row"><button class="chip active" id="loginTab" type="button">Entrar</button><button class="chip" id="registerTab" type="button">Criar conta</button></div>
 <form id="authForm"><label id="authNameLabel" hidden>Nome<input class="field" id="authName" autocomplete="name"></label><label>E-mail<input class="field" id="authEmail" type="email" autocomplete="email" required></label><label id="authPasswordLabel">Senha<input class="field" id="authPassword" type="password" minlength="6" autocomplete="current-password" required></label><button class="btn" id="authSubmit" type="submit">ENTRAR</button></form><button id="forgotPassword" class="linkbtn" type="button">Esqueci minha senha</button><button id="backLogin" class="linkbtn" type="button" hidden>Voltar para entrar</button></div><p id="authMsg" role="status" aria-live="polite"></p></div></div><div
 id="drawer"
@@ -693,8 +693,9 @@ msg.textContent=
 'Preencha todos os dados obrigatórios.';
 return;
 }
-msg.textContent=
-'Criando pagamento...';
+const {data:{session}}=await sb.auth.getSession();
+if(!session){msg.textContent='Entre na sua conta antes de comprar.';openAccount();return;}
+msg.textContent='Criando pagamento...';
 try{
 const response=
 await fetch(
@@ -702,8 +703,8 @@ await fetch(
 {
 method:'POST',
 headers:{
-'Content-Type':
-'application/json'
+'Content-Type':'application/json',
+'Authorization':'Bearer '+session.access_token
 },
 body:
 JSON.stringify({
