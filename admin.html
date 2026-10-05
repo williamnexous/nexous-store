@@ -862,16 +862,17 @@ Estoque total
   class="filter">
 
 <option value="">
-Todas as categorias
+Todas as marcas e tipos
 </option>
 
-<option>Camisas</option>
-<option>Bermudas</option>
-<option>Tênis</option>
-<option>Moletons</option>
-<option>Calças</option>
-<option>Bonés</option>
-<option>Acessórios</option>
+<option>Nike</option>
+<option>Lacoste</option>
+<option>Adidas</option>
+<option>All Star</option>
+<option>Puma</option>
+<option>New Balance</option>
+<option>Chuteiras</option>
+<option>Chinelos</option>
 
 </select>
 
@@ -1011,7 +1012,7 @@ Estoque
 <div class="field">
 
 <label>
-Categoria
+Marca / tipo
 </label>
 
 <select id="category">
@@ -1020,13 +1021,14 @@ Categoria
 Selecionar
 </option>
 
-<option>Camisas</option>
-<option>Bermudas</option>
-<option>Tênis</option>
-<option>Moletons</option>
-<option>Calças</option>
-<option>Bonés</option>
-<option>Acessórios</option>
+<option>Nike</option>
+<option>Lacoste</option>
+<option>Adidas</option>
+<option>All Star</option>
+<option>Puma</option>
+<option>New Balance</option>
+<option>Chuteiras</option>
+<option>Chinelos</option>
 
 </select>
 
@@ -1065,21 +1067,7 @@ Tag
 Tipo
 </label>
 
-<select id="product_type">
-
-<option value="roupa">
-Roupa
-</option>
-
-<option value="tenis">
-Tênis
-</option>
-
-<option value="acessorio">
-Acessório
-</option>
-
-</select>
+<select id="product_type"><option value="tenis">Calçado (numeração)</option></select>
 
 </div>
 
@@ -1087,12 +1075,12 @@ Acessório
 <div class="field">
 
 <label>
-Modelo / Cor
+Modelo
 </label>
 
 <input
   id="variant"
-  placeholder="Ex: TN Deadpool ou Canelada preta"
+  placeholder="Ex: Air Max TN"
 >
 
 </div>
@@ -1115,7 +1103,7 @@ Tamanhos / Numeração
 >
 
 <small class="help">
-Separe cada tamanho por vírgula. Exemplo para tênis: 38, 39, 40, 41, 42. Para roupas: P, M, G, GG.
+Separe cada tamanho por vírgula. Exemplo para tênis: 38, 39, 40, 41, 42. Informe apenas as numerações que seu fornecedor oferece.
 </small>
 
 </div>
@@ -1144,7 +1132,7 @@ Imagem do produto
 </div>
 
 
-<!-- CHECKBOXES -->
+<section class="field"><h3>Cores e fotos do modelo</h3><p class="help">Adicione uma cor e selecione várias fotos dessa cor. O estoque e a numeração são compartilhados pelo modelo.</p><div id="colorRows"></div><button type="button" id="addColor">+ Adicionar cor</button></section><!-- CHECKBOXES -->
 
 <div class="checks">
 
@@ -1939,6 +1927,7 @@ function resetForm(){
 
   $('productForm')
     .reset();
+  $('colorRows').replaceChildren();
 
 
   $('editingId').value =
@@ -1962,7 +1951,7 @@ function resetForm(){
 
 
   $('product_type').value =
-    'roupa';
+    'tenis';
 
 
   $('preview').src =
@@ -2062,8 +2051,7 @@ function openEdit(id){
 
 
   $('product_type').value =
-    product.product_type ||
-    'roupa';
+    'tenis';
 
 
   $('variant').value =
@@ -2105,6 +2093,7 @@ function openEdit(id){
   }
 
 
+  (product.color_variants||[]).forEach(addColorRow);
   $('formTitle').textContent =
     'Editar produto';
 
@@ -2253,6 +2242,23 @@ async function upload(file){
    SALVAR PRODUTO
 ========================= */
 
+function addColorRow(value={}){
+ const row=document.createElement('div');row.className='color-row';row.style.cssText='border:1px solid #444;padding:15px;margin:12px 0';row.savedImages=[...(value.images||[])];
+ const label=document.createElement('label');label.textContent='Nome da cor';const name=document.createElement('input');name.className='color-name';name.value=value.name||'';name.placeholder='Ex: Preto / Branco';name.required=true;label.append(name);row.append(label);
+ const file=document.createElement('input');file.type='file';file.accept='image/*';file.multiple=true;file.className='color-files';file.setAttribute('aria-label','Adicionar fotos desta cor');row.append(file);
+ const preview=document.createElement('div');preview.className='color-preview';row.append(preview);
+ function render(){preview.replaceChildren();row.savedImages.forEach((url,index)=>{const wrap=document.createElement('div');const img=document.createElement('img');img.src=url;img.alt='Foto da cor';img.style.cssText='width:70px;height:70px;object-fit:cover';wrap.append(img);const remove=document.createElement('button');remove.type='button';remove.textContent='Remover foto';remove.onclick=()=>{row.savedImages.splice(index,1);render();};wrap.append(remove);preview.append(wrap);});}
+ render();const pending=document.createElement('p');row.append(pending);file.onchange=()=>pending.textContent=file.files.length+' foto(s) selecionada(s) para enviar ao salvar';
+ const remove=document.createElement('button');remove.type='button';remove.textContent='Remover esta cor';remove.onclick=()=>row.remove();row.append(remove);$('colorRows').append(row);
+}
+$('addColor').onclick=()=>addColorRow();
+async function collectColors(){
+ const result=[];const seen=new Set();
+ for(const row of $('colorRows').children){const name=row.querySelector('.color-name').value.trim();if(!name)throw new Error('Informe o nome de cada cor.');const key=name.toLocaleLowerCase('pt-BR');if(seen.has(key))throw new Error('Não repita o nome das cores.');seen.add(key);
+ const images=[...row.savedImages];for(const file of row.querySelector('.color-files').files){if(!file.type.startsWith('image/')||file.size>8*1024*1024)throw new Error('Use imagens de até 8 MB.');images.push(await upload(file));row.savedImages=[...images];}
+ row.querySelector('.color-files').value='';if(!images.length)throw new Error('Adicione ao menos uma foto para '+name);result.push({name,images});}
+ return result;
+}
 $('productForm').onsubmit =
 async event => {
 
@@ -2315,9 +2321,13 @@ async event => {
       ];
 
 
+    const color_variants=await collectColors();
+    if(!['Nike', 'Lacoste', 'Adidas', 'All Star', 'Puma', 'New Balance', 'Chuteiras', 'Chinelos'].includes($('category').value))throw new Error('Selecione a marca ou tipo.');
+    if(!uniqueSizes.length)throw new Error('Informe as numerações disponíveis.');
     /* PRODUTO */
 
     const product = {
+      color_variants,
 
 
       name:
@@ -2403,6 +2413,7 @@ async event => {
     }
 
 
+    if(color_variants.length)product.image_url=color_variants[0].images[0];
     /* ID */
 
     const id =

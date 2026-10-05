@@ -30,7 +30,7 @@ function render(){
   const card=el('article',undefined,'card');const row=el('div',undefined,'row');row.append(el('h2','Pedido '+o.id.slice(0,8).toUpperCase()),el('span',paymentLabels[o.status]||'Pagamento: '+o.status,'badge'));card.append(row);
   card.append(el('p','Realizado em '+date(o.created_at)+' · '+money(o.total),'muted'));
   const details=el('details');details.append(el('summary','Produtos e endereço de entrega'));const items=el('ul',undefined,'items');
-  for(const item of o.items||[])items.append(el('li',`${item.quantity} × ${item.product_name}${item.size?' · '+item.size:''} — ${money(item.unit_price)}/un.`));
+  for(const item of o.items||[])items.append(el('li',`${item.quantity} × ${item.product_name}${item.size?' · '+item.size:''}${item.color?' · Cor: '+item.color:''} — ${money(item.unit_price)}/un.`));
   if(o.subtotal!==null&&o.subtotal!==undefined){items.append(el('li','Produtos: '+money(o.subtotal)),el('li','Entrega padrão: '+(Number(o.shipping_amount)?money(o.shipping_amount):'Grátis')));}
   details.append(items,el('p',o.customer_name));
   if(admin)details.append(el('p',o.customer_email));
