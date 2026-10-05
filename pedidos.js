@@ -31,6 +31,7 @@ function render(){
   card.append(el('p','Realizado em '+date(o.created_at)+' · '+money(o.total),'muted'));
   const details=el('details');details.append(el('summary','Produtos e endereço de entrega'));const items=el('ul',undefined,'items');
   for(const item of o.items||[])items.append(el('li',`${item.quantity} × ${item.product_name}${item.size?' · '+item.size:''} — ${money(item.unit_price)}/un.`));
+  if(o.subtotal!==null&&o.subtotal!==undefined){items.append(el('li','Produtos: '+money(o.subtotal)),el('li','Entrega padrão: '+(Number(o.shipping_amount)?money(o.shipping_amount):'Grátis')));}
   details.append(items,el('p',o.customer_name));
   if(admin)details.append(el('p',o.customer_email));
   details.append(el('p',[o.rua,o.numero,o.complemento,o.bairro].filter(Boolean).join(', ')),el('p',[o.cidade,o.estado,o.cep?'CEP '+o.cep:''].filter(Boolean).join(' · ')));card.append(details);
