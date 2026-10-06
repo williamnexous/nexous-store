@@ -1,17 +1,17 @@
 export const shippingRates = {
- Sudeste:{states:['SP','RJ','MG','ES'],cents:2490},
- Sul:{states:['RS','SC','PR'],cents:2990},
- 'Centro-Oeste':{states:['DF','GO','MT','MS'],cents:3490},
- Nordeste:{states:['AL','BA','CE','MA','PB','PE','PI','RN','SE'],cents:3990},
- Norte:{states:['AC','AP','AM','PA','RO','RR','TO'],cents:4990}
+ Sudeste:{states:['SP','RJ','MG','ES'],cents:3000},
+ Sul:{states:['RS','SC','PR'],cents:3000},
+ 'Centro-Oeste':{states:['DF','GO','MT','MS'],cents:3000},
+ Nordeste:{states:['AL','BA','CE','MA','PB','PE','PI','RN','SE'],cents:3000},
+ Norte:{states:['AC','AP','AM','PA','RO','RR','TO'],cents:3000}
 };
 export class ShippingError extends Error {constructor(message,status=400){super(message);this.status=status;}}
 export function totalsForRegion(subtotalCents,uf){
  if(!Number.isSafeInteger(subtotalCents)||subtotalCents<0)throw new ShippingError('Valor dos produtos inválido.');
  const entry=Object.entries(shippingRates).find(([,rate])=>rate.states.includes(uf));
  if(!entry)throw new ShippingError('Estado de entrega inválido.');
- const shipping=subtotalCents>=49900||subtotalCents===0?0:null;
- return {subtotal:subtotalCents/100,shipping_amount:shipping===null?null:shipping/100,total:shipping===null?null:(subtotalCents+shipping)/100,shipping_region:entry[0],shipping_consultation:shipping===null,discount_amount:0};
+ const shipping=subtotalCents>=49900||subtotalCents===0?0:3000;
+ return {subtotal:subtotalCents/100,shipping_amount:shipping/100,total:(subtotalCents+shipping)/100,shipping_region:entry[0],shipping_consultation:false,discount_amount:0};
 }
 const cepCache=new Map();
 export async function lookupCep(input,request=fetch){
