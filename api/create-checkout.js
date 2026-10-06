@@ -125,7 +125,6 @@ export function createCheckoutHandler(supabase, paymentFetch = fetch, cepLookup 
         if (product.stock != null && (!Number.isInteger(product.stock) || product.stock < quantity)) throw fail(`Estoque insuficiente para ${product.name}.`, 409);
       }
       const subtotalCents = orderItems.reduce((sum, item) => sum + cents(item.unit_price) * item.quantity, 0);
-      if (subtotalCents < 49900) throw fail('Consulte o frete pelo WhatsApp antes de combinar o pagamento. O Pix no site está disponível a partir de R$ 499,00.', 409);
       const destination = await cepLookup(customerData.cep);
       if (destination.uf !== customerData.estado) throw fail('O estado informado não corresponde ao CEP. Calcule o frete novamente.');
       const pricing = totalsForRegion(subtotalCents, destination.uf);
